@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/FrontEnd/static/css/main.ddad0cb6.css",
-    "main.js": "/FrontEnd/static/js/main.7e73ff9d.js",
+    "main.js": "/FrontEnd/static/js/main.1bd1cf82.js",
     "static/media/WebServer_Login_BG-01.png": "/FrontEnd/static/media/WebServer_Login_BG-01.091523233220a5448537.png",
     "static/media/WebServer_Login_Image.png": "/FrontEnd/static/media/WebServer_Login_Image.a4a32d55bcad3e9f9b1f.png",
     "static/media/Logo_ACIS.png": "/FrontEnd/static/media/Logo_ACIS.1b918ac439fde949315b.png",
@@ -14,10 +14,10 @@
     "static/media/slick.woff": "/FrontEnd/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/FrontEnd/index.html",
     "main.ddad0cb6.css.map": "/FrontEnd/static/css/main.ddad0cb6.css.map",
-    "main.7e73ff9d.js.map": "/FrontEnd/static/js/main.7e73ff9d.js.map"
+    "main.1bd1cf82.js.map": "/FrontEnd/static/js/main.1bd1cf82.js.map"
   },
   "entrypoints": [
     "static/css/main.ddad0cb6.css",
-    "static/js/main.7e73ff9d.js"
+    "static/js/main.1bd1cf82.js"
   ]
 }
