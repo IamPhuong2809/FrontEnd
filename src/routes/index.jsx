@@ -14,9 +14,9 @@ function AppRoutes() {
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         {Control6dofRoutes()}
-        <Route path="StateSystems" element={<StateSystems />} />
-        <Route path="AssignTask" element={<AssignTask />} />
-        <Route path="ControlMobile" element={<ControlMobile />} />
+        <Route path="/StateSystems" element={<StateSystems />} />
+        <Route path="/AssignTask" element={<AssignTask />} />
+        <Route path="/ControlMobile" element={<ControlMobile />} />
       </Routes>
     </BrowserRouter>
   );
