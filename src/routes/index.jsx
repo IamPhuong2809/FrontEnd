@@ -9,9 +9,9 @@ import ControlMobile from '../features/ControlMobile/ControlMobile';
 function AppRoutes() {
     
   return (
-    <BrowserRouter>
+    <BrowserRouter basename='/FrontEnd'>
       <Routes>
-        <Route path="FrontEnd/" element={<Homepage />} />
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         {Control6dofRoutes()}
         <Route path="/StateSystems" element={<StateSystems />} />
