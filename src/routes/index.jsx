@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Login from '../features/Login/Login';
 import Homepage from '../features/Homepage/Homepage';
 import Control6dofRoutes from './6dofRoutes';
@@ -9,7 +9,7 @@ import ControlMobile from '../features/ControlMobile/ControlMobile';
 function AppRoutes() {
     
   return (
-    <BrowserRouter basename='/FrontEnd'>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
@@ -18,7 +18,7 @@ function AppRoutes() {
         <Route path="/AssignTask" element={<AssignTask />} />
         <Route path="/ControlMobile" element={<ControlMobile />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
