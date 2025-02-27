@@ -19,8 +19,9 @@ const Input = (props) => {
     const [inputValue, setInputValue] = useState(formValue);
 
     const handleChange = (e) => {
-        setInputValue(e.target.value);
-        onChange(inputValue); // Gọi hàm onChange khi giá trị thay đổi
+        const newValue = e.target.value;
+        setInputValue(newValue);
+        onChange(newValue); // Gọi hàm onChange khi giá trị thay đổi
     };
 
   return (
