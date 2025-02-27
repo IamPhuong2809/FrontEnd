@@ -1,0 +1,38 @@
+.input-group {
+    display: flex;
+    flex-direction: column;
+    width: 130px;
+    gap: 4px;
+}
+  
+label {
+    color: black;
+    font-size: 20px;
+    margin-left: 5px;
+}
+  
+.input-group-container {
+    position: relative;
+    display: inline-block;
+}
+
+input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    font-size: 17px;
+    align-items: center;
+    box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều rộng tổng thể */
+    font-family: "Montserrat", sans-serif;
+    height: 35px;
+    overflow: hidden;
+}
+  
+.unit {
+    position: absolute;
+    font-size: 17px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    pointer-events: none; /* Không cho phép tương tác với đơn vị */
+    color: black; 
+}

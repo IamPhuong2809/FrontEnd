@@ -1,0 +1,158 @@
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
+body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.homepage-container {
+    min-height: 100vh;
+    height: 100%;
+}
+
+.homepage-content1 {
+    padding: 70px 20px 20px;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    justify-content: center; /* Căn giữa nội dung theo chiều dọc */
+}
+
+.hero-section {
+    margin: 0 auto;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 10px 20px;
+}
+
+.slider-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    padding: 10px;
+    outline: none;
+}
+
+/* Fix dots container position */
+.slick-dots {
+    bottom: 25px;
+    display: flex !important;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Remove default list styling */
+.slick-dots li {
+    margin: 0 8px;
+    padding: 0;
+}
+
+.slick-dots li button {
+    position: relative;
+    top: 0;
+    transform: none;
+}
+
+/* Style the dots */
+.slick-dots li button:before {
+    content: "";
+    width: 20px;
+    height: 6px;
+    border-radius: 10px;
+    background: #888;
+    opacity: 0.5;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease;
+    margin-top: 35px;
+}
+
+/* Style active dot */
+.slick-dots li.slick-active button:before {
+    width: 60px;
+    opacity: 1;
+    background: #333;
+}
+
+.homepage-content2 {
+    width: 100%;
+    padding: 120px 0;
+    min-height: 100vh;
+}
+
+.features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 30px;
+    padding-bottom: 50px;
+}
+
+.feature-column {
+    flex: 1; /* Chia đều không gian */
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Khoảng cách giữa các row */
+  }
+
+.feature-item {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.feature-title {
+    width: 100%;
+    padding: 25px;
+    background: #1797e5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 18px;
+    font-weight: bold;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.feature-title span {
+    position: relative;
+    z-index: 2;
+}
+
+.feature-title:hover {
+    background: #1377b6;
+}
+
+.feature-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 1.5s ease-out;
+    padding: 0 25px;
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+}
+
+.feature-item:hover .feature-content {
+    max-height: 200px; /* Điều chỉnh theo nội dung thực tế */
+    padding: 20px -12px;
+}
+
+/* Thêm mũi tên indicator */
+.feature-title::after {
+    content: "▼";
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover .feature-title::after {
+    transform: translateY(-50%) rotate(180deg);
+}

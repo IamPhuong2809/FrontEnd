@@ -1,0 +1,233 @@
+.point-management {
+    position: relative;
+    display: flex;
+    background-color: transparent;
+    left: 110px;
+    top: 75px;
+    width: 91%;
+    height: 87vh;
+}
+  
+  /* Point Detail Styles */
+.point-detail {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+  
+.point-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #d0e1ec;
+    color: #628491;
+    border: 2px solid #628491;
+    height: 40px;
+    width: calc(100% + 1px);
+    margin-left: -1px;
+    border-top-right-radius: 5px;
+}
+  
+.point-detail-title {
+    font-weight: bold;
+}
+  
+.close-button {
+    background: none;
+    color: #006991;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 25px;
+    padding-right: 0px;
+}
+
+.close-button:hover {
+    color: rgb(206, 5, 5);
+}
+
+/* Move to Point Styles */
+.move-to-point-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 40px);
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    background-color: #dadce0;
+    display: flex;
+    flex-direction: column;
+    border-bottom-right-radius: 5px;
+}
+  
+.dialog-header {
+    background-color: #006991;
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+}
+
+.note-header {
+    font-weight: 600;
+    padding: 10px 10px;
+}
+
+.dialog-content {
+    display: flex;
+    padding: 5px 10px 0px 5px;
+    flex-direction: row;
+    gap: 10px;
+    border-radius: 10px;
+}
+  
+.note-section {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+}
+  
+.option-spans {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    margin: 10px 0 0 10px;
+}
+
+.option-span-top {
+    display: flex;
+    gap: 5px;
+}
+
+.option-span-bottom {
+    display: flex;
+    gap: 5px;
+}
+.option-span {
+    display: flex;
+    background-color: white;
+    border: 1px solid #8d8c8c;
+    cursor: pointer;
+    font-size: 14px;
+    width: 95px;
+    height: 30px;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+}
+  
+.option-span.active {
+    background-color: #ddd;
+    border-color: #999;
+}
+  
+.error-text {
+    font-size: 16px;
+    margin-top: 10px;
+    color: #666;
+    margin-left: 10px;
+    height: 70px;
+    max-height: 70px;
+    text-overflow: ellipsis; /* Thêm dấu ba chấm */
+    max-width: 300px;
+    word-wrap: break-word;
+}
+  
+.position-section-desired {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+}
+  
+.position-header {
+    font-weight: bold;
+    margin-bottom: 8px;
+    margin: 10px 0 0 10px;
+}
+  
+.position-data {
+    font-size: 12px;
+}
+  
+.position-row {
+    display: flex;
+    margin-bottom: 5px;
+    width: 90%;
+    margin-left: 5px;
+    padding: 5px 5px 5px 7px;
+}
+  
+.position-label {
+    width: 30px;
+    font-weight: bold;
+}
+  
+.position-value {
+    flex: 1;
+    margin-left: 10px;
+}
+
+/*Curent Position Section*/
+
+.position-section-current{
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+    margin: 5px 10px 5px 5px;
+}
+
+.position-section-current .position-header {
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+.position-section-current .position-data {
+    margin-left: 10px; 
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+    row-gap: 5px;
+    column-gap: 0px;
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.position-section-current .position-row {
+    display: flex;
+    width: 95%;
+    padding: 5px 5px 5px 7px;
+}
+
+  
+.action-buttons {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.move-button, .abort-button {
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 5px;
+    margin: 10px 10px 0 10px;
+}
+  
+.move-button {
+    background-color: #006991;
+}
+  
+.move-button:hover {
+    background-color: #00587a;
+}
+  
+.abort-button {
+    background-color: #d9534f;
+}
+  
+.abort-button:hover {
+    background-color: #c9302c;
+}
