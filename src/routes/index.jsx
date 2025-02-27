@@ -11,7 +11,7 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route path="FrontEnd/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         {Control6dofRoutes()}
         <Route path="/StateSystems" element={<StateSystems />} />
