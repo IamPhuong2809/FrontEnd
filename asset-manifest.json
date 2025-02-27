@@ -1,16 +1,23 @@
 {
   "files": {
-    "main.css": "/FrontEnd/static/css/main.f855e6bc.css",
-    "main.js": "/FrontEnd/static/js/main.51db27bd.js",
-    "static/js/453.9b1485be.chunk.js": "/FrontEnd/static/js/453.9b1485be.chunk.js",
-    "static/media/logo.svg": "/FrontEnd/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "main.css": "/FrontEnd/static/css/main.ddad0cb6.css",
+    "main.js": "/FrontEnd/static/js/main.d2861140.js",
+    "static/media/WebServer_Login_BG-01.png": "/FrontEnd/static/media/WebServer_Login_BG-01.091523233220a5448537.png",
+    "static/media/WebServer_Login_Image.png": "/FrontEnd/static/media/WebServer_Login_Image.a4a32d55bcad3e9f9b1f.png",
+    "static/media/Logo_ACIS.png": "/FrontEnd/static/media/Logo_ACIS.1b918ac439fde949315b.png",
+    "static/media/default-avatar.png": "/FrontEnd/static/media/default-avatar.1b918ac439fde949315b.png",
+    "static/media/Logo_Horizon.png": "/FrontEnd/static/media/Logo_Horizon.e13b8901f9edc53648c7.png",
+    "static/media/Logo_UTE.png": "/FrontEnd/static/media/Logo_UTE.646d9adbbfc5b263472e.png",
+    "static/media/slick.svg": "/FrontEnd/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/FrontEnd/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/FrontEnd/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/FrontEnd/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/FrontEnd/index.html",
-    "main.f855e6bc.css.map": "/FrontEnd/static/css/main.f855e6bc.css.map",
-    "main.51db27bd.js.map": "/FrontEnd/static/js/main.51db27bd.js.map",
-    "453.9b1485be.chunk.js.map": "/FrontEnd/static/js/453.9b1485be.chunk.js.map"
+    "main.ddad0cb6.css.map": "/FrontEnd/static/css/main.ddad0cb6.css.map",
+    "main.d2861140.js.map": "/FrontEnd/static/js/main.d2861140.js.map"
   },
   "entrypoints": [
-    "static/css/main.f855e6bc.css",
-    "static/js/main.51db27bd.js"
+    "static/css/main.ddad0cb6.css",
+    "static/js/main.d2861140.js"
   ]
 }
