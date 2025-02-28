@@ -9,3 +9,8 @@
     height: 87vh;
     overflow: hidden;
 }
+
+/* Để PopupScreen hiển thị đúng cách */
+.teach-management > div:first-child {
+    z-index: 3;
+}

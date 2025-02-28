@@ -2,8 +2,7 @@
 .points-list-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    min-width: 30vw;
+    width: 30vw;
     height: 100vh;
     border-right: 1px solid #ccc;
     background-color: white;
@@ -178,4 +177,30 @@
     display: flex;
     align-items: center;
     font-size: 12px;
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-in-out forwards;
+}
+
+.slide-out {
+    animation: slideOut 0.5s ease-in-out forwards;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }

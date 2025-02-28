@@ -29,10 +29,6 @@
     animation: slideOut 0.5s ease-in-out forwards;
 }
 
-.none{
-    animation: none;
-}
-
 @keyframes slideIn {
     0% {
         transform: translateX(-100%);

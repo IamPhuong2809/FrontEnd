@@ -222,12 +222,12 @@ const PositionList = () => {
         <Menu />
         <div className="point-management">
             <List 
-                points={points} 
+                items={points} 
                 SelectedItem={selectedPoint} 
+                isPopupOpen={true}
                 handleItemSelect={handlePointSelect}
                 handleDetailClose={handleDetailClose}
                 headerName="Point Name" 
-                PopupScreen={PopupScreen}
             />
 
             {isDetailOpen && PopupScreen && (

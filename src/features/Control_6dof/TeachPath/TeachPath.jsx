@@ -23,8 +23,26 @@ const TeachPath = () => {
         { id: 13, name: 'type_a_name' },
         { id: 14, name: 'type_a_name' },
         ];
+    //#endregion
 
     //#region Point List Screen
+    const points =[
+        { id: 1, name: 'Home' },
+        { id: 2, name: 'Prepick Pos 1' },
+        { id: 3, name: 'PickPos 1' },
+        { id: 4, name: 'Prepick Pos 2' },
+        { id: 5, name: 'Pick Pos 2' },
+        { id: 6, name: 'type_a_name' },
+        { id: 7, name: 'type_a_name' },
+        { id: 8, name: 'type_a_name' },
+        { id: 9, name: 'type_a_name' },
+        { id: 10, name: 'type_a_name' },
+        { id: 11, name: 'type_a_name' },
+        { id: 12, name: 'type_a_name' },
+        { id: 13, name: 'type_a_name' },
+        { id: 14, name: 'type_a_name' },
+    ];
+
     const [isPointOpen, setIsPointOpen] = useState(false);
     const [selectedPath, setSelectedPath] = useState(null);
     const [isPointClosing, setIsPointClosing] = useState(false);
@@ -51,35 +69,16 @@ const TeachPath = () => {
             setIsPointClosing(false);
         }, 500);
     };
-    //#endregion
-
-    //#region Point List
-    const points =[
-        { id: 1, name: 'Home' },
-        { id: 2, name: 'Prepick Pos 1' },
-        { id: 3, name: 'PickPos 1' },
-        { id: 4, name: 'Prepick Pos 2' },
-        { id: 5, name: 'Pick Pos 2' },
-        { id: 6, name: 'type_a_name' },
-        { id: 7, name: 'type_a_name' },
-        { id: 8, name: 'type_a_name' },
-        { id: 9, name: 'type_a_name' },
-        { id: 10, name: 'type_a_name' },
-        { id: 11, name: 'type_a_name' },
-        { id: 12, name: 'type_a_name' },
-        { id: 13, name: 'type_a_name' },
-        { id: 14, name: 'type_a_name' },
-        ];
 
     const PointList = () => {
         return (
             <List 
-                points={points} 
-                noSelectingItem={handlePointSelect} 
+                items={points} 
+                SelectedItem={selectedPoint}
+                handleItemSelect={handlePointSelect} 
                 handleDetailClose={handleDetailClose}
-                isPopupOpen={isPointOpen} 
+                isPopupClosing={isPointClosing} 
                 headerName="Point Name" 
-                PopupScreen={PopupScreen} 
             />
         )
     }
@@ -114,7 +113,6 @@ const TeachPath = () => {
     };
 
     const PopupScreen = () => {
-
         return(
             <div>abc</div>
         )
@@ -127,13 +125,15 @@ const TeachPath = () => {
         <Menu />
         <div className="teach-management">
             <List 
-                points={paths} 
+                items={paths} 
                 SelectedItem={selectedPath} 
+                isPopupOpen={true}
                 handleItemSelect={handlePathSelect} 
                 handleDetailClose={handlePathClose}
-                headerName="Path Name" 
-                PopupScreen={PointList} 
+                headerName="Path Name"
             />
+            {/* Hiển thị PopupScreen nếu có item được chọn */}
+            {isPointOpen && PointList && <PointList />}
         </div>
    </div>
   )

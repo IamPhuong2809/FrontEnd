@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react'
 import './List.css'
 import deleteItems from '@images/deleteItems.png'
 import renameItem from '@images/renameItem.png'
@@ -12,12 +12,12 @@ const List = (props) => {
 
     //#region Destructure props properly
     const { 
-        points, 
+        items,
+        isPopupClosing,
         SelectedItem,
         handleItemSelect,
         handleDetailClose,
         headerName, 
-        PopupScreen,
     } = props;
 
     const ItemSelect = (item) => {
@@ -31,39 +31,32 @@ const List = (props) => {
 
     //#endregion
 
-    //#region Update points when props change
-        const addPoint = (newPoint, nextId) => {
-            setPointsList((prevPoints) => [
-                ...prevPoints,
-                { id: nextId++, ...newPoint }
+    // #region Update items when props change
+        const insertItem = (index, newItem, nextId) => {
+            setItemsList((prevItems) => [
+                ...prevItems.slice(0, index),
+                { id: nextId++, ...newItem },
+                ...prevItems.slice(index)
             ]);
         };
 
-        const insertPoint = (index, newPoint, nextId) => {
-            setPointsList((prevPoints) => [
-                ...prevPoints.slice(0, index),
-                { id: nextId++, ...newPoint },
-                ...prevPoints.slice(index)
-            ]);
+        const removeItem = (index) => {
+            setItemsList((prevItems) => prevItems.filter((_, i) => i !== index));
         };
 
-        const removePoint = (index) => {
-            setPointsList((prevPoints) => prevPoints.filter((_, i) => i !== index));
-        };
-
-        const swapPoints = (index1, index2) => {
-            setPointsList((prevPoints) => {
-                const newPoints = [...prevPoints];
-                [newPoints[index1], newPoints[index2]] = [newPoints[index2], newPoints[index1]];
-                return newPoints;
+        const swapItems = (index1, index2) => {
+            setItemsList((prevItems) => {
+                const newItems = [...prevItems];
+                [newItems[index1], newItems[index2]] = [newItems[index2], newItems[index1]];
+                return newItems;
             });
         };
 
-        const updatePoint = (index, updatedPoint) => {
-            setPointsList((prevPoints) => {
-                const newPoints = [...prevPoints];
-                newPoints[index] = { ...newPoints[index], ...updatedPoint };
-                return newPoints;
+        const updateItem = (index, updatedItem) => {
+            setItemsList((prevItems) => {
+                const newItems = [...prevItems];
+                newItems[index] = { ...newItems[index], ...updatedItem };
+                return newItems;
             });
         };
     //#endregion
@@ -77,22 +70,22 @@ const List = (props) => {
     //#endregion
 
     //#region Drag Drop
-        const [pointsList, setPointsList] = useState([...points]);
+        const [itemsList, setItemsList] = useState([...items]);
         const [draggedItem, setDraggedItem] = useState(null);
 
         // Xử lý bắt đầu kéo
-        const handleDragStart = (e, point) => {
+        const handleDragStart = (e, item) => {
             e.stopPropagation();
-            setDraggedItem(point);
+            setDraggedItem(item);
             // Thêm lớp styling để hiển thị item đang được kéo
             e.currentTarget.classList.add('dragging');
         };
 
         // Xử lý khi kéo qua item khác
-        const handleDragOver = (e, point) => {
+        const handleDragOver = (e, item) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!draggedItem || draggedItem.id === point.id) return;
+            if (!draggedItem || draggedItem.id === item.id) return;
             
             e.currentTarget.classList.add('drag-over');
         };
@@ -105,32 +98,32 @@ const List = (props) => {
         };
 
         // Xử lý khi thả
-        const handleDrop = (e, targetPoint) => {
+        const handleDrop = (e, targetItem) => {
             e.preventDefault();
             e.stopPropagation();
             e.currentTarget.classList.remove('drag-over');
             
-            if (!draggedItem || draggedItem.id === targetPoint.id) return;
+            if (!draggedItem || draggedItem.id === targetItem.id) return;
 
             // Tạo mảng mới với thứ tự đã thay đổi
-            const updatedPoints = [...pointsList];
-            const draggedIndex = updatedPoints.findIndex(p => p.id === draggedItem.id);
-            const targetIndex = updatedPoints.findIndex(p => p.id === targetPoint.id);
+            const updatedItems = [...itemsList];
+            const draggedIndex = updatedItems.findIndex(p => p.id === draggedItem.id);
+            const targetIndex = updatedItems.findIndex(p => p.id === targetItem.id);
             
             // Loại bỏ item được kéo và chèn vào vị trí mới
-            const [removed] = updatedPoints.splice(draggedIndex, 1);
-            updatedPoints.splice(targetIndex, 0, removed);
+            const [removed] = updatedItems.splice(draggedIndex, 1);
+            updatedItems.splice(targetIndex, 0, removed);
             
             // Gán lại id mới theo thứ tự
-            const newPointsList = updatedPoints.map((point, index) => ({
-                ...point,
+            const newItemsList = updatedItems.map((item, index) => ({
+                ...item,
                 id: index + 1  // Gán lại id theo thứ tự mới
             }));
 
-            setPointsList(newPointsList);
+            setItemsList(newItemsList);
             
             // Ở đây bạn có thể gọi một hàm callback để thông báo cho component cha
-            // Ví dụ: props.onReorder(updatedPoints);
+            // Ví dụ: props.onReorder(updatedItems);
         };
 
         // Xử lý khi kết thúc kéo
@@ -144,7 +137,7 @@ const List = (props) => {
 
   return (
     <div>
-        <div className="points-list-container">
+        <div className={`points-list-container ${isPopupClosing ? 'slide-out' : 'slide-in'}`}>
             <div className="points-header">
                 <div className="point-header-title">
                     <span>No. {headerName}</span>
@@ -154,24 +147,24 @@ const List = (props) => {
                 </div>
             </div>
             <div className="points-list">
-                {pointsList && pointsList.map((point) => (
+                {itemsList && itemsList.map((item) => (
                 <div 
-                    key={point.id} 
-						className={`point-item ${SelectedItem && SelectedItem.id === point.id ? 'selected' : ''}`}
-						onClick={() => ItemSelect(point)}
-                        onMouseEnter={() => setHoveredItemId(point.id)}
+                    key={item.id} 
+						className={`point-item ${SelectedItem && SelectedItem.id === item.id ? 'selected' : ''}`}
+						onClick={() => ItemSelect(item)}
+                        onMouseEnter={() => setHoveredItemId(item.id)}
                         onMouseLeave={() => setHoveredItemId(null)}
                         draggable={true}
-                        onDragStart={(e) => handleDragStart(e, point)}
-                        onDragOver={(e) => handleDragOver(e, point)}
+                        onDragStart={(e) => handleDragStart(e, item)}
+                        onDragOver={(e) => handleDragOver(e, item)}
                         onDragLeave={handleDragLeave}
-                        onDrop={(e) => handleDrop(e, point)}
+                        onDrop={(e) => handleDrop(e, item)}
                         onDragEnd={handleDragEnd}
                     >
-						<div className="point-no">{point.id}</div>
-						<div className="point-name">{point.name}</div>					
+						<div className="point-no">{item.id}</div>
+						<div className="point-name">{item.name}</div>					
                         
-                        {shouldShowActions(point.id) && (
+                        {shouldShowActions(item.id) && (
                             <div className="item-actions">
                                 <div className="action-button-wrapper">
                                     <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>
