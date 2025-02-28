@@ -1,12 +1,13 @@
 .teach-management {
     position: relative;
     display: grid;
-    grid-template-columns: auto 1fr; /* This creates two columns - the list and detail */
-    gap: 0px; /* Space between the columns if desired */
-    background-color: yellow;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: white;
     margin: 75px 0 0 125px;
     width: 90vw;
     height: 87vh;
+    border-radius: 5px;
+    box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.5);
     overflow: hidden;
 }
 
@@ -14,3 +15,204 @@
 .teach-management > div:first-child {
     z-index: 3;
 }
+
+.detail-screen {
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+ /* Point Detail Styles */
+ .point-detail {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    z-index: 1;
+}
+
+.point-detail.slide-in {
+    animation: slideInDetail 0.5s ease-in-out forwards;
+}
+
+.point-detail.slide-out {
+    animation: slideOutDetail 0.5s ease-in-out forwards;
+}
+
+@keyframes slideInDetail {
+    0% {
+        transform: translateX(-200%);
+    }
+    25% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+}
+}
+
+@keyframes slideOutDetail {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-200%);
+}
+}
+
+.point-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #d0e1ec;
+    color: #628491;
+    border: 2px solid #628491;
+    height: 40px;
+    width: calc(100% + 1px);
+    margin-left: -1px;
+    border-top-right-radius: 5px;
+}
+  
+.point-detail-title {
+    font-weight: bold;
+}
+  
+.close-button {
+    background: none;
+    color: #006991;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 25px;
+    padding-right: 0px;
+}
+
+.close-button:hover {
+    color: rgb(206, 5, 5);
+}
+
+
+/*Position*/
+.coordinates-container {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    width: fit-content; 
+    font-family: sans-serif; 
+    padding: 10px 10px 0 10px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+  
+.coordinates-row {
+    display: flex;
+    gap: 5px;
+}
+
+.coordinates-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 9.3vw;
+    padding: 8px;
+    background-color: white;
+}
+  
+.coordinate-label {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #444;
+}
+  
+.coordinate-value-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: gray;
+    margin: 0px;
+    padding: 3px 0 0px 0;
+    width: 100%;
+    height: 20px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #222;
+}
+  
+.coordinate-value-input {
+    font-size: 0.85rem;
+    color: #777;
+    width: 100%;
+    height: 30px;
+}
+
+/* Parameter */
+.parameter-form-container {
+    display: flex;
+    flex-wrap: wrap;       /* Cho phép xuống dòng khi thiếu chỗ */
+    gap: 8px;
+    padding: 10px 10px 0 15px;
+    background-color: white;
+    width: fit-content;    /* Tự động co giãn theo nội dung */
+    border-radius: 4px;
+    font-family: sans-serif;
+    margin-top: 0px;
+}
+  
+.parameter-item {
+    display: flex;
+    flex-direction: column;
+    width: 9vw;
+    gap: 5px;
+}
+  
+.parameter-label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    padding-top: 5px;
+}
+  
+.parameter-select,
+.parameter-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    outline: none;
+    width: 95%;
+}
+  
+.parameter-select:focus,
+.parameter-input:focus {
+    border-color: #007bff; /* Màu viền khi focus */
+}
+  
+.button-container{
+    display: flex;
+    gap: 5px;
+    padding: 5px 10px 0 15px;
+    background-color: white;
+    width: fit-content;    /* Tự động co giãn theo nội dung */
+    font-family: sans-serif;
+    width: 100%;
+}
+
+.button-item{
+    background-color: gray;
+    border: none;
+    width: 9vw;
+    border-radius: 5px;
+}
+
+.button-save{
+    background-color: rgb(64, 64, 223);
+    border: none;
+    width: 9vw;
+    border-radius: 5px;
+}
+  
