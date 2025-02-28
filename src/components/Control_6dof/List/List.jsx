@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './List.css'
 import deleteItems from '@images/deleteItems.png'
 import renameItem from '@images/renameItem.png'
@@ -13,26 +13,22 @@ const List = (props) => {
     //#region Destructure props properly
     const { 
         points, 
-        noSelectingItem, 
-        isPopupOpen,  
+        SelectedItem,
+        handleItemSelect,
         handleDetailClose,
         headerName, 
-        PopupScreen 
+        PopupScreen,
     } = props;
 
-    const [selectedPoint, setSelectedPoint] = useState(null);
-
-    const handlePointSelect = (point) => {
+    const ItemSelect = (item) => {
         // Nếu click vào item đã chọn, bỏ chọn nó
-        if (selectedPoint && selectedPoint.id === point.id) {
-            setSelectedPoint(null);
-            noSelectingItem(null);
+        if (SelectedItem && SelectedItem.id === item.id) {
             handleDetailClose();
         } else {
-            setSelectedPoint(point);
-            noSelectingItem(point);
+            handleItemSelect(item);
         }
     };
+
     //#endregion
 
     //#region Update points when props change
@@ -75,8 +71,8 @@ const List = (props) => {
     //#region Hovered item
     const [hoveredItemId, setHoveredItemId] = useState(null);
 
-    const shouldShowActions = (pointId) => {
-        return hoveredItemId === pointId || (selectedPoint && selectedPoint.id === pointId);
+    const shouldShowActions = (itemId) => {
+        return hoveredItemId === itemId || (SelectedItem && SelectedItem.id === itemId);
     };
     //#endregion
 
@@ -147,7 +143,7 @@ const List = (props) => {
     //#endregion
 
   return (
-    <div className="point-management">
+    <div>
         <div className="points-list-container">
             <div className="points-header">
                 <div className="point-header-title">
@@ -161,8 +157,8 @@ const List = (props) => {
                 {pointsList && pointsList.map((point) => (
                 <div 
                     key={point.id} 
-						className={`point-item ${selectedPoint && selectedPoint.id === point.id ? 'selected' : ''}`}
-						onClick={() => handlePointSelect(point)}
+						className={`point-item ${SelectedItem && SelectedItem.id === point.id ? 'selected' : ''}`}
+						onClick={() => ItemSelect(point)}
                         onMouseEnter={() => setHoveredItemId(point.id)}
                         onMouseLeave={() => setHoveredItemId(null)}
                         draggable={true}
@@ -199,7 +195,6 @@ const List = (props) => {
                                 </div>
                             </div>
                         )}
-
                     </div>
                 ))}
                 <div className="scroll-button">
@@ -207,10 +202,6 @@ const List = (props) => {
                 </div>
             </div>
         </div>
-
-        {isPopupOpen && PopupScreen && (
-            <PopupScreen />
-        )}
     </div>
   )
 }

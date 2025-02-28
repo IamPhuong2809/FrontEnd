@@ -1,0 +1,11 @@
+.teach-management {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr; /* This creates two columns - the list and detail */
+    gap: 0px; /* Space between the columns if desired */
+    background-color: yellow;
+    margin: 75px 0 0 125px;
+    width: 90vw;
+    height: 87vh;
+    overflow: hidden;
+}

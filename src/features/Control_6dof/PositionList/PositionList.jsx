@@ -46,22 +46,36 @@ const PositionList = () => {
 
     //#region Popup Screen
     const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [selectedPoint, setSelectedPoint] = useState();
+    const [selectedPoint, setSelectedPoint] = useState(null);
+    const [isClosing, setIsClosing] = useState(false);
     
     const handleDetailClose = () => {
-        setIsDetailOpen(false);
-        setSelectedPoint(null);
+        setIsClosing(true);
+        setTimeout(() => {
+            setIsDetailOpen(false);
+            setSelectedPoint(null);
+            setIsClosing(false);
+        }, 500);
     };
 
     const handlePointSelect = (point) => {
-        setSelectedPoint(point);
-        setIsDetailOpen(true);
+        if(isDetailOpen) {
+            handleDetailClose();
+            setTimeout(() => {
+                setSelectedPoint(point);
+                setIsDetailOpen(true);
+            }, 500);
+        }
+        else {
+            setSelectedPoint(point);
+            setIsDetailOpen(true);
+        }
     };
 
     const PopupScreen = () => {
 
         return (
-            <div className="point-detail">
+            <div className={`point-detail ${isClosing ? 'slide-out' : 'slide-in'}`}>
                 <div className="point-detail-header">
                     <div className="point-detail-title">[Point {selectedPoint.id}] "{selectedPoint.name}"</div>
                     <button className="close-button" onClick={handleDetailClose}>✕</button>
@@ -206,14 +220,19 @@ const PositionList = () => {
     <div>
         <HeaderControl />
         <Menu />
-        <div>
+        <div className="point-management">
             <List 
                 points={points} 
-                noSelectingItem={handlePointSelect} 
-                isPopupOpen={isDetailOpen} 
+                SelectedItem={selectedPoint} 
+                handleItemSelect={handlePointSelect}
                 handleDetailClose={handleDetailClose}
                 headerName="Point Name" 
-                PopupScreen={PopupScreen} />
+                PopupScreen={PopupScreen}
+            />
+
+            {isDetailOpen && PopupScreen && (
+                        <PopupScreen />
+                    )}
         </div>
     </div>
     )

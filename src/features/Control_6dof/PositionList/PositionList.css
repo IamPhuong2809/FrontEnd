@@ -1,22 +1,56 @@
 .point-management {
     position: relative;
-    display: flex;
-    background-color: transparent;
-    left: 110px;
-    top: 75px;
-    width: 91%;
+    display: grid;
+    grid-template-columns: auto 1fr; /* This creates two columns - the list and detail */
+    gap: 0px; /* Space between the columns if desired */
+    background-color: white;
+    margin: 75px 0 0 125px;
+    width: 90vw;
     height: 87vh;
+    overflow: hidden;
 }
-  
-  /* Point Detail Styles */
+ 
+ /* Point Detail Styles */
 .point-detail {
-    width: 50%;
+    position: relative;
+    width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     background-color: white;
+    z-index: 1;
 }
-  
+
+.slide-in {
+    animation: slideIn 0.5s ease-in-out forwards;
+}
+
+.slide-out {
+    animation: slideOut 0.5s ease-in-out forwards;
+}
+
+.none{
+    animation: none;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
 .point-detail-header {
     display: flex;
     justify-content: space-between;
@@ -169,7 +203,6 @@
 }
 
 /*Curent Position Section*/
-
 .position-section-current{
     flex: 1;
     background-color: white;
@@ -191,6 +224,7 @@
     flex: 1;
     background-color: white;
     border-radius: 5px;
+    height: 83%;
 }
 
 .position-section-current .position-row {
