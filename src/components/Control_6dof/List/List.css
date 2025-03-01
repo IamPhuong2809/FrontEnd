@@ -2,7 +2,6 @@
 .points-list-container {
     display: flex;
     flex-direction: column;
-    width: 30vw;
     height: 79vh;
     border-right: 1px solid #ccc;
     background-color: white;

@@ -18,6 +18,7 @@ const List = (props) => {
         handleItemSelect,
         handleDetailClose,
         headerName, 
+        width,
     } = props;
 
     const ItemSelect = (item) => {
@@ -137,7 +138,7 @@ const List = (props) => {
 
   return (
     <div>
-        <div className={`points-list-container ${isPopupClosing ? 'slide-out' : 'slide-in'}`}>
+        <div className={`points-list-container ${isPopupClosing ? 'slide-out' : 'slide-in'}`} style={{ width: width }}>
             <div className="points-header">
                 <div className="point-header-title">
                     <span>No. {headerName}</span>
@@ -190,7 +191,7 @@ const List = (props) => {
                         )}
                     </div>
                 ))}
-                <div className="scroll-button">
+                <div className="scroll-button" style={{width: width}}>
                     <span>▼</span>
                 </div>
             </div>

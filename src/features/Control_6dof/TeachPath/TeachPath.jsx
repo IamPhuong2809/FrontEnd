@@ -232,6 +232,7 @@ const TeachPath = () => {
                     handleItemSelect={handlePathSelect} 
                     handleDetailClose={handlePathClose}
                     headerName="Path Name"
+                    width="30vw"
                 />
                 {/* Point List (danh sách thứ hai) */}
                 {isPointOpen && (
@@ -242,6 +243,7 @@ const TeachPath = () => {
                     handleDetailClose={handleDetailClose}
                     isPopupClosing={isPointClosing} 
                     headerName="Point Name" 
+                    width="30vw"
                     />
                 )}
                 

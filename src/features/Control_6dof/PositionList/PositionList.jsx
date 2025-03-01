@@ -28,25 +28,6 @@ const PositionList = () => {
         ];
 	//#endregion
 
-	//#region Detail of Point
-		const [activeOption, setActiveOption] = useState('ACTIVE');
-	
-		const handleOptionChange = (option) => {
-		setActiveOption(option);
-		};
-		
-		const handleMoveToPoint = () => {
-		console.log('Moving to point...');
-		// Implement actual move functionality here
-		};
-		
-		const handleAbort = () => {
-		console.log('Movement aborted');
-		// Implement abort functionality here
-		};
-
-	//#endregion
-
     //#region Popup Screen
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedPoint, setSelectedPoint] = useState(null);
@@ -96,6 +77,23 @@ const PositionList = () => {
     ];
 
     const PopupScreen = () => {
+        //#region Detail of Point
+        const [activeOption, setActiveOption] = useState('ACTIVE');
+
+        const handleOptionChange = (option) => {
+        setActiveOption(option);
+        };
+        
+        const handleMoveToPoint = () => {
+        console.log('Moving to point...');
+        // Implement actual move functionality here
+        };
+        
+        const handleAbort = () => {
+        console.log('Movement aborted');
+        // Implement abort functionality here
+        };
+        //#endregion
 
         return (
             <div className={`point-detail-position ${isClosing ? 'slide-out' : 'slide-in'}`}>
@@ -211,6 +209,7 @@ const PositionList = () => {
                     handleItemSelect={handlePointSelect}
                     handleDetailClose={handleDetailClose}
                     headerName="Point Name" 
+                    width="30vw"
                 />
 
                 {isDetailOpen && PopupScreen && (
