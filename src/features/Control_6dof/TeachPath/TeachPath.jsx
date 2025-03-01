@@ -3,6 +3,7 @@ import './TeachPath.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Control_6dof/Header/Header'
 import List from '@components/Control_6dof/List/List'
+import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 
 const TeachPath = () => {
 
@@ -144,11 +145,6 @@ const TeachPath = () => {
         defaultValue: 'NO'
         },
         {
-        label: 'M_Function',
-        type: 'text',
-        defaultValue: '999'
-        },
-        {
         label: 'Velocity',
         type: 'text',
         defaultValue: '10 %'
@@ -159,7 +155,7 @@ const TeachPath = () => {
         defaultValue: '10 %'
         },
         {
-        label: 'Corner distanc',
+        label: 'Corner distance',
         type: 'text',
         defaultValue: '100mm'
         }
@@ -226,31 +222,34 @@ const TeachPath = () => {
    <div>
         <HeaderControl />
         <Menu />
-        <div className="teach-management">
-            <List 
-                items={paths} 
-                SelectedItem={selectedPath} 
-                isPopupOpen={true}
-                handleItemSelect={handlePathSelect} 
-                handleDetailClose={handlePathClose}
-                headerName="Path Name"
-            />
-            {/* Point List (danh sách thứ hai) */}
-            {isPointOpen && (
+        <div className='teach-path-robot-container'>
+            <TaskBar />
+            <div className="teach-management">
                 <List 
-                items={points} 
-                SelectedItem={selectedPoint}
-                handleItemSelect={handlePointSelect} 
-                handleDetailClose={handleDetailClose}
-                isPopupClosing={isPointClosing} 
-                headerName="Point Name" 
+                    items={paths} 
+                    SelectedItem={selectedPath} 
+                    isPopupOpen={true}
+                    handleItemSelect={handlePathSelect} 
+                    handleDetailClose={handlePathClose}
+                    headerName="Path Name"
                 />
-            )}
-            
-            {/* Detail Screen cho Point được chọn */}
-            {isDetailOpen && selectedPoint && (
-                <PopupScreen />
-            )}
+                {/* Point List (danh sách thứ hai) */}
+                {isPointOpen && (
+                    <List 
+                    items={points} 
+                    SelectedItem={selectedPoint}
+                    handleItemSelect={handlePointSelect} 
+                    handleDetailClose={handleDetailClose}
+                    isPopupClosing={isPointClosing} 
+                    headerName="Point Name" 
+                    />
+                )}
+                
+                {/* Detail Screen cho Point được chọn */}
+                {isDetailOpen && selectedPoint && (
+                    <PopupScreen />
+                )}
+            </div>
         </div>
    </div>
   )

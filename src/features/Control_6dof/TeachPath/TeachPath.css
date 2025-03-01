@@ -1,11 +1,24 @@
+.teach-path-robot-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(155, 152, 152);
+    margin: 75px 0 0 125px;
+    width: 90vw;
+    height: 87vh;
+    border-radius: 5px;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
 .teach-management {
     position: relative;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     background-color: white;
-    margin: 75px 0 0 125px;
+    margin: 5px 0 0 0px;
     width: 90vw;
-    height: 87vh;
+    height: 100%;
     border-radius: 5px;
     box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.5);
     overflow: hidden;
@@ -24,7 +37,7 @@
 }
 
  /* Point Detail Styles */
- .point-detail {
+ .point-detail-teachpath {
     position: relative;
     width: 100%;
     height: 100%;
@@ -154,9 +167,10 @@
 .parameter-form-container {
     display: flex;
     flex-wrap: wrap;       /* Cho phép xuống dòng khi thiếu chỗ */
-    gap: 8px;
+    row-gap: 13px;
+    column-gap: 8px;
     padding: 10px 10px 0 15px;
-    background-color: white;
+    background-color: transparent;
     width: fit-content;    /* Tự động co giãn theo nội dung */
     border-radius: 4px;
     font-family: sans-serif;
@@ -194,9 +208,9 @@
   
 .button-container{
     display: flex;
-    gap: 5px;
-    padding: 5px 10px 0 15px;
-    background-color: white;
+    gap: 25px;
+    padding: 10px 10px 0 15px;
+    background-color: transparent;
     width: fit-content;    /* Tự động co giãn theo nội dung */
     font-family: sans-serif;
     width: 100%;
@@ -205,14 +219,19 @@
 .button-item{
     background-color: gray;
     border: none;
-    width: 9vw;
+    width: 8vw;
     border-radius: 5px;
+    display: flex;
+    justify-content: center;
 }
 
 .button-save{
     background-color: rgb(64, 64, 223);
     border: none;
-    width: 9vw;
+    width: 8vw;
     border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
   

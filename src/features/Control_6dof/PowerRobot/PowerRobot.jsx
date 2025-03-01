@@ -8,6 +8,32 @@ import Menu from '@components/Control_6dof/Menu/Menu'
 const PowerRobot = () => {
   const [showModal, setShowModal] = useState(false);
 
+    // Dữ liệu cho từng card
+    const errors = [
+        { id: 1, code: "0000" },
+        { id: 2, code: "0000" },
+        { id: 3, code: "0000" },
+        { id: 4, code: "0000" }
+      ];
+      
+      const axisPositions = [
+        { joint: "J1", value: "-52.67°" },
+        { joint: "J2", value: "+10.44°" },
+        { joint: "J3", value: "+95.79°" },
+        { joint: "J4", value: "+0.00°" },
+        { joint: "J5", value: "+27.29°" },
+        { joint: "J6", value: "+8.01°" }
+      ];
+      
+      const cartesianPositions = [
+        { label: "X", value: "+170.08mm" },
+        { label: "Y", value: "-223.05mm" },
+        { label: "Z", value: "+433.70mm" },
+        { label: "Roll", value: "+177.64°" },
+        { label: "Pitch", value: "+16.31°" },
+        { label: "Yaw", value: "+118.98°" }
+      ];
+
   //#region Modal
   // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
   const savedPositions = [
@@ -78,12 +104,12 @@ const PowerRobot = () => {
             <div className='control-card error-section'>
               <h3>Error IDs</h3>
               <div className='error-list'>
-              {[1, 2, 3, 4].map(num => (
-                  <div className='error-row' key={num}>
-                  <span>Error ID {num}</span>
-                  <span>0000</span>
-                  </div>
-              ))}
+                {errors.map((error) => (
+                    <div className='error-row' key={error.id}>
+                        <span>Error ID {error.id}</span>
+                        <span>{error.code}</span>
+                    </div>
+                ))}
               </div>
             </div>
           </div>
@@ -93,59 +119,23 @@ const PowerRobot = () => {
             <div className='control-card position-section'>
               <h3>Cartesian Position</h3>
               <div className='position-display'>
-                <div className='position-row'>
-                  <span>X</span>
-                  <span>+170.08mm</span>
-                </div>
-                <div className='position-row'>
-                  <span>Y</span>
-                  <span>-223.05mm</span>
-                </div>
-                <div className='position-row'>
-                  <span>Z</span>
-                  <span>+432.70mm</span>
-                </div>
-                <div className='position-row'>
-                  <span>Roll</span>
-                  <span>+177.64°</span>
-                </div>
-                <div className='position-row'>
-                  <span>Pitch</span>
-                  <span>+16.31°</span>
-                </div>
-                <div className='position-row'>
-                  <span>Yaw</span>
-                  <span>+118.98°</span>
-                </div>
+                {cartesianPositions.map((pos, index) => (
+                    <div className='position-row' key={index}>
+                        <span>{pos.label}</span>
+                        <span>{pos.value}</span>
+                    </div>
+                ))}
               </div>
             </div>
             <div className='control-card axis-section'>
               <h3>Axis Position</h3>
               <div className='axis-display'>
-                <div className='axis-row'>
-                  <span>J1</span>
-                  <span>-52.67°</span>
-                </div>
-                <div className='axis-row'>
-                  <span>J2</span>
-                  <span>+10.44°</span>
-                </div>
-                <div className='axis-row'>
-                  <span>J3</span>
-                  <span>+95.79°</span>
-                </div>
-                <div className='axis-row'>
-                  <span>J4</span>
-                  <span>+0.00°</span>
-                </div>
-                <div className='axis-row'>
-                  <span>J5</span>
-                  <span>+57.29°</span>
-                </div>
-                <div className='axis-row'>
-                  <span>J6</span>
-                  <span>+8.01°</span>
-                </div>
+                {axisPositions.map((axis, index) => (
+                    <div className="axis-row" key={index}>
+                        <span>{axis.joint}</span>
+                        <span>{axis.value}</span>
+                    </div>
+                ))}
               </div>
             </div>
             <div className='control-card parameters-section'>
