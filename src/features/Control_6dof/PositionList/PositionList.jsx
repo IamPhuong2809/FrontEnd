@@ -3,6 +3,7 @@ import './PositionList.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Control_6dof/Header/Header'
 import List from '@components/Control_6dof/List/List'
+import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 
 const PositionList = () => {
 
@@ -22,6 +23,8 @@ const PositionList = () => {
         { id: 12, name: 'type_a_name' },
         { id: 13, name: 'type_a_name' },
         { id: 14, name: 'type_a_name' },
+        { id: 15, name: 'type_a_name' },
+        { id: 16, name: 'type_a_name' },
         ];
 	//#endregion
 
@@ -55,7 +58,7 @@ const PositionList = () => {
             setIsDetailOpen(false);
             setSelectedPoint(null);
             setIsClosing(false);
-        }, 500);
+        }, 800);
     };
 
     const handlePointSelect = (point) => {
@@ -64,7 +67,7 @@ const PositionList = () => {
             setTimeout(() => {
                 setSelectedPoint(point);
                 setIsDetailOpen(true);
-            }, 500);
+            }, 800);
         }
         else {
             setSelectedPoint(point);
@@ -72,10 +75,30 @@ const PositionList = () => {
         }
     };
 
+    const desiredPosition = [
+        { label: 'X', value: '-57.54mm' },
+        { label: 'Y', value: '210.00mm' },
+        { label: 'Z', value: '463.14mm' },
+        { label: 'RX', value: '180.00°' },
+        { label: 'RY', value: '20.00°' },
+        { label: 'RZ', value: '-81.49°' },
+        { label: 'FIG', value: '5' }
+    ];
+
+    const currentPosition = [
+        { label: 'X', value: '-57.54mm' },
+        { label: 'Y', value: '210.00mm' },
+        { label: 'Z', value: '463.14mm' },
+        { label: 'FIG', value: '5' },
+        { label: 'RX', value: '180.00°' },
+        { label: 'RY', value: '0.00°' },
+        { label: 'RZ', value: '-81.49°' },
+    ];
+
     const PopupScreen = () => {
 
         return (
-            <div className={`point-detail ${isClosing ? 'slide-out' : 'slide-in'}`}>
+            <div className={`point-detail-position ${isClosing ? 'slide-out' : 'slide-in'}`}>
                 <div className="point-detail-header">
                     <div className="point-detail-title">[Point {selectedPoint.id}] "{selectedPoint.name}"</div>
                     <button className="close-button" onClick={handleDetailClose}>✕</button>
@@ -141,73 +164,31 @@ const PositionList = () => {
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div className="position-section-desired">
                             <div className="position-header">Desired Position:</div>
-                            <div className="position-data">
-                                <div className="position-row">
-                                    <div className="position-label">X</div>
-                                    <div className="position-value">-57.54mm</div>
+                                <div className="position-data">
+                                {desiredPosition.map((item, index) => (
+                                    <div className="position-row" key={index}>
+                                        <div className="position-label">{item.label}</div>
+                                        <div className="position-value">{item.value}</div>
+                                    </div>
+                                ))}
                                 </div>
-                                <div className="position-row">
-                                    <div className="position-label">Y</div>
-                                    <div className="position-value">210.00mm</div>
-                                </div>
-                                <div className="position-row">
-                                    <div className="position-label">Z</div>
-                                    <div className="position-value">463.14mm</div>
-                                </div>
-                                <div className="position-row">
-                                    <div className="position-label">RX</div>
-                                    <div className="position-value">180.00°</div>
-                                </div>
-                                <div className="position-row">
-                                    <div className="position-label">RY</div>
-                                    <div className="position-value">0.00°</div>
-                                </div>
-                                <div className="position-row">
-                                    <div className="position-label">RZ</div>
-                                    <div className="position-value">-81.49°</div>
-                                </div>
-                                <div className="position-row">
-                                    <div className="position-label">FIG</div>
-                                    <div className="position-value">5</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
                     <div className="position-section-current">
                         <div className="position-header">Current Position:</div>
                         <div className="position-data">
-                            <div className="position-row">
-                                <div className="position-label">X</div>
-                                <div className="position-value">-57.54mm</div>
-                            </div>
-                            <div className="position-row">
-                                <div className="position-label">Y</div>
-                                <div className="position-value">210.00mm</div>
-                            </div>
-                            <div className="position-row">
-                                <div className="position-label">Z</div>
-                                <div className="position-value">463.14mm</div>
-                            </div>
-                            <div className="position-row">
-                                <div className="position-label">RX</div>
-                                <div className="position-value">180.00°</div>
-                            </div>
-                            <div className="position-row">
-                                <div className="position-label">RY</div>
-                                <div className="position-value">0.00°</div>
-                            </div>
-                            <div className="position-row">
-                                <div className="position-label">RZ</div>
-                                <div className="position-value">-81.49°</div>
-                            </div>
-                            <div className="position-row">
-                                <div className="position-label">FIG</div>
-                                <div className="position-value">5</div>
-                            </div>
+                            {currentPosition.map((item, index) => (
+                                <div className="position-data">
+                                    <div className="position-row" key={index}>
+                                        <div className="position-label">{item.label}</div>
+                                        <div className="position-value">{item.value}</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -220,19 +201,22 @@ const PositionList = () => {
     <div>
         <HeaderControl />
         <Menu />
-        <div className="point-management">
-            <List 
-                items={points} 
-                SelectedItem={selectedPoint} 
-                isPopupOpen={true}
-                handleItemSelect={handlePointSelect}
-                handleDetailClose={handleDetailClose}
-                headerName="Point Name" 
-            />
+        <div className="position-list-robot-container">
+            <TaskBar />
+            <div className="point-management">
+                <List 
+                    items={points} 
+                    SelectedItem={selectedPoint} 
+                    isPopupOpen={true}
+                    handleItemSelect={handlePointSelect}
+                    handleDetailClose={handleDetailClose}
+                    headerName="Point Name" 
+                />
 
-            {isDetailOpen && PopupScreen && (
-                        <PopupScreen />
-                    )}
+                {isDetailOpen && PopupScreen && (
+                            <PopupScreen />
+                        )}
+            </div>
         </div>
     </div>
     )

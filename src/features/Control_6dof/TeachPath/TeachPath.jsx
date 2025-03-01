@@ -167,7 +167,7 @@ const TeachPath = () => {
 
     const PopupScreen = () => {
         return(
-            <div className={`point-detail ${isDetailClosing ? 'slide-out' : 'slide-in'}`}>
+            <div className={`point-detail-teachpath ${isDetailClosing ? 'slide-out' : 'slide-in'}`}>
                 <div className="point-detail-header">
                     <div className="point-detail-title">[Point {selectedPoint.id}] "{selectedPoint.name}"</div>
                     <button className="close-button" onClick={handleDetailClose}>✕</button>

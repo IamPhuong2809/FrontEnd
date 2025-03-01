@@ -34,11 +34,11 @@
     z-index: 1;
 }
 
-.point-detail.slide-in {
+.point-detail-teachpath.slide-in {
     animation: slideInDetail 0.5s ease-in-out forwards;
 }
 
-.point-detail.slide-out {
+.point-detail-teachpath.slide-out {
     animation: slideOutDetail 0.5s ease-in-out forwards;
 }
 
