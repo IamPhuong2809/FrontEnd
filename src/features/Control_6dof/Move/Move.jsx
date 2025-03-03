@@ -16,7 +16,7 @@ const Move = () => {
 
     // Dữ liệu của các khớp (giá trị mẫu)
     const jointInputRead = [
-        { label: 'J1', value: 1.00, input: 0.00 },
+        { label: 'J1', value: 1.00, input: 110.23 },
         { label: 'J2', value: -2.00, input: 0.00 },
         { label: 'J3', value: 3.00, input: 0.00 },
         { label: 'J4', value: -41.00, input: 0.00 },
@@ -37,41 +37,40 @@ const Move = () => {
             <HeaderControl />
             <Menu />
             <div className="move-robot-container">
-                {/* Top Control Bar */}
-                {/* <div className="info-controls">
-                    <div className="display-container">
-                        <div className="tool-display">Tool: {Tool}</div>
-                        <div className="work-display">Work: {WorkType}</div>
-                    </div>
-                    <div className="tool-information">
-                        <div className="indicator-container">
-                            {statuses.map((status, index) => (
-                            <div key={index}>
-                                <span className={`indicator ${status.isOn ? 'green' : ''}`}>
-                                    {status.label}
-                                </span>
-                            </div>
-                            ))}
-                        </div>
-                        <div className="override">Override: {Override} %</div>
-                    </div>
-                    <div className="tool-buttons">
-                        <button>HELP</button>
-                        <button>EMERGENCY</button>
-                    </div>
-                </div> */}
-
                 {/* Left Content Area */}
                 <div className="left-content">
+                    <div className="info-controls">
+                        <div className="tool-information">
+                            <div className="indicator-container">
+                                {statuses.map((status, index) => (
+                                <div key={index}>
+                                    <span className={`indicator ${status.isOn ? 'green' : ''}`}>
+                                        {status.label}
+                                    </span>
+                                </div>
+                                ))}
+                            </div>
+                            <div className="override">Override: {Override} %</div>
+                        </div>
+                        <div className="display-container">
+                            <div className="tool-display">Tool: {Tool}</div>
+                            <div className="work-display">Work: {WorkType}</div>
+                        </div>
+                        <div className="tool-buttons">
+                            <button>HELP</button>
+                            <button>EMERGENCY</button>
+                        </div>
+                    </div>
+                    
                     <div className="joint-panel">
                         <div className="left-panel">
-                            {jointInputRead.slice(0, 3).map((joint, index) => (
+                            {JointInput.slice(0, 3).map((joint, index) => (
                                 <div className="joint-control-left" key={index}>
                                     <div className="joint-label">{joint.label}</div>
                                     <div>
                                         <input 
                                             type="text" 
-                                            value={`${joint.input} °`} 
+                                            value={joint.input}
                                             className="joint-input"
                                             onChange={(e) => handleInputChange(e, index)} />
                                         <div className="joint-value">{joint.value}°</div>
@@ -82,45 +81,40 @@ const Move = () => {
 
                         {/* Right Panel: Hiển thị các khớp bên phải */}
                         <div className="right-panel">
-                            {jointInputRead.slice(3, 6).map((joint, index) => (
-                                <div className="joint-control-right" key={index}>
+                            {JointInput.slice(3, 6).map((joint, index) => (
+                                <div className="joint-control-right" key={index + 3}>
                                     <div className="joint-label">{joint.label}</div>
                                     <div>
                                         <input 
                                             type="text" 
-                                            value={`${joint.input} °`} 
+                                            value={joint.input}
                                             className="joint-input"
-                                            onChange={(e) => handleInputChange(e, index)} />
+                                            onChange={(e) => handleInputChange(e, index + 3)} />
                                         <div className="joint-value">{joint.value}°</div>
+
                                     </div>
                                 </div>    
                             ))}
                         </div>
                     </div>
-                <div className="bottom-controls">
-                    <div className="left-buttons">
-                        <div className="jog-label">JOG</div>
-                        <div>
-                            <button className="control-btn">Work</button>
-                            <button className="control-btn">Joint</button>
-                            <button className="control-btn">Tool</button>
+                    <div className="bottom-controls">
+                        <div className="left-buttons">
+                            <div className="jog-label">JOG</div>
+                            <div className='jog-container'>
+                                <button className="control-btn">Work</button>
+                                <button className="control-btn">Joint</button>
+                                <button className="control-btn">Tool</button>
+                            </div>
+                        </div>
+                        <div className="right-buttons">
+                            <div className="move-label">MOVE</div>
+                            <div className='move-container'>
+                                <button className="control-btn">LIN</button>
+                                <button className="control-btn active">JOINT</button>
+                                <button className="control-btn">PTP</button>
+                            </div>
                         </div>
                     </div>
-                    <div className="right-buttons">
-                        <div className="move-label">MOVE</div>
-                        <button className="control-btn">LIN</button>
-                        <button className="control-btn active">JOINT</button>
-                        <button className="control-btn">PTP</button>
-                    </div>
-                </div>
-
-                {/* Bottom Control Bar */}
-
-                <div className="center-buttons">
-                    <button className="control-btn">Teach Position</button>
-                    <button className="control-btn">Back</button>
-                    <button className="control-btn">Position List</button>
-                </div>
                 </div>
                 <div className='right-content'>
                     {/* Center Panel: Robot Visualization, Action Buttons & Settings */}
@@ -152,6 +146,11 @@ const Move = () => {
                     <div className="setting-label">Acceleration</div>
                     <div className="setting-value">5 %</div>
                     </div>
+                </div>
+                <div className="center-buttons">
+                    <button className="control-btn">Teach Position</button>
+                    <button className="control-btn">Back</button>
+                    <button className="control-btn">Position List</button>
                 </div>
                 </div>
             </div>
