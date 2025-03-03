@@ -15,7 +15,7 @@
     position: relative;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    background-color: white;
+    background-color: #c4c7cd;
     margin: 5px 0 0 0px;
     width: 90vw;
     height: 100%;

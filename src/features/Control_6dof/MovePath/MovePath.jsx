@@ -59,7 +59,7 @@ const MovePath = () => {
             setIsPointOpen(false);
             setSelectedPath(null);
             setIsClosing(false);
-        }, 800);
+        }, 500);
     };
 
     const handlePathSelect = (path) => {
@@ -68,7 +68,7 @@ const MovePath = () => {
             setTimeout(() => {
                 setSelectedPath(path);
                 setIsPointOpen(true);
-            }, 800);
+            }, 500);
         }
         else {
             setSelectedPath(path);

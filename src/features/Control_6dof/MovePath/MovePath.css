@@ -29,11 +29,11 @@
 }
 
 .point-detail-movepath.slide-in {
-    animation: slideIn 0.8s ease-in-out forwards;
+    animation: slideIn 0.5s ease-in-out forwards;
 }
 
 .point-detail-movepath.slide-out {
-    animation: slideOut 0.8s ease-in-out forwards;
+    animation: slideOut 0.5s ease-in-out forwards;
 }
 
 @keyframes slideIn {

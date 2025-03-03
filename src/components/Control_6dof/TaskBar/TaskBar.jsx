@@ -27,7 +27,7 @@ const TaskBar = () => {
                             {status.label}
                         </span>
                         </div>
-                    ))}
+                ))}
             </div>
 
             <div className="left-content2">
