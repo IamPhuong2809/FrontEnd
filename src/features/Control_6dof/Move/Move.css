@@ -17,9 +17,10 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
+    max-height: 100%;
 }
   
-  /*#region Info controls */
+/*#region Info controls */
 .move-robot-container .info-controls {
     display: flex;
     flex-direction: row;
@@ -115,13 +116,13 @@
 }
 /* #endregion */
   
-  /* #region Joint panels */
+/* #region Joint panels */
 .joint-panel {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 40px;
     width: 100%;
-    height: 45%;
+    height: 55%;
     margin-top: 5px;
 }
 
@@ -197,14 +198,13 @@
 }
 /* #endregion */
 
-  /* #region Bottom control bar */
+/* #region Bottom control bar */
 .bottom-controls {
     display: flex;
     flex-direction: row;
     height: 20%;
     justify-content: space-between;
     padding: 0 15% 0 11%;
-    margin-top: 10px;
 }
   
 .left-buttons {
@@ -258,8 +258,10 @@
 
 /* #endregion */
   
-  /* Center panel */
-.center-panel {
+  /*Right content */
+
+/* #region Top content */
+.top-panel {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -268,57 +270,24 @@
 .axis-title {
     text-align: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 1.4rem;
+    color: white;
+    margin-top: 15px;
 }
   
 .robot-visualization {
-    height: 250px;
+    padding-top: 5%;
+    height: 45vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     position: relative;
 }
-  
-.joint-label-overlay {
-    position: absolute;
-    font-weight: bold;
-    color: #fc0;
-}
-  
-.j1 {
-    right: 100px;
-    bottom: 50px;
-}
-  
-.j2 {
-    right: 30px;
-    top: 100px;
-}
-  
-.j3 {
-    right: 30px;
-    top: 50px;
-}
-  
-.j4 {
-    left: 100px;
-    top: 30px;
-}
-  
-.j5 {
-    left: 30px;
-    top: 50px;
-}
-  
-.j6 {
-    left: 30px;
-    top: 100px;
-}
-  
+
 .robot-arm {
     width: 120px;
     height: 180px;
     position: relative;
+    margin-left: 20%;
 }
   
 .robot-base {
@@ -330,6 +299,7 @@
     background-color: #ddd;
     border-radius: 4px;
 }
+
   
 .robot-arm-upper {
     position: absolute;
@@ -341,25 +311,97 @@
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
-  
-.action-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
 
 .settings-panel {
-    background-color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-right: 15%;
     padding: 8px;
-    border-radius: 4px;
+    max-width: 180px;
+}
+
+.velocity-container{
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    width: 100%;
+}
+
+.acceleration-container{
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    width: 100%;
 }
   
 .setting-label {
-    margin-top: 8px;
+    margin-bottom: 5px;
+    color: white;
 }
   
 .setting-value {
-    background-color: #333;
-    padding: 4px;
-    margin-bottom: 8px;
+    background-color: #c9d2d9;
+    padding: 4px 0 4px 4px;
+    margin-bottom: 0px;
+    width: 95%;
 }
+
+.btn-change {
+    background-color: #3c454c;
+    border: none;
+    color: white;
+    padding: 0px 16px;
+    height: 47%;
+    margin: 2px 0 0 0;
+    border-radius: 0px;
+    cursor: pointer;
+    text-align: center;
+    width: 90%;
+}
+/* #endregion */
+
+/* #region Button control */
+.button-control-panel {
+    background-color: tomato;
+    padding: 0 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+}
+  
+.button-control-panel .button-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+  
+.button-control-panel .control-button {
+    background-color: #3a3f44;
+    color: #fff;
+    border: none;
+    padding: 15px 10px;
+    flex: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+  
+.control-button:hover {
+    background-color: #4a4f54;
+}
+  
+.control-button:active {
+    background-color: #2a2f34;
+}
+  
+.small {
+    max-width: 100px;
+}
+  
+.spacer {
+    height: 20px;
+}
+/* #endregion */

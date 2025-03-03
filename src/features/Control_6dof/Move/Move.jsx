@@ -4,6 +4,7 @@ import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Control_6dof/Header/Header';
 
 const Move = () => {
+    //#region Left Content Area
     // Các state cho thông số hiển thị
     const [Tool, setTool] = useState(1);
     const [statuses, setStatuses] = useState([
@@ -31,6 +32,27 @@ const Move = () => {
         newJointInput[index].input = value;
         setJointInput(newJointInput);
     };
+    //#endregion
+
+    //#region Right Content Area
+    const [velocity, setVelocity] = useState(5);
+    const [acceleration, setAcceleration] = useState(5);
+    const handleIncrementVelocity = () => {
+        setVelocity(prev => (prev < 100 ? prev + 1 : 100));
+    };
+    
+    const handleDecrementVelocity = () => {
+        setVelocity(prev => (prev > 0 ? prev - 1 : 0));
+    };
+
+    const handleIncrementAcceleration = () => {
+        setAcceleration(prev => (prev < 100 ? prev + 1 : 100));
+    };
+
+    const handleDecrementAcceleration = () => {
+        setAcceleration(prev => (prev > 0 ? prev - 1 : 0));
+    };
+    //#endregion
 
     return (
         <div>
@@ -116,42 +138,55 @@ const Move = () => {
                         </div>
                     </div>
                 </div>
+                {/* Right content */}
                 <div className='right-content'>
-                    {/* Center Panel: Robot Visualization, Action Buttons & Settings */}
-                <div className="center-panel">
                     <div className="axis-title">MOVE AXIS</div>
                     <div className="robot-visualization">
-                    {/* Các nhãn khớp overlay đặt tương ứng */}
-                    <div className="joint-label-overlay j5">J5</div>
-                    <div className="joint-label-overlay j6">J6</div>
-                    <div className="joint-label-overlay j4">J4</div>
-                    <div className="joint-label-overlay j3">J3</div>
-                    <div className="joint-label-overlay j2">J2</div>
-                    <div className="joint-label-overlay j1">J1</div>
-                    {/* Hình ảnh mô phỏng cánh tay robot */}
-                    <div className="robot-arm">
-                        <div className="robot-base"></div>
-                        <div className="robot-arm-upper"></div>
+                        <div className="robot-arm">
+                            <div className="robot-base"></div>
+                            <div className="robot-arm-upper"></div>
+                        </div>
+                        <div className="settings-panel">
+                            <div className='velocity-container'>
+                                <div>
+                                    <div className="setting-label">Velocity</div>
+                                    <div className="setting-value">{velocity} %</div>
+                                </div>
+                                <div>
+                                    <button className="btn-change" onClick={handleIncrementVelocity}>V+</button>
+                                    <button className="btn-change" onClick={handleDecrementVelocity}>V-</button>
+                                </div>
+                            </div>
+                            <div className='acceleration-container'>
+                                <div>
+                                <div className="setting-label">Acceleration</div>
+                                <div className="setting-value">{acceleration} %</div>
+                                </div>
+                                <div>
+                                    <button className="btn-change" onClick={handleIncrementAcceleration}>A+</button>
+                                    <button className="btn-change" onClick={handleDecrementAcceleration}>A-</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div className="button-control-panel">
+                        <div className="button-row">
+                            <button className="control-button">Read Actual Position</button>
+                            <button className="control-button">Move</button>
+                        </div>
+                        
+                        <div className="button-row">
+                            <button className="control-button">Abort</button>
+                            <button className="control-button">Move to Home</button>
+                        </div>
+                        
+                        <div className="spacer"></div>
+                        <div className="button-row">
+                            <button className="control-button">Teach Position</button>
+                            <button className="control-button small">Back</button>
+                            <button className="control-button">Position List</button>
+                        </div>
                     </div>
-                    <div className="action-buttons">
-                    <button className="control-btn">Read Actual Position</button>
-                    <button className="control-btn">Move</button>
-                    <button className="control-btn">Abort</button>
-                    <button className="control-btn">Move to Home</button>
-                    </div>
-                    <div className="settings-panel">
-                    <div className="setting-label">Velocity</div>
-                    <div className="setting-value">5 %</div>
-                    <div className="setting-label">Acceleration</div>
-                    <div className="setting-value">5 %</div>
-                    </div>
-                </div>
-                <div className="center-buttons">
-                    <button className="control-btn">Teach Position</button>
-                    <button className="control-btn">Back</button>
-                    <button className="control-btn">Position List</button>
-                </div>
                 </div>
             </div>
         </div>
