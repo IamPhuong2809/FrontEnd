@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from "framer-motion";
 import './Move.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Control_6dof/Header/Header';
@@ -30,13 +30,12 @@ const Move = () => {
         handleMouseUp: handleMouseUpVelocity
       } = useCounter(5, [0, 100], 1, 150);
     
-      const {
+    const {
         value: acceleration,
         handleMouseDown: handleMouseDownAcceleration,
         handleMouseUp: handleMouseUpAcceleration
-      } = useCounter(5, [0, 100], 1, 150);
+    } = useCounter(5, [0, 100], 1, 150);
     //#endregion
-
 
     const handleJogButtonClick = (label) => {
         setActiveJogButton(label);
@@ -58,9 +57,9 @@ const Move = () => {
     //#region Declaration variable right content
     const jointInputRead = [
         { label: 'J1', value: 1.00 }, 
-        { label: 'J2', value: -2.00 }, 
+        { label: 'J2', value: 2.00 }, 
         { label: 'J3', value: 3.00 }, 
-        { label: 'J4', value: -41.00 }, 
+        { label: 'J4', value: 41.00 }, 
         { label: 'J5', value: 51.00 }, 
         { label: 'J6', value: 61.00 }, 
     ];
@@ -90,9 +89,54 @@ const Move = () => {
         [[-90, 90],[0, 180]],
         [[-180, 180],[0, 180]],
     ]
+
+    
+    const {
+        value: stepsize,
+        handleMouseDown: handleMouseDownStepsize,
+        handleMouseUp: handleMouseUpStepsize
+      } = useCounter(0.5, [0.5, 10], 0.5, 170);
+    
+    const {
+        value: duration,
+        handleMouseDown: handleMouseDownDuration,
+        handleMouseUp: handleMouseUpDuration
+    } = useCounter(300, [50, 200], 10, 170);
+    
+    // Tạo 6 counters riêng biệt cho 6 joint
+    const jointCounters = [
+        useCounter(jointInputRead[1].value, [0, 180], stepsize, duration), //LimitRangeRobot[1][currentUnitShow]
+        useCounter(jointInputRead[0].value, [0, 180], stepsize, duration),
+        useCounter(jointInputRead[2].value, [0, 180], stepsize, duration),
+        useCounter(jointInputRead[3].value, [0, 180], stepsize, duration),
+        useCounter(jointInputRead[4].value, [0, 180], stepsize, duration),
+        useCounter(jointInputRead[5].value, [0, 180], stepsize, duration),
+    ];
+
+    // Cập nhật JointInput khi các giá trị counter thay đổi
+    useEffect(() => {
+        const newJointInput = jointCounters.map((counter, index) => ({
+            label: LabelShow[index][currentUnitShow],
+            value: counter.value,
+            input: counter.value
+        }));
+        setJointInput(newJointInput);
+    }, [jointCounters.map(counter => counter.value).join(','), currentUnitShow]);
+
     //#endregion
 
     //#region Increase and Decrease JogMode
+    const handleJointIncrement = (index) => {
+        jointCounters[index].handleMouseDown("increase");
+    };
+
+    const handleJointDecrement = (index) => {
+        jointCounters[index].handleMouseDown("decrease");
+    };
+
+    const handleJointButtonRelease = (index) => {
+        jointCounters[index].handleMouseUp();
+    };
     //#endregion
 
     const[isBusy, setIsBusy] = useState(false);
@@ -135,52 +179,6 @@ const Move = () => {
                         <div className="robot-arm">
                             <div className="robot-base"></div>
                             <div className="robot-arm-upper"></div>
-                        </div>
-                        <div className="settings-panel">
-                            <div className='velocity-container'>
-                                <div>
-                                    <div className="setting-label">Velocity</div>
-                                    <div className="setting-value">{velocity} %</div>
-                                </div>
-                                <div>
-                                <button 
-                                    className="btn-change" 
-                                    onMouseDown={() => handleMouseDownVelocity("increase")}
-                                    onMouseUp={handleMouseUpVelocity}
-                                >
-                                    V+
-                                </button>
-                                <button 
-                                    className="btn-change" 
-                                    onMouseDown={() => handleMouseDownVelocity("decrease")} 
-                                    onMouseUp={handleMouseUpVelocity}
-                                >
-                                    V-
-                                </button>
-                                </div>
-                            </div>
-                            <div className='acceleration-container'>
-                                <div>
-                                <div className="setting-label">Acceleration</div>
-                                <div className="setting-value">{acceleration} %</div>
-                                </div>
-                                <div>
-                                    <button 
-                                        className="btn-change" 
-                                        onMouseDown={() => handleMouseDownAcceleration("increase")}
-                                        onMouseUp={handleMouseUpAcceleration}
-                                    >
-                                        A+
-                                    </button>
-                                    <button 
-                                        className="btn-change" 
-                                        onMouseDown={() => handleMouseDownAcceleration("decrease")}
-                                        onMouseUp={handleMouseUpAcceleration}
-                                    >
-                                        A-
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div className="bottom-controls">
@@ -228,6 +226,56 @@ const Move = () => {
                                 >
                                     PTP
                                 </button>
+                            </div>
+                        </div>
+                        <div className="settings-panel">
+                            <div className='velocity-container'>
+                                <div>
+                                    <div className="setting-label">Velocity</div>
+                                    <div className="setting-value">{velocity} %</div>
+                                </div>
+                                <div>
+                                <button 
+                                    className="btn-change" 
+                                    onMouseDown={() => handleMouseDownVelocity("increase")}
+                                    onMouseUp={handleMouseUpVelocity}
+                                    onMouseLeave={handleMouseUpVelocity}
+                                >
+                                    V+
+                                </button>
+                                <button 
+                                    className="btn-change" 
+                                    onMouseDown={() => handleMouseDownVelocity("decrease")} 
+                                    onMouseUp={handleMouseUpVelocity}
+                                    onMouseLeave={handleMouseUpVelocity}
+                                >
+                                    V-
+                                </button>
+                                </div>
+                            </div>
+                            <div className='acceleration-container'>
+                                <div>
+                                <div className="setting-label">Acceleration</div>
+                                <div className="setting-value">{acceleration} %</div>
+                                </div>
+                                <div>
+                                    <button 
+                                        className="btn-change" 
+                                        onMouseDown={() => handleMouseDownAcceleration("increase")}
+                                        onMouseUp={handleMouseUpAcceleration}
+                                        onMouseLeave={handleMouseUpAcceleration}
+                                    >
+                                        A+
+                                    </button>
+                                    <button 
+                                        className="btn-change" 
+                                        onMouseDown={() => handleMouseDownAcceleration("decrease")}
+                                        onMouseUp={handleMouseUpAcceleration}
+                                        onMouseLeave={handleMouseUpAcceleration}
+                                    >
+                                        A-
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -294,10 +342,24 @@ const Move = () => {
                                     {JointInput.slice(0, 3).map((joint, index) => (
                                         <div className="joint-control-left" key={index}>
                                             <div className="joint-btn-container">
-                                                <button className="joint-btn"> {LabelShow[index][currentUnitShow]}+ </button>
-                                                <button className="joint-btn"> {LabelShow[index][currentUnitShow]}- </button>
+                                                <button 
+                                                    className="joint-btn"
+                                                    onMouseDown={() => handleJointIncrement(index)}
+                                                    onMouseUp={() => handleJointButtonRelease(index)}
+                                                    onMouseLeave={() => handleJointButtonRelease(index)}
+                                                > 
+                                                    {LabelShow[index][currentUnitShow]}+ 
+                                                </button>
+                                                <button 
+                                                    className="joint-btn"
+                                                    onMouseDown={() => handleJointDecrement(index)}
+                                                    onMouseUp={() => handleJointButtonRelease(index)}
+                                                    onMouseLeave={() => handleJointButtonRelease(index)}
+                                                > 
+                                                    {LabelShow[index][currentUnitShow]}- 
+                                                </button>
                                             </div>
-                                                <div className="joint-value">{joint.value.toFixed(2)}{UnitShow[currentUnitShow]}</div>
+                                            <div className="joint-value">{jointCounters[index].value.toFixed(2)}{UnitShow[currentUnitShow]}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -306,10 +368,24 @@ const Move = () => {
                                     {JointInput.slice(3, 6).map((joint, index) => (
                                         <div className="joint-control-right" key={index + 3}>
                                             <div className="joint-btn-container">
-                                                <button className="joint-btn"> {LabelShow[index+3][currentUnitShow]}+ </button>
-                                                <button className="joint-btn"> {LabelShow[index+3][currentUnitShow]}- </button>
+                                                <button 
+                                                    className="joint-btn"
+                                                    onMouseDown={() => handleJointIncrement(index + 3)}
+                                                    onMouseUp={() => handleJointButtonRelease(index + 3)}
+                                                    onMouseLeave={() => handleJointButtonRelease(index + 3)}
+                                                > 
+                                                    {LabelShow[index+3][currentUnitShow]}+ 
+                                                </button>
+                                                <button 
+                                                    className="joint-btn"
+                                                    onMouseDown={() => handleJointDecrement(index + 3)}
+                                                    onMouseUp={() => handleJointButtonRelease(index + 3)}
+                                                    onMouseLeave={() => handleJointButtonRelease(index + 3)}
+                                                > 
+                                                    {LabelShow[index+3][currentUnitShow]}- 
+                                                </button>
                                             </div>
-                                            <div className="joint-value">{joint.value.toFixed(2)}°</div>
+                                            <div className="joint-value">{jointCounters[index + 3].value.toFixed(2)}{UnitShow[currentUnitShow]}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -318,20 +394,82 @@ const Move = () => {
                     )}
                     <div className="button-control-panel">
                         <div className='button-top'>
-                            <div className="button-row">
-                                <button className={`control-button-tall ${isJog ? '' : 'active'}`}>
+                            <motion.div
+                                key={isJog ? "settings-step" : "button-row"}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.6 }}
+                            >
+                                {isJog ? (
+                                <div className="settings-step">
+                                    <div className="velocity-container">
+                                    <div>
+                                        <div className="setting-label">Stepsize</div>
+                                        <div className="setting-value">{stepsize.toFixed(1)}</div>
+                                    </div>
+                                    <div>
+                                        <button 
+                                        className="btn-change" 
+                                        onMouseDown={() => handleMouseDownStepsize("increase")}
+                                        onMouseUp={handleMouseUpStepsize}
+                                        onMouseLeave={handleMouseUpStepsize}
+                                        >
+                                        S+
+                                        </button>
+                                        <button 
+                                        className="btn-change" 
+                                        onMouseDown={() => handleMouseDownStepsize("decrease")} 
+                                        onMouseUp={handleMouseUpStepsize}
+                                        onMouseLeave={handleMouseUpStepsize}
+                                        >
+                                        S-
+                                        </button>
+                                    </div>
+                                    </div>
+                                    <div className="acceleration-container">
+                                    <div>
+                                        <div className="setting-label">Duration</div>
+                                        <div className="setting-value">{duration} ms</div>
+                                    </div>
+                                    <div>
+                                        <button 
+                                        className="btn-change" 
+                                        onMouseDown={() => handleMouseDownDuration("increase")}
+                                        onMouseUp={handleMouseUpDuration}
+                                        onMouseLeave={handleMouseUpDuration}
+                                        >
+                                        D+
+                                        </button>
+                                        <button 
+                                        className="btn-change" 
+                                        onMouseDown={() => handleMouseDownDuration("decrease")}
+                                        onMouseUp={handleMouseUpDuration}
+                                        onMouseLeave={handleMouseUpDuration}
+                                        >
+                                        D-
+                                        </button>
+                                    </div>
+                                    </div>
+                                </div>
+                                ) : (
+                                <div className="button-row">
+                                    <button className={`control-button-tall ${isJog ? '' : 'active'}`}>
                                     Read Actual Position
-                                </button>
-                                <button className={`control-button-tall ${isJog ? '' : 'active'}`}>
+                                    </button>
+                                    <button className={`control-button-tall ${isJog ? '' : 'active'}`}>
                                     Move
-                                </button>
-                            </div>
+                                    </button>
+                                </div>
+                                )}
+                            </motion.div>
                             
                             <div className="button-row">
                                 <button className="control-button">Abort</button>
                                 <button className="control-button">Move to Home</button>
                             </div>
                         </div>
+                        
                         <div className="button-bottom">
                             <div className="info-row">
                                 <span className={`info-span ${isBusy ? 'busy' : ''}`}>BUSY</span>

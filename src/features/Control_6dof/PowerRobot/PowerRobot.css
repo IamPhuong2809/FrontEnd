@@ -55,20 +55,20 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-}
-
-.btn-off {
     background-color: #e0e0e0;
+    color: #868585;
 }
 
-.btn-off.active {
+.btn-off:active, .btn-on:active{
+    transform: scale(1);
+}
+
+.button-start .active {
     background-color: #333;
     color: white;
 }
 
-.btn-on {
-    background-color: #e0e0e0;
-}
+
 
 .status-list {
     padding-top: 0px;

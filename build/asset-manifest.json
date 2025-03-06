@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/FrontEnd/static/css/main.7f693395.css",
-    "main.js": "/FrontEnd/static/js/main.0926e5ab.js",
+    "main.css": "/FrontEnd/static/css/main.ba5191d7.css",
+    "main.js": "/FrontEnd/static/js/main.d3c95fa3.js",
     "static/media/WebServer_Login_BG-01.png": "/FrontEnd/static/media/WebServer_Login_BG-01.091523233220a5448537.png",
     "static/media/WebServer_Login_Image.png": "/FrontEnd/static/media/WebServer_Login_Image.a4a32d55bcad3e9f9b1f.png",
     "static/media/Logo_ACIS.png": "/FrontEnd/static/media/Logo_ACIS.1b918ac439fde949315b.png",
@@ -13,11 +13,11 @@
     "static/media/slick.ttf": "/FrontEnd/static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "/FrontEnd/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/FrontEnd/index.html",
-    "main.7f693395.css.map": "/FrontEnd/static/css/main.7f693395.css.map",
-    "main.0926e5ab.js.map": "/FrontEnd/static/js/main.0926e5ab.js.map"
+    "main.ba5191d7.css.map": "/FrontEnd/static/css/main.ba5191d7.css.map",
+    "main.d3c95fa3.js.map": "/FrontEnd/static/js/main.d3c95fa3.js.map"
   },
   "entrypoints": [
-    "static/css/main.7f693395.css",
-    "static/js/main.0926e5ab.js"
+    "static/css/main.ba5191d7.css",
+    "static/js/main.d3c95fa3.js"
   ]
 }

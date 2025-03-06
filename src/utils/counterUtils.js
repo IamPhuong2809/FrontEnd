@@ -11,7 +11,7 @@ import { useState, useRef } from 'react';
 export const useCounter = (initialValue = 0, limit, step = 1, intervalDelay = 150) => {
   const [value, setValue] = useState(initialValue);
   const intervalRef = useRef(null);
-  const [min, max] = limit
+  const [min, max] = limit;
 
   // Hàm thay đổi giá trị theo kiểu "increase" hoặc "decrease"
   const changeValue = (type) => {
@@ -33,5 +33,5 @@ export const useCounter = (initialValue = 0, limit, step = 1, intervalDelay = 15
     intervalRef.current = null;
   };
 
-  return { value, setValue, changeValue, handleMouseDown, handleMouseUp };
+  return { value, handleMouseDown, handleMouseUp };
 };

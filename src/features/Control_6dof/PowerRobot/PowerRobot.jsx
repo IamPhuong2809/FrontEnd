@@ -6,7 +6,8 @@ import Menu from '@components/Control_6dof/Menu/Menu'
 
 
 const PowerRobot = () => {
-  const [showModal, setShowModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [powerRobot, setPowerRobot] = useState(false);
 
     // Dữ liệu cho từng card
     const errors = [
@@ -88,8 +89,18 @@ const PowerRobot = () => {
               <div className='power-button'>
                 <span>Robot Power</span>
                 <div className='button-start'>
-                  <button className='btn-off active'>Off</button>
-                  <button className='btn-on'>On</button>
+                    <button 
+                        className={`btn-off ${powerRobot ? '' : 'active'}`} 
+                        onMouseDown={() => setPowerRobot(false)}
+                    >
+                        Off
+                    </button>
+                    <button 
+                        className={`btn-on ${powerRobot ? 'active' : ''}`} 
+                        onMouseDown={() => setPowerRobot(true)}
+                    >
+                        On
+                    </button>
                 </div>
               </div>
               <div className='status-list'>

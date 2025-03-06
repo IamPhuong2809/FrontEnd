@@ -15,6 +15,7 @@
 .move-robot-container .left-content {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 16px;
     width: 100%;
     max-height: 100%;
@@ -90,6 +91,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+    height: 47%;
 }
 
 .tool-buttons{
@@ -169,13 +171,84 @@
     border-top-right-radius: 8px;
 }
 
+/* #endregion */
+
+/* #region Bottom control bar */
+.bottom-controls {
+    display: flex;
+    flex-direction: row;
+    height: 30%;
+    margin: 0 20px 30px 30px;
+    gap: 20px;
+}
+  
+.left-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+  
+.right-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+  
+.move-label, .jog-label {
+    background-color: #313f46;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.4s;
+    width: 100%;
+}
+
+.move-label.active, .jog-label.active {
+    background-color: rgb(82, 172, 37);
+}
+
+.jog-container{
+    display: flex;
+    gap: 10px;
+}
+
+.move-container{
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    background-color: #3c454c;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 0px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.4s;
+}
+  
+.control-btn:hover {
+    background-color: #555f66;
+}
+  
+.control-btn.active {
+    background-color: rgb(82, 172, 37);
+}
+
 .settings-panel {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-right: 15%;
     padding: 8px;
     max-width: 180px;
+    margin-bottom: 3px;
 }
 
 .velocity-container{
@@ -214,75 +287,6 @@
     text-align: center;
     width: 90%;
 }
-/* #endregion */
-
-/* #region Bottom control bar */
-.bottom-controls {
-    display: flex;
-    flex-direction: row;
-    height: 20%;
-    justify-content: space-between;
-    padding: 0px 15% 0px 11%;
-    margin-bottom: 30px;
-}
-  
-.left-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-}
-  
-.right-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-}
-  
-.move-label, .jog-label {
-    background-color: #313f46;
-    color: white;
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 8px 35px;
-    display: flex;
-    align-items: center;
-    transition: background-color 0.4s;
-}
-
-.move-label.active, .jog-label.active {
-    background-color: rgb(82, 172, 37);
-}
-
-.jog-container{
-    display: flex;
-    gap: 10px;
-}
-
-.move-container{
-    display: flex;
-    gap: 10px;
-}
-
-.control-btn {
-    background-color: #3c454c;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 0px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.4s;
-}
-  
-.control-btn:hover {
-    background-color: #555f66;
-}
-  
-.control-btn.active {
-    background-color: rgb(82, 172, 37);
-}
 
 /* #endregion */
   
@@ -291,9 +295,11 @@
 .right-content{
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 0;
     width: 100%;
     max-height: 100%;
+    background-color: #1e2427;
 }
 
 /* #region Joint panels */
@@ -419,6 +425,7 @@
 .jog-false .joint-btn:hover {
     background-color: #4b5b63;
 }
+
 /* #endregion */
 
 /* #region Button control */
@@ -432,12 +439,22 @@
     justify-content: flex-end;
     border-radius: 4px;
     gap: 20px;
+    margin-bottom: 20px;
+}
+
+.settings-step{
+    display: flex;
+    flex-direction: row;
+    height: 30%;
+    width: 100%;
+    gap: 5px;
+    margin-left: 3px;
 }
  
 .button-top{
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
     width: 100%;
     justify-content: space-between;
 }
@@ -483,17 +500,11 @@
     font-weight: 500;
     border-radius: 3px;
     cursor: pointer;
-    transition: all 0.4s;
     min-height: 60px;
-    opacity: 0;
 }
 
 .control-button-tall:hover {
     background-color: #4a4f54;
-}
-
-.control-button-tall.active{
-    opacity: 1;
 }
   
 .control-button:hover {
