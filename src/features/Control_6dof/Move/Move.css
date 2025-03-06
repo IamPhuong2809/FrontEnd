@@ -28,6 +28,7 @@
     gap: 8px;
     margin-left: 20%;
     width: 60%;
+    height: 15%;
 }
 
 .tool-information{
@@ -116,150 +117,6 @@
 }
 /* #endregion */
   
-/* #region Joint panels */
-.joint-panel {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
-    width: 100%;
-    height: 55%;
-    margin-top: 5px;
-}
-
-.left-panel{
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    width: 100%;
-    height: 100%;
-    padding-top: 10px;
-}
-  
-.joint-control-left {
-    display: flex;
-    flex-direction: row;
-    padding: 15px 0 15px 40px;
-    border-radius: 4px;
-    width: 100%;
-    gap: 5px;
-}
-
-.right-panel{
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    width: 100%;
-    height: 100%;
-    padding-top: 10px;
-}
-
-.joint-control-right {
-    display: flex;
-    flex-direction: row-reverse;
-    padding: 15px 40px 15px 0;
-    border-radius: 4px;
-    width: 100%;
-    gap: 5px;
-}
-  
-.joint-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 18px;
-    width:auto;
-    background-color: #313f46;
-    color: white;
-}
-  
-.joint-value {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 2%;
-    height: 46%;
-    background-color: #313f46;
-    font-size: 1rem;
-    color: #fc0;
-    letter-spacing: 2px;
-}
-  
-.joint-input {
-    background-color: #c9d2d9;
-    color: black;
-    padding: 4px 8px;
-    width: 100%;
-    height: 50%;
-    border: none;
-    border-radius: 2px;
-    font-size: 1rem;
-    text-align: center;
-    letter-spacing: 1px;
-}
-/* #endregion */
-
-/* #region Bottom control bar */
-.bottom-controls {
-    display: flex;
-    flex-direction: row;
-    height: 20%;
-    justify-content: space-between;
-    padding: 0 15% 0 11%;
-}
-  
-.left-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-  
-.right-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-  
-.move-label, .jog-label {
-    background-color: #313f46;
-    color: white;
-    font-size: 1rem;
-    padding: 8px 35px;
-    display: flex;
-    align-items: center;
-}
-
-.jog-container{
-    display: flex;
-    gap: 10px;
-}
-
-.move-container{
-    display: flex;
-    gap: 10px;
-}
-
-.control-btn {
-    background-color: #3c454c;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 0px;
-    cursor: pointer;
-    text-align: center;
-}
-  
-.control-btn:hover {
-    background-color: #555f66;
-}
-  
-.control-btn.active {
-    background-color: #6c3;
-}
-
-/* #endregion */
-  
-  /*Right content */
-
 /* #region Top content */
 .top-panel {
     display: flex;
@@ -277,7 +134,7 @@
   
 .robot-visualization {
     padding-top: 5%;
-    height: 45vh;
+    height: 60%;
     display: flex;
     justify-content: space-between;
     position: relative;
@@ -359,16 +216,240 @@
 }
 /* #endregion */
 
-/* #region Button control */
-.button-control-panel {
-    background-color: tomato;
-    padding: 0 15px;
-    width: 100%;
+/* #region Bottom control bar */
+.bottom-controls {
     display: flex;
-    flex-direction: column;
-    border-radius: 4px;
+    flex-direction: row;
+    height: 20%;
+    justify-content: space-between;
+    padding: 0px 15% 0px 11%;
+    margin-bottom: 30px;
 }
   
+.left-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+  
+.right-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+  
+.move-label, .jog-label {
+    background-color: #313f46;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 35px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.4s;
+}
+
+.move-label.active, .jog-label.active {
+    background-color: rgb(82, 172, 37);
+}
+
+.jog-container{
+    display: flex;
+    gap: 10px;
+}
+
+.move-container{
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    background-color: #3c454c;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 0px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.4s;
+}
+  
+.control-btn:hover {
+    background-color: #555f66;
+}
+  
+.control-btn.active {
+    background-color: rgb(82, 172, 37);
+}
+
+/* #endregion */
+  
+/*Right content */
+
+.right-content{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    max-height: 100%;
+}
+
+/* #region Joint panels */
+.joint-panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    height: 55%;
+}
+
+.left-panel{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    padding-top: 10px;
+}
+  
+.joint-control-left {
+    display: flex;
+    flex-direction: row;
+    padding: 15px 0px 15px 0px;
+    border-radius: 0px;
+    margin-left: 15%;
+    width: 80%;
+    gap: 5px;
+    min-height: 85px;
+}
+
+.right-panel{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    padding-top: 10px;
+}
+
+.joint-control-right {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 15px 0 15px 0;
+    border-radius: 4px;
+    margin-right: 15%;
+    width: 80%;
+    gap: 5px;
+}
+  
+.jog-true .joint-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    width:auto;
+    background-color: #313f46;
+    color: white;
+}
+  
+.jog-true .joint-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2%;
+    height: 46%;
+    background-color: #313f46;
+    font-size: 1rem;
+    color: #fc0;
+    letter-spacing: 2px;
+}
+  
+.jog-true .joint-input {
+    background-color: #c9d2d9;
+    color: black;
+    padding: 4px 8px;
+    width: 100%;
+    height: 50%;
+    border: none;
+    border-radius: 2px;
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.jog-false .joint-control-left,
+.jog-false .joint-control-right {
+    padding: 5px 0 0 0;
+    margin-top: 3px;
+    gap: 10px;
+}
+
+.jog-false .joint-btn-container{
+    display: flex;
+    flex-direction: column;
+    gap: 4%;
+    width: 20%;
+}
+
+.jog-false .joint-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    color: white;
+    background-color: #313f46;
+    width: 100%;
+}
+
+
+.jog-false .joint-btn {
+    background-color: #3a4247;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 0px;
+    padding: 14px 8px;
+    font-size: 0.8rem;
+    margin: 0;
+    height: 48%;
+}
+
+.jog-false .joint-btn:hover {
+    background-color: #4b5b63;
+}
+/* #endregion */
+
+/* #region Button control */
+.button-control-panel {
+    margin-left: 5%;
+    padding: 0 15px;
+    width: 88%;
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-radius: 4px;
+    gap: 20px;
+}
+ 
+.button-top{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.button-bottom{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    justify-content: space-between;
+}
+
 .button-control-panel .button-row {
     display: flex;
     gap: 10px;
@@ -380,28 +461,86 @@
     color: #fff;
     border: none;
     padding: 15px 10px;
+    margin: 0;
     flex: 1;
     text-align: center;
     font-size: 14px;
     font-weight: 500;
     border-radius: 3px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.4s;
+}
+
+.button-control-panel .control-button-tall {
+    background-color: #3a3f44;
+    color: #fff;
+    border: none;
+    padding: 15px 10px;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.4s;
+    min-height: 60px;
+    opacity: 0;
+}
+
+.control-button-tall:hover {
+    background-color: #4a4f54;
+}
+
+.control-button-tall.active{
+    opacity: 1;
 }
   
 .control-button:hover {
     background-color: #4a4f54;
 }
-  
-.control-button:active {
-    background-color: #2a2f34;
+
+.info-row{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
 }
+
+.info-row .info-span {
+    display: flex;
+    background-color: transparent;
+    border: 2px solid #8d8c8c;
+    font-size: 1rem;
+    color: white;
+    width: 100%;
+    height: 30px;
+    border-radius: none;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 10px; 
+    letter-spacing: 2px;
+    transition: background-color 0.2s;
+}
+
+.info-span.busy{
+    color: rgb(221, 221, 27);
+    border-color: rgb(221, 221, 27);
+}
+
+.info-span.active{
+    color: rgb(70, 173, 10);
+    border-color: rgb(70, 173, 10);
+}
+
+.info-span.error{
+    color: rgb(207, 57, 57);
+    border-color: rgb(207, 57, 57);
+}
+  
   
 .small {
-    max-width: 100px;
+    max-width: 150px;
 }
-  
-.spacer {
-    height: 20px;
-}
+
 /* #endregion */
