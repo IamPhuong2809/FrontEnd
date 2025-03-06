@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import './Move.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Control_6dof/Header/Header';
+import { handleInputChange } from '../../../utils/inputValidation';
+import { useCounter } from '../../../utils/counterUtils';
 
 const Move = () => {
     //#region Left Content Area
-    // Các state cho thông số hiển thị
+    //#region Declaration variable left content
     const [Tool, setTool] = useState(1);
     const [statuses, setStatuses] = useState([
         { label: 'S', isOn: false },
@@ -16,79 +18,44 @@ const Move = () => {
     const [Override, setOverride] = useState(5);
     const [WorkType, setWorkType] = useState(2);
 
-    //#region Velocity and Acceleration
-    const intervalRefVelocity = useRef(null);
-    const intervalRefAcceleration = useRef(null);
-    const [velocity, setVelocity] = useState(5);
-    const [acceleration, setAcceleration] = useState(5);
-
-    const changeVelocity = (type) => {
-        setVelocity((prevVelocity) => {
-            let newVelocity = type === "increase" ? prevVelocity + 1 : prevVelocity - 1;
-            return Math.max(0, Math.min(100, newVelocity)); // Giới hạn từ 0 đến 100
-        });
-    };
-
-    const handleMouseDownVelocity = (type) => {
-        changeVelocity(type);
-        intervalRefVelocity.current = setInterval(() => {
-            changeVelocity(type);
-        }, 150);
-    };
-
-    const handleMouseUpVelocity = () => {
-        clearInterval(intervalRefVelocity.current);
-    };
-
-    const changeAcceleration = (type) => {
-        setAcceleration((prevAcceleration) => {
-            let newAcceleration = type === "increase" ? prevAcceleration + 1 : prevAcceleration - 1;
-            return Math.max(0, Math.min(100, newAcceleration)); // Giới hạn từ 0 đến 100
-        });
-    };
-    
-    const handleMouseDownAcceleration = (type) => {
-        changeAcceleration(type);
-        intervalRefAcceleration.current = setInterval(() => {
-            changeAcceleration(type);
-        }, 150); 
-    };
-    
-    const handleMouseUpAcceleration = () => {
-        if (intervalRefAcceleration.current) {
-            clearInterval(intervalRefAcceleration.current);
-            intervalRefAcceleration.current = null;
-        }
-    };
-    //#endregion
-
     const[isJog, setIsJog] = useState(true);
     const [activeJogButton, setActiveJogButton] = useState('Work');
     const [activeMoveButton, setActiveMoveButton] = useState(null);
+    //#endregion
+
+    //#region Velocity and Acceleration
+    const {
+        value: velocity,
+        handleMouseDown: handleMouseDownVelocity,
+        handleMouseUp: handleMouseUpVelocity
+      } = useCounter(5, [0, 100], 1, 150);
+    
+      const {
+        value: acceleration,
+        handleMouseDown: handleMouseDownAcceleration,
+        handleMouseUp: handleMouseUpAcceleration
+      } = useCounter(5, [0, 100], 1, 150);
+    //#endregion
+
 
     const handleJogButtonClick = (label) => {
         setActiveJogButton(label);
         setActiveMoveButton(null);
         setIsJog(true);
-        if(label === 'Joint')
-            setIndexShow(0);
-        else
-            setIndexShow(1);
+        setCurrentUnitShow(label === "Joint" ? 0 : 1);
     };
 
     const handleMoveButtonClick = (label) => {
         setActiveMoveButton(label);
         setActiveJogButton(null);
         setIsJog(false);
-        if(label === 'Joint')
-            setIndexShow(0);
-        else
-            setIndexShow(1);
+        setCurrentUnitShow(label === "Joint" ? 0 : 1);
     };
     //#endregion
 
     //#region Right Content Area
-    // Dữ liệu của các khớp (giá trị mẫu)
+
+    //#region Declaration variable right content
     const jointInputRead = [
         { label: 'J1', value: 1.00 }, 
         { label: 'J2', value: -2.00 }, 
@@ -97,16 +64,15 @@ const Move = () => {
         { label: 'J5', value: 51.00 }, 
         { label: 'J6', value: 61.00 }, 
     ];
-    
-      
     const initialJointInput = jointInputRead.map(joint => ({
     ...joint,
     input: joint.value
     }));
 
     const [JointInput, setJointInput] = useState(initialJointInput);
-    const [indexShow, setIndexShow] = useState(1);
+    const [currentUnitShow, setCurrentUnitShow] = useState(1);
 
+    const UnitShow = ['°', 'mm'];
     const LabelShow = [
         ['J1', 'X',],
         ['J2', 'Y'],
@@ -116,12 +82,18 @@ const Move = () => {
         ['J6', 'RZ'],
     ];
 
-    const handleInputChange = (e, index) => {
-        const value = parseFloat(e.target.value);
-        const newJointInput = [...JointInput];
-        newJointInput[index].input = value;
-        setJointInput(newJointInput);
-    };
+    const LimitRangeRobot = [
+        [[-180, 180],[0, 400]],
+        [[-90, 90],[0, 400]],
+        [[-45, 135],[0, 400]],
+        [[-90, 90],[0, 180]],
+        [[-90, 90],[0, 180]],
+        [[-180, 180],[0, 180]],
+    ]
+    //#endregion
+
+    //#region Increase and Decrease JogMode
+    //#endregion
 
     const[isBusy, setIsBusy] = useState(false);
     const[isActive, setIsActive] = useState(false);
@@ -171,22 +143,20 @@ const Move = () => {
                                     <div className="setting-value">{velocity} %</div>
                                 </div>
                                 <div>
-                                    <button 
-                                        className="btn-change" 
-                                        onMouseDown={() => handleMouseDownVelocity("increase")}
-                                        onMouseUp={handleMouseUpVelocity}
-                                        onMouseLeave={handleMouseUpVelocity}
-                                    >
-                                        V+
-                                    </button>
-                                    <button
-                                        className="btn-change" 
-                                        onMouseDown={() => handleMouseDownVelocity("decrease")}
-                                        onMouseUp={handleMouseUpVelocity}
-                                        onMouseLeave={handleMouseUpVelocity}
-                                    >
-                                        V-
-                                    </button>
+                                <button 
+                                    className="btn-change" 
+                                    onMouseDown={() => handleMouseDownVelocity("increase")}
+                                    onMouseUp={handleMouseUpVelocity}
+                                >
+                                    V+
+                                </button>
+                                <button 
+                                    className="btn-change" 
+                                    onMouseDown={() => handleMouseDownVelocity("decrease")} 
+                                    onMouseUp={handleMouseUpVelocity}
+                                >
+                                    V-
+                                </button>
                                 </div>
                             </div>
                             <div className='acceleration-container'>
@@ -199,7 +169,6 @@ const Move = () => {
                                         className="btn-change" 
                                         onMouseDown={() => handleMouseDownAcceleration("increase")}
                                         onMouseUp={handleMouseUpAcceleration}
-                                        onMouseLeave={handleMouseUpAcceleration}
                                     >
                                         A+
                                     </button>
@@ -207,7 +176,6 @@ const Move = () => {
                                         className="btn-change" 
                                         onMouseDown={() => handleMouseDownAcceleration("decrease")}
                                         onMouseUp={handleMouseUpAcceleration}
-                                        onMouseLeave={handleMouseUpAcceleration}
                                     >
                                         A-
                                     </button>
@@ -272,22 +240,23 @@ const Move = () => {
                         initial={{ opacity: 0}}
                         animate={{ opacity: 1}}
                         exit={{ opacity: 0}}
-                        transition={{ duration: 0.4 }}
+                        transition={{ duration: 0.6 }}
                         >
                             <div className="joint-panel jog-true">
                                 {/* Left panel cũ */}
                                 <div className="left-panel">
                                     {JointInput.slice(0, 3).map((joint, index) => (
                                         <div className="joint-control-left" key={index}>
-                                            <div className="joint-label">{joint.label}</div>
+                                            <div className="joint-label">{LabelShow[index][currentUnitShow]}</div>
                                             <div>
                                                 <input
                                                     type="text"
-                                                    value={joint.input.toFixed(2)}
+                                                    value={joint.input}
                                                     className="joint-input"
-                                                    onChange={(e) => handleInputChange(e, index)}
+                                                    onChange={(e) => handleInputChange(e, index, JointInput,
+                                                         setJointInput, LimitRangeRobot[index][currentUnitShow])}
                                                 />
-                                                <div className="joint-value">{joint.value.toFixed(2)}°</div>
+                                                <div className="joint-value">{joint.value.toFixed(2)}{UnitShow[currentUnitShow]}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -296,13 +265,14 @@ const Move = () => {
                                 <div className="right-panel">
                                     {JointInput.slice(3, 6).map((joint, index) => (
                                         <div className="joint-control-right" key={index + 3}>
-                                            <div className="joint-label">{joint.label}</div>
+                                            <div className="joint-label">{LabelShow[index + 3][currentUnitShow]}</div>
                                             <div>
                                                 <input
                                                     type="text"
-                                                    value={joint.input.toFixed(2)}
+                                                    value={joint.input}
                                                     className="joint-input"
-                                                    onChange={(e) => handleInputChange(e, index + 3)}
+                                                    onChange={(e) => handleInputChange(e, index + 3, JointInput,
+                                                         setJointInput, LimitRangeRobot[index+3][currentUnitShow])}
                                                 />
                                                 <div className="joint-value">{joint.value.toFixed(2)}°</div>
                                             </div>
@@ -324,10 +294,10 @@ const Move = () => {
                                     {JointInput.slice(0, 3).map((joint, index) => (
                                         <div className="joint-control-left" key={index}>
                                             <div className="joint-btn-container">
-                                                <button className="joint-btn"> {joint.label}+ </button>
-                                                <button className="joint-btn"> {joint.label}- </button>
+                                                <button className="joint-btn"> {LabelShow[index][currentUnitShow]}+ </button>
+                                                <button className="joint-btn"> {LabelShow[index][currentUnitShow]}- </button>
                                             </div>
-                                                <div className="joint-value">{joint.value.toFixed(2)}</div>
+                                                <div className="joint-value">{joint.value.toFixed(2)}{UnitShow[currentUnitShow]}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -336,10 +306,10 @@ const Move = () => {
                                     {JointInput.slice(3, 6).map((joint, index) => (
                                         <div className="joint-control-right" key={index + 3}>
                                             <div className="joint-btn-container">
-                                                <button className="joint-btn"> {joint.label}+ </button>
-                                                <button className="joint-btn"> {joint.label}- </button>
+                                                <button className="joint-btn"> {LabelShow[index+3][currentUnitShow]}+ </button>
+                                                <button className="joint-btn"> {LabelShow[index+3][currentUnitShow]}- </button>
                                             </div>
-                                            <div className="joint-value">{joint.value.toFixed(2)}</div>
+                                            <div className="joint-value">{joint.value.toFixed(2)}°</div>
                                         </div>
                                     ))}
                                 </div>
