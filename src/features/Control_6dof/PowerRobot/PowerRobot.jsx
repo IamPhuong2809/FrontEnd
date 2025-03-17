@@ -3,21 +3,25 @@ import HeaderControl from '@components/Control_6dof/Header/Header'
 import './PowerRobot.css'
 import Table from '@components/Control_6dof/Table/Table'
 import Menu from '@components/Control_6dof/Menu/Menu'
+import { handleInputChange } from '@utils/inputValidation';
+
+const url = "http://127.0.0.1:8000/api/"
 
 
 const PowerRobot = () => {
     const [showModal, setShowModal] = useState(false);
     const [powerRobot, setPowerRobot] = useState(false);
+    const LimitRangeCartesian = [
+        [0, 400], [0, 400], [0, 400], [0, 180], [0, 180], [0, 180]
+    ];
 
-    // Dữ liệu cho từng card
-    const errors = [
-        { id: 1, code: "0000" },
-        { id: 2, code: "0000" },
-        { id: 3, code: "0000" },
-        { id: 4, code: "0000" }
-      ];
-      
-      const axisPositions = [
+
+    // Khai báo cho từng card
+    //#region Card Power
+    //#endregion
+
+    //#region Card Axis
+    const axisPositions = [
         { joint: "J1", value: "-52.67°" },
         { joint: "J2", value: "+10.44°" },
         { joint: "J3", value: "+95.79°" },
@@ -25,8 +29,10 @@ const PowerRobot = () => {
         { joint: "J5", value: "+27.29°" },
         { joint: "J6", value: "+8.01°" }
       ];
-      
-      const cartesianPositions = [
+    //#endregion
+
+    //#region Card Cartesian
+    const cartesianPositions = [
         { label: "X", value: "+170.08mm" },
         { label: "Y", value: "-223.05mm" },
         { label: "Z", value: "+433.70mm" },
@@ -34,8 +40,38 @@ const PowerRobot = () => {
         { label: "Pitch", value: "+16.31°" },
         { label: "Yaw", value: "+118.98°" }
       ];
+    //#endregion
 
-  //#region Modal
+    //#region Card Error
+    const errors = [
+        { id: 1, code: "0000" },
+        { id: 2, code: "0000" },
+        { id: 3, code: "0000" },
+        { id: 4, code: "0000" }
+      ];
+    //#endregion
+
+    //#region Card Parameter
+    //#endregion
+
+    //#region Card Home Position
+    const defaultPosition = [
+        { label: "X", input: 170.09 },
+        { label: "Y", input: -223.05 },
+        { label: "Z", input: 432.71 },
+        { label: "Rl", input: 177.64 },
+        { label: "Pt", input: 16.31 },
+        { label: "Yw", input: 118.98 }
+    ];
+
+    const [homePosition, setHomePosition] = useState(defaultPosition);
+
+    const handleResetToDefault = () => {
+        setHomePosition(defaultPosition);
+    };
+    //#endregion
+    
+    //#region Modal
   // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
   const savedPositions = [
     {
@@ -71,12 +107,115 @@ const PowerRobot = () => {
                     nameTitle="List Home Position"
                     savedPositions={savedPositions}
                     setShowModal={setShowModal}
+                    handleUsePosition={handleUsePosition}
+                    handleDeletePosition={handleDeletePosition}
                 />
             </div>
         </div>
     );
   };
   //#endregion Modals
+
+    //#region Backend
+
+    const handlePowerOff = async () => {
+        try {
+            const response = await fetch(url + "O0000/", {
+                method: 'GET',
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handlePowerOn = async () => {
+        try {
+            const response = await fetch(url + "O0001/", {
+                method: 'GET',
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handlePowerReset = async () => {
+        try {
+            const response = await fetch(url + "O0002/", {
+                method: 'GET',
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handlePowerAbort = async () => {
+        try {
+            const response = await fetch(url + "O0003/", {
+                method: 'GET',
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleHomePositionSave = async (position) => {
+        try {
+            const response = await fetch(url + "O0010/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(homePosition),
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleUsePosition = async (id) => {
+        try {
+            const response = await fetch(url + "O0011/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(id),
+            });
+            const data = await response.json();
+            // setHomePosition(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleDeletePosition = async (id) => {
+        try {
+            const response = await fetch(url + "O0012/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(id),
+            });
+            const data = await response.json();
+            // setHomePosition(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const [isError, setIsError] = useState(false);
+    const [isMove, setIsMove] = useState(false);
+    const [isEE, setIsEE] = useState(false);
+    
+
+    //#endregion 
+
 
   return (
     <div className="power-robot-container">
@@ -91,25 +230,31 @@ const PowerRobot = () => {
                 <div className='button-start'>
                     <button 
                         className={`btn-off ${powerRobot ? '' : 'active'}`} 
-                        onMouseDown={() => setPowerRobot(false)}
+                        onClick={() => {
+                            setPowerRobot(false);
+                            handlePowerOff();
+                        }}
                     >
                         Off
                     </button>
                     <button 
                         className={`btn-on ${powerRobot ? 'active' : ''}`} 
-                        onMouseDown={() => setPowerRobot(true)}
+                        onClick={() => {
+                            setPowerRobot(true);
+                            handlePowerOn();
+                        }}
                     >
                         On
                     </button>
                 </div>
               </div>
               <div className='status-list'>
-                <div className='status-item powered'>Powered</div>
-                <div className='status-item no-error'>No Error</div>
-                <div className='status-item ready'>Robot is ready to move</div>
-                <div className='status-item on'>End-Effector ON</div>
-                <button className='btn-reset'>Reset</button>
-                <button className='btn-abort'>Abort</button>
+                <div className={`status-item  ${powerRobot ? 'active' : ''}`}>Powered</div>
+                <div className={`status-item  ${isError ? 'active' : ''}`}>No Error</div>
+                <div className={`status-item  ${isMove ? 'active' : ''}`}>Robot is ready to move</div>
+                <div className={`status-item  ${isEE ? 'active' : ''}`}>End-Effector ON</div>
+                <button className='btn-reset' onClick={handlePowerReset}>Reset</button>
+                <button className='btn-abort' onClick={handlePowerAbort}>Abort</button>
               </div>
             </div>
             <div className='control-card error-section'>
@@ -172,46 +317,37 @@ const PowerRobot = () => {
             </div>
 
             <div className='control-card home-position-section'>
-              <h3>Home Position</h3>
-              <div className='home-position-grid'>
-                <div className='position-group'>
-                  <div className='position-label'>X</div>
-                  <input type="text" value="170.09" readOnly />
+                <h3>Home Position</h3>
+                <div className="home-position-grid">
+                    <div className='position-group-container'>
+                        {homePosition.map((axis, index) => (
+                            <div className="position-group" key={index}>
+                                <div className="position-label">{axis.label}</div>
+                                <input
+                                    type="text"
+                                    name = {axis}
+                                    value={axis.input}
+                                    onChange={(e) => handleInputChange(e, index, homePosition, setHomePosition, LimitRangeCartesian[index])}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    <div className="home-position-actions">
+                        <button className="btn-default" onClick={handleResetToDefault}>
+                            DEFAULT
+                        </button>
+                        <button className="btn-save" onClick={handleHomePositionSave}>
+                            SAVE
+                        </button>
+                    </div>
                 </div>
-                <div className='position-group'>
-                  <div className='position-label'>Y</div>
-                  <input type="text" value="-223.05" readOnly />
-                </div>
-                <div className='position-group'>
-                  <div className='position-label'>Z</div>
-                  <input type="text" value="432.71" readOnly />
-                </div>
-                <div className='home-position-actions'>
-                  <button className='btn-default'>DEFAULT</button>
-                </div>
-                <div className='position-group'>
-                  <div className='position-label'>Rl</div>
-                  <input type="text" value="177.64" readOnly />
-                </div>
-                <div className='position-group'>
-                  <div className='position-label'>Pt</div>
-                  <input type="text" value="16.31" readOnly />
-                </div>
-                <div className='position-group'>
-                  <div className='position-label'>Yw</div>
-                  <input type="text" value="118.98" readOnly />
-                </div>
-                <div className='home-position-actions'>
-                  <button className='btn-save'>SAVE</button>
-                </div>
-              </div>
-              <div className="home-list">
-                <div
-                className="home-list-item"
-                onClick={() => handlePositionClick()}
-                >
-                <span>List home position</span>
-                <span>→</span>
+                <div className="home-list">
+                    <div
+                    className="home-list-item"
+                    onClick={() => handlePositionClick()}
+                    >
+                    <span>List home position</span>
+                    <span>→</span>
                 </div>
               </div>
             </div>

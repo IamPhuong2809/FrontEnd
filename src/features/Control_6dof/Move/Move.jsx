@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import './Move.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Control_6dof/Header/Header';
-import { handleInputChange } from '../../../utils/inputValidation';
-import { useCounter } from '../../../utils/counterUtils';
+import { handleInputChange } from '@utils/inputValidation';
+import { useCounter } from '@utils/counterUtils';
 
 const Move = () => {
     //#region Left Content Area

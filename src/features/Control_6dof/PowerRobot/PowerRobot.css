@@ -87,23 +87,13 @@
     border-radius: 4px;
     text-align: center;
     color: white;
+    background-color: #d3372c;
     height: 100%;
     font-size: calc(9px + max(1vh, 1vh));
+    transition: background-color 0.4s;
   }
 
-.powered {
-    background-color: #4CAF50;
-}
-
-.no-error {
-    background-color: #4CAF50;
-}
-
-.ready {
-    background-color: #4CAF50;
-}
-
-.on {
+.status-item.active {
     background-color: #4CAF50;
 }
 
@@ -124,7 +114,7 @@
 }
 
 .btn-abort {
-    background-color: #f44336;
+    background-color: #d3372c;
     margin-top: -10px;
 }
 
@@ -338,19 +328,26 @@
 }
 
 .home-position-grid {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
+    display: flex;
+    flex-direction: row;
     row-gap: 0px;
     align-items: center;
     height: 100%;
     justify-content: space-between;
 }
 
+.position-group-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 5px;
+    height: 100%;
+}
+
 .position-group {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0px;
+    gap: 10px;
     height: 100%;
 }
 
@@ -374,17 +371,21 @@
 
 .home-position-actions {
     display: flex;
+    flex-direction: column;
     height: 100%;
-    align-items: center;
+    padding: 10px 0;
+    gap: 30%;
 }
 
 .btn-default, .btn-save {
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 60%;
-    font-size: calc(5px + max(1vh, 1vh));
-
+    justify-content: center;
+    padding: 5px 15px;
+    width: 100%;
+    min-height: 30%;
+    max-height: 35%;
+    margin: 0px;
 }
 
 .home-list {

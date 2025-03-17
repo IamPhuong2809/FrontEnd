@@ -39,13 +39,13 @@ const Table = (props) => {
                     <div className="position-actions">
                         <button 
                             className="btn-use"
-                            onClick={() => handleUsePosition(position)}
+                            onClick={() => handleUsePosition(position.id)}
                         >
                             Use
                         </button>
                         <button 
                             className="btn-delete"
-                            onClick={() => handleDeletePosition(position)}
+                            onClick={() => handleDeletePosition(position.id)}
                         >
                             Delete
                         </button>
