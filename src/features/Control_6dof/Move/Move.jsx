@@ -6,6 +6,8 @@ import HeaderControl from '@components/Control_6dof/Header/Header';
 import { handleInputChange } from '@utils/inputValidation';
 import { useCounter } from '@utils/counterUtils';
 
+const url = "http://127.0.0.1:8000/api/"
+
 const Move = () => {
     //#region Left Content Area
     //#region Declaration variable left content
@@ -90,6 +92,8 @@ const Move = () => {
         [[-180, 180],[0, 180]],
     ]
 
+    const lastApiCallTime = useRef(0);
+    const [isHolding, setIsHolding] = useState(false);
     
     const {
         value: stepsize,
@@ -123,25 +127,54 @@ const Move = () => {
         setJointInput(newJointInput);
     }, [jointCounters.map(counter => counter.value).join(','), currentUnitShow]);
 
+    useEffect(() => {
+        sendJointUpdate();
+    }, [JointInput]);
+
     //#endregion
 
     //#region Increase and Decrease JogMode
     const handleJointIncrement = (index) => {
         jointCounters[index].handleMouseDown("increase");
+        setIsHolding(true);
     };
 
     const handleJointDecrement = (index) => {
         jointCounters[index].handleMouseDown("decrease");
+        setIsHolding(true);
     };
 
     const handleJointButtonRelease = (index) => {
         jointCounters[index].handleMouseUp();
+        setIsHolding(false);
     };
     //#endregion
 
     const[isBusy, setIsBusy] = useState(false);
     const[isActive, setIsActive] = useState(false);
     const[isError, setIsError] = useState(false);
+
+    //#endregion
+
+    //#region Backend
+    const sendJointUpdate = async () => {
+        try {
+            const jointValues = JointInput.map(joint => joint.value);
+            const response = await fetch(url + 'O0025/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    joint: jointValues,
+                    jogMode: activeJogButton,
+                    moveMode: activeMoveButton
+                })
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     //#endregion
 
