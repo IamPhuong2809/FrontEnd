@@ -1,24 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import './Move.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Control_6dof/Header/Header';
 import { handleInputChange } from '@utils/inputValidation';
 import { useCounter } from '@utils/counterUtils';
+import { useRobotData } from '@components/Control_6dof/RobotData';
 
 const url = "http://127.0.0.1:8000/api/"
 
 const Move = () => {
+    const navigate = useNavigate();
     //#region Left Content Area
     //#region Declaration variable left content
-    const [Tool, setTool] = useState(1);
-    const [statuses, setStatuses] = useState([
-        { label: 'S', isOn: false },
-        { label: 'I', isOn: false },
-        { label: 'AUX', isOn: false },
-    ]);
-    const [Override, setOverride] = useState(5);
-    const [WorkType, setWorkType] = useState(2);
 
     const[isJog, setIsJog] = useState(true);
     const [activeJogButton, setActiveJogButton] = useState('Work');
@@ -109,8 +104,8 @@ const Move = () => {
     
     // Tạo 6 counters riêng biệt cho 6 joint
     const jointCounters = [
-        useCounter(jointInputRead[1].value, [0, 180], stepsize, duration), //LimitRangeRobot[1][currentUnitShow]
-        useCounter(jointInputRead[0].value, [0, 180], stepsize, duration),
+        useCounter(jointInputRead[0].value, [0, 180], stepsize, duration), //LimitRangeRobot[1][currentUnitShow]
+        useCounter(jointInputRead[1].value, [0, 180], stepsize, duration),
         useCounter(jointInputRead[2].value, [0, 180], stepsize, duration),
         useCounter(jointInputRead[3].value, [0, 180], stepsize, duration),
         useCounter(jointInputRead[4].value, [0, 180], stepsize, duration),
@@ -131,6 +126,8 @@ const Move = () => {
         sendJointUpdate();
     }, [JointInput]);
 
+    const [isError, setIsError] = useState(false);
+
     //#endregion
 
     //#region Increase and Decrease JogMode
@@ -150,13 +147,20 @@ const Move = () => {
     };
     //#endregion
 
-    const[isBusy, setIsBusy] = useState(false);
-    const[isActive, setIsActive] = useState(false);
-    const[isError, setIsError] = useState(false);
-
     //#endregion
 
     //#region Backend
+    const handleEMG = async () => {
+        try {
+            const response = await fetch(url + "EMG/", {
+                method: 'GET'
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const sendJointUpdate = async () => {
         try {
             const jointValues = JointInput.map(joint => joint.value);
@@ -168,13 +172,70 @@ const Move = () => {
                 body: JSON.stringify({
                     joint: jointValues,
                     jogMode: activeJogButton,
-                    moveMode: activeMoveButton
+                    velocity: velocity,
+                    acceleration: acceleration
                 })
             });
         } catch (error) {
             console.error('Error:', error);
         }
     };
+
+    const handleReadActualPosition = async () => {
+        try {
+            const response = await fetch(url + "O0021/", {
+                method: 'GET',
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleMove= async () => {
+        try {
+            const jointInputs = JointInput.map(joint => parseFloat(joint.input));
+            const response = await fetch(url + 'O0022/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    joint: jointInputs,
+                    moveMode: activeMoveButton,
+                    velocity: velocity,
+                    acceleration: acceleration
+                })
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleAbort = async () => {
+        try {
+            const response = await fetch(url + "O0023/", {
+                method: 'GET'
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleMoveToHome = async () => {
+        try {
+            const response = await fetch(url + "O0024/", {
+                method: 'GET'   
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        console.log(robotData)
+    };
+
+    const { robotData, setRobotData} = useRobotData();
 
     //#endregion
 
@@ -188,19 +249,21 @@ const Move = () => {
                     <div className="info-controls">
                         <div className="tool-information">
                             <div className="indicator-container">
-                                {statuses.map((status, index) => (
-                                <div key={index}>
-                                    <span className={`indicator ${status.isOn ? 'green' : ''}`}>
-                                        {status.label}
-                                    </span>
-                                </div>
-                                ))}
+                                <span className={`indicator ${robotData.S ? 'green' : ''}`}>
+                                    S
+                                </span>
+                                <span className={`indicator ${robotData.I ? 'green' : ''}`}>
+                                    I
+                                </span>
+                                <span className={`indicator ${robotData.AUX ? 'green' : ''}`}>
+                                    AUX
+                                </span>
                             </div>
-                            <div className="override">Override: {Override} %</div>
+                            <div className="override">Override: {robotData.override} %</div>
                         </div>
                         <div className="display-container">
-                            <div className="tool-display">Tool: {Tool}</div>
-                            <div className="work-display">Work: {WorkType}</div>
+                            <div className="tool-display">Tool: {robotData.tool}</div>
+                            <div className="work-display">Work: {robotData.work}</div>
                         </div>
                         <div className="tool-buttons">
                             <button>HELP</button>
@@ -225,13 +288,13 @@ const Move = () => {
                                     Work
                                 </button>
                                 <button 
-                                className={`control-btn ${activeJogButton === 'Joint' ? 'active' : ''}`} 
+                                    className={`control-btn ${activeJogButton === 'Joint' ? 'active' : ''}`} 
                                     onClick={() => handleJogButtonClick('Joint')}
                                 >
                                     Joint
                                 </button>
                                 <button 
-                                className={`control-btn ${activeJogButton === 'Tool' ? 'active' : ''}`} 
+                                    className={`control-btn ${activeJogButton === 'Tool' ? 'active' : ''}`} 
                                     onClick={() => handleJogButtonClick('Tool')}
                                 >
                                     Tool
@@ -487,32 +550,58 @@ const Move = () => {
                                 </div>
                                 ) : (
                                 <div className="button-row">
-                                    <button className={`control-button-tall ${isJog ? '' : 'active'}`}>
-                                    Read Actual Position
+                                    <button 
+                                        className={`control-button-tall ${isJog ? '' : 'active'}`}
+                                        onClick={handleReadActualPosition}
+                                    >
+                                        Read Actual Position
                                     </button>
-                                    <button className={`control-button-tall ${isJog ? '' : 'active'}`}>
-                                    Move
+                                    <button 
+                                        className={`control-button-tall ${isJog ? '' : 'active'}`}
+                                        onClick={handleMove}
+                                    >
+                                        Move
                                     </button>
                                 </div>
                                 )}
                             </motion.div>
                             
                             <div className="button-row">
-                                <button className="control-button">Abort</button>
-                                <button className="control-button">Move to Home</button>
+                                <button 
+                                    className="control-button"
+                                    onClick={handleAbort}
+                                >
+                                    Abort
+                                </button>
+                                <button 
+                                    className="control-button"
+                                    onClick={handleMoveToHome}
+                                >
+                                    Move to Home
+                                </button>
                             </div>
                         </div>
                         
                         <div className="button-bottom">
                             <div className="info-row">
-                                <span className={`info-span ${isBusy ? 'busy' : ''}`}>BUSY</span>
-                                <span className={`info-span small ${isActive ? 'active' : ''}`}>ACTIVE</span>
-                                <span className={`info-span ${isError ? 'error' : ''}`}>ERROR</span>
+                                <span className={`info-span ${robotData.busy ? 'busy' : ''}`}>BUSY</span>
+                                <span className={`info-span small ${robotData.Power ? 'active' : ''}`}>ACTIVE</span>
+                                <span className={`info-span ${robotData.error  ? 'error' : ''}`}>ERROR</span>
                             </div>
                             <div className="button-row">
                                 <button className="control-button">Teach Position</button>
-                                <button className="control-button small">Back</button>
-                                <button className="control-button">Position List</button>
+                                <button 
+                                    className="control-button small"
+                                    onClick={() => navigate(-1)}
+                                >
+                                    Back
+                                </button>
+                                <button 
+                                    className="control-button"
+                                    onClick={() => navigate("/6dof/PositionList")}
+                                >
+                                    Position List
+                                </button>
                             </div>
                         </div>
                     </div>

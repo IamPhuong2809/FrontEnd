@@ -1,0 +1,44 @@
+import { createContext, useState, useContext, useEffect } from "react";
+
+const url = "http://127.0.0.1:8000/api/"
+
+const RobotContext = createContext();
+
+export const ReceiveRobotData = ({ children }) => {
+    const [robotData, setRobotData] = useState({
+        Power: false,
+        S: false,
+        I: false,
+        AUX: false,
+        busy: false,
+        error: false,
+        override: 5,
+        tool: 1,
+        work: 2,
+        positionCurrent: { x:0, y:0, z:0, rl:0, pt:0, yw:0 },
+        jointCurrent: {t1:0, t2:0, t3:0, t4:0, t5:0, t6:0}
+    });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(url + "I1001/"); // Gọi API
+                const data = await response.json();
+                setRobotData(data);
+            } catch (error) {
+                console.error("Error when receive data", error);
+            }
+        };
+
+        const interval = setInterval(fetchData, 200); // Gọi API mỗi 200ms
+        return () => clearInterval(interval); // Cleanup khi component unmount
+    }, []);
+
+    return (
+        <RobotContext.Provider value={{robotData, setRobotData}}>
+            {children}
+        </RobotContext.Provider>
+    );
+};
+
+export const useRobotData = () => useContext(RobotContext);

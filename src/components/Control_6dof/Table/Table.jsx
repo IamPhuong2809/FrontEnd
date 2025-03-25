@@ -12,6 +12,7 @@ const Table = (props) => {
     } = props;
 
     const [activePositionId, setActivePositionId] = useState(null);
+    console.log("1");
 
     const toggleCoordinates = (positionId) => {
         setActivePositionId(activePositionId === positionId ? null : positionId);

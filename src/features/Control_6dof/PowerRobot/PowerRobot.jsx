@@ -1,44 +1,44 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import HeaderControl from '@components/Control_6dof/Header/Header'
 import './PowerRobot.css'
 import Table from '@components/Control_6dof/Table/Table'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import { handleInputChange } from '@utils/inputValidation';
+import { useRobotData } from '@components/Control_6dof/RobotData'
 
 const url = "http://127.0.0.1:8000/api/"
 
 
 const PowerRobot = () => {
+    const { robotData, setRobotData} = useRobotData();
     const [showModal, setShowModal] = useState(false);
     const [powerRobot, setPowerRobot] = useState(false);
     const LimitRangeCartesian = [
         [0, 400], [0, 400], [0, 400], [0, 180], [0, 180], [0, 180]
     ];
-
-
     // Khai báo cho từng card
     //#region Card Power
     //#endregion
 
     //#region Card Axis
     const axisPositions = [
-        { joint: "J1", value: "-52.67°" },
-        { joint: "J2", value: "+10.44°" },
-        { joint: "J3", value: "+95.79°" },
-        { joint: "J4", value: "+0.00°" },
-        { joint: "J5", value: "+27.29°" },
-        { joint: "J6", value: "+8.01°" }
+        { joint: "J1", value: `${robotData.jointCurrent.t1.toFixed(2)}°`},
+        { joint: "J2", value: `${robotData.jointCurrent.t2.toFixed(2)}°`},
+        { joint: "J3", value: `${robotData.jointCurrent.t3.toFixed(2)}°`},
+        { joint: "J4", value: `${robotData.jointCurrent.t4.toFixed(2)}°`},
+        { joint: "J5", value: `${robotData.jointCurrent.t5.toFixed(2)}°`},
+        { joint: "J6", value: `${robotData.jointCurrent.t6.toFixed(2)}°`}
       ];
     //#endregion
 
     //#region Card Cartesian
     const cartesianPositions = [
-        { label: "X", value: "+170.08mm" },
-        { label: "Y", value: "-223.05mm" },
-        { label: "Z", value: "+433.70mm" },
-        { label: "Roll", value: "+177.64°" },
-        { label: "Pitch", value: "+16.31°" },
-        { label: "Yaw", value: "+118.98°" }
+      { label: "X", value: `${robotData.positionCurrent.x.toFixed(2)}mm` },
+      { label: "Y", value: `${robotData.positionCurrent.y.toFixed(2)}mm` },
+      { label: "Z", value: `${robotData.positionCurrent.z.toFixed(2)}mm` },
+      { label: "Roll", value: `${robotData.positionCurrent.rl.toFixed(2)}°` },
+      { label: "Pitch", value: `${robotData.positionCurrent.pt.toFixed(2)}°` },
+      { label: "Yaw", value: `${robotData.positionCurrent.yw.toFixed(2)}°` }
       ];
     //#endregion
 
@@ -52,6 +52,30 @@ const PowerRobot = () => {
     //#endregion
 
     //#region Card Parameter
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 1000); // Cập nhật mỗi giây
+  
+      return () => clearInterval(interval); // Cleanup interval khi component unmount
+    }, []);
+
+    const formatDateTime = (date) => {
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const dayOfWeek = days[date.getDay()]; // Lấy thứ (Sun, Mon, ...)
+      
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() trả về từ 0-11
+      const year = date.getFullYear();
+  
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+  
+      return `${dayOfWeek}, ${day}-${month}-${year}, ${hours}:${minutes}:${seconds}`;
+    };
     //#endregion
 
     //#region Card Home Position
@@ -70,51 +94,6 @@ const PowerRobot = () => {
         setHomePosition(defaultPosition);
     };
     //#endregion
-    
-    //#region Modal
-  // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
-  const savedPositions = [
-    {
-      id: 1,
-      name: "Home Position 1",
-      coordinates: {
-        X: 170.09, Y: -223.05, Z: 432.71,
-        Rl: 177.64, Pt: 16.31, Yw: 118.98
-      }
-    },
-    {
-      id: 2,
-      name: "Home Position 2",
-      coordinates: {
-        X: 180.00, Y: -220.00, Z: 430.00,
-        Rl: 175.00, Pt: 15.00, Yw: 120.00
-      }
-    }
-  ];
-
-  const handlePositionClick = () => {
-    setShowModal(true);
-  };
-
-  // Thêm Modal component vào phần render
-  const Modal = () => {
-    if (!showModal) return null;
-
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <Table 
-                    nameTitle="List Home Position"
-                    savedPositions={savedPositions}
-                    setShowModal={setShowModal}
-                    handleUsePosition={handleUsePosition}
-                    handleDeletePosition={handleDeletePosition}
-                />
-            </div>
-        </div>
-    );
-  };
-  //#endregion Modals
 
     //#region Backend
 
@@ -209,13 +188,53 @@ const PowerRobot = () => {
         }
     };
 
-    const [isError, setIsError] = useState(false);
-    const [isMove, setIsMove] = useState(false);
     const [isEE, setIsEE] = useState(false);
-    
-
     //#endregion 
 
+    //#region Modal
+    // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
+    const savedPositions =[
+      {
+        id: 1,
+        name: "Home Position 1",
+        coordinates: {
+          X: 170.09, Y: -223.05, Z: 432.71,
+          Rl: 177.64, Pt: 16.31, Yw: 118.98
+        }
+      },
+      {
+        id: 2,
+        name: "Home Position 2",
+        coordinates: {
+          X: 180.00, Y: -220.00, Z: 430.00,
+          Rl: 175.00, Pt: 15.00, Yw: 120.00
+        }
+      }
+    ];
+
+    const handlePositionClick = () => {
+      setShowModal(true);
+    };
+
+    // Thêm Modal component vào phần render
+    const Modal = useMemo(() => {
+      if (!showModal) return null;
+
+      return (
+          <div className="modal-overlay">
+              <div className="modal-content">
+                  <Table 
+                      nameTitle="List Home Position"
+                      savedPositions={savedPositions}
+                      setShowModal={setShowModal}
+                      handleUsePosition={handleUsePosition}
+                      handleDeletePosition={handleDeletePosition}
+                  />
+              </div>
+          </div>
+      );
+    }, [showModal, savedPositions]);
+    //#endregion Modals
 
   return (
     <div className="power-robot-container">
@@ -249,9 +268,15 @@ const PowerRobot = () => {
                 </div>
               </div>
               <div className='status-list'>
-                <div className={`status-item  ${powerRobot ? 'active' : ''}`}>Powered</div>
-                <div className={`status-item  ${isError ? 'active' : ''}`}>No Error</div>
-                <div className={`status-item  ${isMove ? 'active' : ''}`}>Robot is ready to move</div>
+                <div className={`status-item  ${robotData.Power ? 'active' : ''}`}>
+                  {robotData.Power ? 'Powered' : 'No Power'}
+                </div>
+                <div className={`status-item  ${robotData.error  ? 'active' : ''}`}>
+                  {robotData.error ? 'Please check error id' : 'Do not have error'}
+                </div>
+                <div className={`status-item  ${robotData.busy ? 'active' : ''}`}>
+                  {robotData.busy ? 'Robot is ready to move' : 'Robot is not ready to move'}  
+                </div>
                 <div className={`status-item  ${isEE ? 'active' : ''}`}>End-Effector ON</div>
                 <button className='btn-reset' onClick={handlePowerReset}>Reset</button>
                 <button className='btn-abort' onClick={handlePowerAbort}>Abort</button>
@@ -299,7 +324,7 @@ const PowerRobot = () => {
               <div className='parameters-list'>
                 <div className='parameter-row'>
                   <span>Data-time</span>
-                  <span>Thu, 00-00-0000, 00:00:00</span>
+                  <span>{formatDateTime(currentTime)}</span>
                 </div>
                 <div className='parameter-row'>
                   <span>Power Consumption</span>
@@ -353,7 +378,7 @@ const PowerRobot = () => {
             </div>
           </div>
         </div>        
-      <Modal />
+      {Modal}
     </div>
   )
 }
