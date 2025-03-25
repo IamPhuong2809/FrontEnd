@@ -141,14 +141,15 @@ const PowerRobot = () => {
         }
     };
 
-    const handleHomePositionSave = async (position) => {
+    const handleHomePositionSave = async () => {
         try {
+            const homeInputs = homePosition.map(homeInput => parseFloat(homeInput.input));
             const response = await fetch(url + "O0010/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(homePosition),
+                body: JSON.stringify(homeInputs),
             });
             // const data = await response.json();
         } catch (error) {

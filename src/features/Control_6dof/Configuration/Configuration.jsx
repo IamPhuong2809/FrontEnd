@@ -1,61 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Configuration.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar';
 import HeaderControl from '@components/Control_6dof/Header/Header';
 import Input from '@components/Control_6dof/Input/Input';
 
+const url = "http://127.0.0.1:8000/api/";
 
 const Configuration = () => {
 
-    //#region Request data
-    const Data_Requests = [
-        {   // Load 1
-            x: '10.00',
-            y: '20.00',
-            z: '30.00',
-            mass: '4.00',
-            jx: '50.00',
-            jxy: '60.00',   
-            jxz: '70.00',
-            jyx: '80.00',
-            jy: '90.00',
-            jyz: '0.00',
-            jzx: '0.00',
-            jzy: '0.00',
-            jz: '0.00'
-        },
-        {   // Load 2
-            x: '15.00',
-            y: '25.00',
-            z: '35.00',
-            mass: '5.00',
-            jx: '55.00',
-            jxy: '65.00',   
-            jxz: '75.00',
-            jyx: '85.00',
-            jy: '95.00',
-            jyz: '5.00',
-            jzx: '5.00',
-            jzy: '5.00',
-            jz: '5.00'
-        },
-        {   // Load 3
-            x: '20.00',
-            y: '30.00',
-            z: '40.00',
-            mass: '5.40',
-            jx: '60.00',
-            jxy: '70.00',   
-            jxz: '80.00',
-            jyx: '90.00',
-            jy: '100.00',
-            jyz: '10.00',
-            jzx: '10.00',
-            jzy: '10.00',
-            jz: '10.00'
+    const [activeTab, setActiveTab] = useState(0);
+    const [title, setTitle] = useState(null);
+    const [name, setName] = useState(null);
+    const [formData, setFormData] = useState(null);
+    const [loading, setLoading] = useState(true); 
+
+
+    const fetchLoadData = async (id) => {
+        try {
+            const response = await fetch(url + "O0005/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(id),
+            });
+            const data = await response.json();
+            setFormData(data.dataLoad);
+            setTitle(data.name);
+            setName(data.name[id]);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error:", error);
         }
-    ];
+    };
+
+    const handleWriteToRobot = async () => {
+        try {
+            const response = await fetch(url + "O0013/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    dataLoad: formData,
+                    nameLoad: name,
+                    id: activeTab
+                }),
+            });
+            // const data = await response.json();
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchLoadData(activeTab);
+    }, [activeTab]); 
 
     //#region Main Content
     const Data_default = {
@@ -73,7 +75,6 @@ const Configuration = () => {
         jzy: '0.00',
         jz: '0.00'
     }
-    const [formData, setFormData] = useState(Data_default);
     const handleReset = () => {
         setFormData(Data_default);
     };
@@ -85,11 +86,10 @@ const Configuration = () => {
         }));
     };
 
-    const title = ['Load 1', 'Load 2', 'Load 3'];
-    const [activeTab, setActiveTab] = useState(title[0]);
-    const [name, setName] = useState(title[0]);
-
-  //#endregion Main Content
+    //#endregion Main Content
+    if (loading || !title || !formData) {
+        return ;
+    }
 
   return (
     <div>
@@ -102,11 +102,10 @@ const Configuration = () => {
                 {title.map((tab, index) => (
                 <button
                     key={tab}
-                    className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+                    className={`tab-button ${activeTab === index ? 'active' : ''}`}
                     onClick={() => {
-                        setActiveTab(tab);
-                        setName(tab);
-                        setFormData(Data_Requests[index]);
+                        setActiveTab(index);
+                        setName(title[index]);
                     }}
                 >
                     {tab}
@@ -168,7 +167,7 @@ const Configuration = () => {
                     onClick={handleReset}
                     >Reset</button>
                     <button className="write-button"
-                    onClick={() => console.log(formData)}
+                    onClick={handleWriteToRobot}
                     >Write to Robot</button>
                 </div>
             </div>

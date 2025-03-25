@@ -3,9 +3,8 @@
     display: flex;
     flex-direction: column;
     background-color: transparent;
-    left: 110px;
-    top: 75px;
-    width: 91%;
+    margin: 75px 0 0 125px;
+    width: 90vw;
     height: 87vh;
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.3);
     overflow: hidden;
