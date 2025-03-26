@@ -27,8 +27,8 @@ const Configuration = () => {
             });
             const data = await response.json();
             setFormData(data.dataLoad);
-            setTitle(data.name);
-            setName(data.name[id]);
+            setTitle(data.nameLoad);
+            setName(data.nameLoad[id]);
             setLoading(false);
         } catch (error) {
             console.error("Error:", error);
@@ -48,7 +48,7 @@ const Configuration = () => {
                     id: activeTab
                 }),
             });
-            // const data = await response.json();
+            fetchLoadData(activeTab);
         } catch (error) {
             console.error("Error:", error);
         }

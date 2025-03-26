@@ -232,7 +232,6 @@ const Move = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-        console.log(robotData)
     };
 
     const { robotData, setRobotData} = useRobotData();
