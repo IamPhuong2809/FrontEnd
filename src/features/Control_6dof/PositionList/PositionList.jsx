@@ -167,7 +167,7 @@ const PositionList = () => {
                             <div className="position-header">Desired Position:</div>
                                 <div className="position-data">
                                 {desiredPosition.map((item, index) => (
-                                    <div className="position-row" key={index}>
+                                    <div className="position-row" key={item.label}>
                                         <div className="position-label">{item.label}</div>
                                         <div className="position-value">{item.value}</div>
                                     </div>
@@ -181,7 +181,7 @@ const PositionList = () => {
                         <div className="position-data">
                             {currentPosition.map((item, index) => (
                                 <div className="position-data">
-                                    <div className="position-row" key={index}>
+                                    <div className="position-row" key={item.label}>
                                         <div className="position-label">{item.label}</div>
                                         <div className="position-value">{item.value}</div>
                                     </div>
