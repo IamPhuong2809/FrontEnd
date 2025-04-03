@@ -23,8 +23,6 @@ const PositionList = () => {
         { id: 12, name: 'type_a_name' },
         { id: 13, name: 'type_a_name' },
         { id: 14, name: 'type_a_name' },
-        { id: 15, name: 'type_a_name' },
-        { id: 16, name: 'type_a_name' },
         ];
 	//#endregion
 

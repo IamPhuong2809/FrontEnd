@@ -6,6 +6,7 @@ import deleteItem from '@images/deleteItem.png'
 import addItem from '@images/addItem.png'
 import copyItem from '@images/copyItem.png'
 import Rename from '@components/Rename/Rename'
+import ConfirmDelete from '@components/ConfirmDelete/ConfirmDelete'
 
 const List = (props) => {
     const { 
@@ -25,6 +26,8 @@ const List = (props) => {
     const [itemsList, setItemsList] = useState([...items]);
     const [hoveredItemId, setHoveredItemId] = useState(null);
     const [draggedItem, setDraggedItem] = useState(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     const ItemSelect = (item) => {
         if (SelectedItem && SelectedItem.id === item.id) {
@@ -52,7 +55,7 @@ const List = (props) => {
 
     const handleRenameConfirm = (newName) => {
         if (renameMode === 'add') {
-            const newId = itemsList.length > 0 ? Math.max(...itemsList.map(i => i.id)) + 1 : 1;
+            const newId = Math.max(...itemsList.map(i => i.id)) + 1;
             const newItem = {
                 id: newId,
                 name: newName
@@ -68,6 +71,25 @@ const List = (props) => {
         setShowRename(false);
     };
 
+    const handleDeleteClick = (item, e) => {
+        e.stopPropagation();
+        setItemToDelete(item);
+        setDeleteDialogOpen(true);
+    };
+    
+    const handleConfirmDelete = () => {
+        let updatedItems = itemsList.filter(item => item.id !== itemToDelete.id);
+        updatedItems = updatedItems.map((item, index) => ({
+            ...item,
+            id: index + 1
+        }));
+        setItemsList(updatedItems);
+        setDeleteDialogOpen(false);
+        
+        if (SelectedItem?.id === itemToDelete.id) {
+            handleDetailClose();
+        }
+    };
     // Drag and drop handlers
     const handleDragStart = (e, item) => {
         e.stopPropagation();
@@ -149,7 +171,7 @@ const List = (props) => {
                             {shouldShowActions(item.id) && (
                                 <div className="item-actions">
                                     <div className="action-button-wrapper">
-                                        <div className="tooltip">Rename</div>
+                                        <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Rename</div>
                                         <img 
                                             src={renameItem} 
                                             alt="Rename" 
@@ -161,15 +183,20 @@ const List = (props) => {
                                         />
                                     </div>
                                     <div className="action-button-wrapper">
-                                        <div className="tooltip">Copy</div>
+                                        <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Copy</div>
                                         <img src={copyItem} alt="Copy" className="action-button" />
                                     </div>
                                     <div className="action-button-wrapper">
-                                        <div className="tooltip">Delete</div>
-                                        <img src={deleteItem} alt="Delete" className="action-button" />
+                                        <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Delete</div>
+                                        <img 
+                                            src={deleteItem} 
+                                            alt="Delete" 
+                                            className="action-button" 
+                                            onClick={(e) => handleDeleteClick(item, e)}
+                                        />
                                     </div>
                                     <div className="action-button-wrapper">
-                                        <div className="tooltip">Add</div>
+                                        <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Add</div>
                                         <img 
                                             src={addItem} 
                                             alt="Add" 
@@ -184,9 +211,9 @@ const List = (props) => {
                             )}
                         </div>
                     ))}
-                    <div className="scroll-button" style={{width: width}}>
+                </div>
+                <div className="scroll-button" style={{width: width}}>
                         <span>▼</span>
-                    </div>
                 </div>
             </div>
 
@@ -199,6 +226,13 @@ const List = (props) => {
                     onConfirm={handleRenameConfirm}
                 />
             )}
+
+            <ConfirmDelete
+                isOpen={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                onConfirm={handleConfirmDelete}
+                itemName={itemToDelete?.name}
+            />
         </div>
     )
 }
