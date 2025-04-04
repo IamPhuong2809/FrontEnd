@@ -1,0 +1,225 @@
+ /* Point Detail Styles */
+.point-detail-position {
+    position: relative;
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    z-index: 1;
+}
+
+
+.point-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #d0e1ec;
+    color: #628491;
+    border: 2px solid #628491;
+    height: 40px;
+    width: calc(100% + 1px);
+    margin-left: -1px;
+    border-top-right-radius: 0px;
+}
+  
+.point-detail-title {
+    font-weight: bold;
+}
+  
+.close-button {
+    background: none;
+    color: #006991;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 25px;
+    padding-right: 0px;
+}
+
+.close-button:hover {
+    color: rgb(206, 5, 5);
+}
+
+/* Move to Point Styles */
+.move-to-point-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 40px);
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    background-color: #dadce0;
+    display: flex;
+    flex-direction: column;
+    border-bottom-right-radius: 5px;
+}
+  
+.dialog-header {
+    background-color: #006991;
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+}
+
+.note-header {
+    font-weight: 600;
+    padding: 10px 10px;
+}
+
+.dialog-content {
+    display: flex;
+    padding: 0px 10px 0px 5px;
+    flex-direction: row;
+    gap: 10px;
+    border-radius: 10px;
+}
+  
+.note-section {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+}
+  
+.option-spans {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    margin: 10px 0 0 10px;
+}
+
+.option-span-top {
+    display: flex;
+    gap: 5px;
+}
+
+.option-span-bottom {
+    display: flex;
+    gap: 5px;
+}
+.option-span {
+    display: flex;
+    background-color: white;
+    border: 2px solid #8d8c8c;
+    font-size: 14px;
+    font-weight: 600;
+    width: 95px;
+    height: 30px;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-span.busy.on {
+    color: rgb(202, 183, 14);
+    border-color: rgb(202, 183, 14);
+}
+
+.option-span.active.on {
+    color: green;
+    border-color: green;
+}
+
+.option-span.error.on {
+    color: rgb(187, 4, 4);
+    border-color: rgb(187, 4, 4);
+}
+  
+.option-span.done.on {
+    color: rgb(33, 109, 209);
+    border-color: rgb(33, 109, 209);
+}
+
+.option-span.abort.on {
+    color: orange;
+    border-color: orange;
+}
+  
+.error-text {
+    font-size: 16px;
+    margin-top: 10px;
+    color: #666;
+    margin-left: 10px;
+    height: 70px;
+    max-height: 70px;
+    text-overflow: ellipsis; /* Thêm dấu ba chấm */
+    max-width: 300px;
+    word-wrap: break-word;
+}
+  
+.position-section-desired {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+}
+  
+.position-section-desired  .position-header {
+    font-weight: bold;
+    margin-bottom: 8px;
+    margin: 10px 0 0 10px;
+}
+  
+.position-section-desired .position-data {
+    margin-left: 5px;
+}
+  
+.position-section-desired  .position-row {
+    display: flex;
+    margin-bottom: 5px;
+    width: 90%;
+    margin-left: 5px;
+    padding: 5px 5px 5px 10px;
+    border-radius: 5px;
+    gap: 5px;
+    background-color: rgb(199, 195, 195);
+}
+  
+.position-section-desired .position-label {
+    width: 30px;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+  
+.position-value {
+    display: flex;
+    flex: 1;
+    margin-left: 10px;
+    font-size: 0.85rem;
+    align-items: center;
+}
+
+  
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-top: 10px;
+}
+
+.move-button, .abort-button {
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 5px;
+    margin: 10px 10px 0px 10px;
+    padding-bottom: 10px;
+}
+  
+.move-button {
+    background-color: #01719e;
+}
+  
+.move-button:hover {
+    background-color: #00587a;
+}
+
+  
+.abort-button {
+    background-color: #d9534f;
+}
+  
+.abort-button:hover {
+    background-color: #c9302c;
+}

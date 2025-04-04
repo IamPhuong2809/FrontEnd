@@ -32,7 +32,7 @@ export const ReceiveRobotData = ({ children }) => {
             }
         };
 
-        const interval = setInterval(fetchData, 200); // Gọi API mỗi 200ms
+        const interval = setInterval(fetchData, 330); // Gọi API mỗi 330ms
         return () => clearInterval(interval); // Cleanup khi component unmount
     }, []);
 
