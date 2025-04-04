@@ -35,31 +35,6 @@
     z-index: 1;
 }
 
-.point-detail-position.slide-in {
-    animation: slideIn 0.8s ease-in-out forwards;
-}
-
-.point-detail-position.slide-out {
-    animation: slideOut 0.8s ease-in-out forwards;
-}
-
-@keyframes slideIn {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideOut {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
-}
 
 .point-detail-header {
     display: flex;
@@ -151,19 +126,40 @@
 .option-span {
     display: flex;
     background-color: white;
-    border: 1px solid #8d8c8c;
+    border: 2px solid #8d8c8c;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
     width: 95px;
     height: 30px;
     border-radius: 5px;
     align-items: center;
     justify-content: center;
 }
+
+.option-span.busy.on {
+    color: rgb(202, 183, 14);
+    border-color: rgb(202, 183, 14);
+}
+
+.option-span.active.on {
+    color: green;
+    border-color: green;
+}
+
+.option-span.error.on {
+    color: rgb(187, 4, 4);
+    border-color: rgb(187, 4, 4);
+}
   
-.option-span.active {
-    background-color: #ddd;
-    border-color: #999;
+.option-span.done.on {
+    color: rgb(33, 109, 209);
+    border-color: rgb(33, 109, 209);
+}
+
+.option-span.abort.on {
+    color: orange;
+    border-color: orange;
 }
   
 .error-text {
@@ -279,15 +275,17 @@
     border-radius: 5px;
     margin: 10px 10px 0px 10px;
     padding-bottom: 10px;
+    transform: scale(1) !important;
 }
   
 .move-button {
-    background-color: #006991;
+    background-color: #01719e;
 }
   
 .move-button:hover {
     background-color: #00587a;
 }
+
   
 .abort-button {
     background-color: #d9534f;

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import './PositionList.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Control_6dof/Header/Header'
@@ -32,31 +32,27 @@ const PositionList = () => {
 
     //#region Popup Screen
     const [selectedPoint, setSelectedPoint] = useState(null);
-    const [isClosing, setIsClosing] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     
     const handleDetailClose = () => {
-        setIsClosing(true);
-        setTimeout(() => {
-            setIsDetailOpen(false);
-            setSelectedPoint(null);
-            setIsClosing(false);
-        }, 800);
+        setIsDetailOpen(false);
+        setSelectedPoint(null);
     };
 
     const handlePointSelect = (point) => {
-        if(isDetailOpen) {
-            handleDetailClose();
-            setTimeout(() => {
-                setSelectedPoint(point);
-                setIsDetailOpen(true);
-            }, 800);
-        }
-        else {
-            setSelectedPoint(point);
-            setIsDetailOpen(true);
-        }
+        setSelectedPoint(point);
+        setIsDetailOpen(true);
     };
+
+    const currentPosition = [
+        { label: "X", value: `${robotData.positionCurrent.x.toFixed(2)}mm` },
+        { label: "Y", value: `${robotData.positionCurrent.y.toFixed(2)}mm` },
+        { label: "Z", value: `${robotData.positionCurrent.z.toFixed(2)}mm` },
+        { label:"Tool", value: `${robotData.tool}`},
+        { label: "Roll", value: `${robotData.positionCurrent.rl.toFixed(2)}°` },
+        { label: "Pitch", value: `${robotData.positionCurrent.pt.toFixed(2)}°` },
+        { label: "Yaw", value: `${robotData.positionCurrent.yw.toFixed(2)}°` },
+    ]
 
     const desiredPosition = [
         { label: 'X', value: '-57.54mm' },
@@ -68,29 +64,7 @@ const PositionList = () => {
         { label: 'FIG', value: '5' }
     ];
 
-    const CurrentPositionDisplay = ({ robotData })=> {
-        return (
-          <div className="position-data">
-            {[
-                { label: "X", value: `${robotData.positionCurrent.x.toFixed(2)}mm` },
-                { label: "Y", value: `${robotData.positionCurrent.y.toFixed(2)}mm` },
-                { label: "Z", value: `${robotData.positionCurrent.z.toFixed(2)}mm` },
-                { label: "Roll", value: `${robotData.positionCurrent.rl.toFixed(2)}°` },
-                { label: "Pitch", value: `${robotData.positionCurrent.pt.toFixed(2)}°` },
-                { label: "Yaw", value: `${robotData.positionCurrent.yw.toFixed(2)}°` }
-            ].map((item) => (
-                <div className="position-data" key={item.label}>
-                    <div className="position-row">
-                        <div className="position-label">{item.label}</div>
-                        <div className="position-value">{item.value}</div>
-                    </div>
-                </div>
-            ))}
-          </div>
-        );
-    };
-
-    const PopupScreen = useMemo(() => {
+    const PopupScreen = () => {
         
         if (!selectedPoint) return null;
 
@@ -102,8 +76,8 @@ const PositionList = () => {
             console.log("abort");
         };
 
-        return () => (
-            <div className={`point-detail-position ${isClosing ? 'slide-out' : 'slide-in'}`}>
+        return (
+            <div className='point-detail-position'>
                 <div className="point-detail-header">
                     <div className="point-detail-title">[Point {selectedPoint.id}] "{selectedPoint.name}"</div>
                     <button className="close-button" onClick={handleDetailClose}>✕</button>
@@ -122,29 +96,29 @@ const PositionList = () => {
                             <div className="option-spans">
                                 <div className="option-span-top">
                                     <span
-                                    className={`option-span ${robotData.Power === 'ACTIVE' ? 'active' : ''}`}
+                                    className={`option-span busy ${robotData.busy ? 'on' : ''}`}
                                     >
                                     BUSY
                                     </span>
                                     <span 
-                                    className={`option-span ${robotData.Power === 'APPROXH' ? 'active' : ''}`}
+                                    className={`option-span active ${robotData.Power ? 'on' : ''}`}
                                     >
                                     ACTIVE
                                     </span>
                                     <span 
-                                    className={`option-span ${robotData.Power === 'LINGER' ? 'active' : ''}`}
+                                    className={`option-span error ${robotData.error ? 'on' : ''}`}
                                     >
                                     ERROR
                                     </span>
                                 </div>
                                 <div className="option-span-bottom">
                                     <span 
-                                    className={`option-span ${robotData.Power === 'DONE' ? 'active' : ''}`}
+                                    className={`option-span done ${!robotData.busy ? 'on' : ''}`}
                                     >
                                     DONE
                                     </span>
                                     <span 
-                                    className={`option-span ${robotData.Power === 'ABORTED' ? 'active' : ''}`}
+                                    className={`option-span abort ${robotData.abort ? 'on' : ''}`}
                                     >
                                     ABORTED
                                     </span>
@@ -168,24 +142,55 @@ const PositionList = () => {
                         <div className="position-section-desired">
                             <div className="position-header">Desired Position:</div>
                                 <div className="position-data">
-                                {desiredPosition.map((item, index) => (
+                                {desiredPosition.map((item) => (
                                     <div className="position-row" key={item.label}>
                                         <div className="position-label">{item.label}</div>
                                         <div className="position-value">{item.value}</div>
                                     </div>
                                 ))}
-                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div className="position-section-current">
                         <div className="position-header">Current Position:</div>
-                        <CurrentPositionDisplay robotData={robotData} />
+                        <div className="position-data">
+                            {currentPosition.map((item) => (
+                                <div className="position-data" key={item.label}>
+                                    <div className="position-row" >
+                                        <div className="position-label">{item.label}</div>
+                                        <div className="position-value">{item.value}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
         );
-    }, [isDetailOpen, selectedPoint, isClosing, robotData.Power]);
+    };
+    //#endregion
+
+    //#region Backend
+    const handleMove = async () => {
+        try {
+            fetch(url + "O0014/", {
+                method: 'GET',
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleAbort = async () => {
+        try {
+            fetch(url + "O0015/", {
+                method: 'GET',
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
     //#endregion
 
     return (
@@ -206,8 +211,8 @@ const PositionList = () => {
                 />
 
                 {isDetailOpen && PopupScreen && (
-                            <PopupScreen />
-                        )}
+                    <PopupScreen key={selectedPoint?.id || 'default'} />
+                )}
             </div>
         </div>
     </div>

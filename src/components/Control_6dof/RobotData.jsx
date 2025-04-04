@@ -13,6 +13,7 @@ export const ReceiveRobotData = ({ children }) => {
         busy: false,
         error: false,
         ee:false,
+        abort:false,
         override: 0,
         tool: 0,
         work: 0,

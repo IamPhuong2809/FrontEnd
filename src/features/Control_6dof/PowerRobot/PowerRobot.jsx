@@ -10,7 +10,7 @@ const url = "http://127.0.0.1:8000/api/"
 
 
 const PowerRobot = () => {
-    const { robotData, setRobotData} = useRobotData();
+    const { robotData} = useRobotData();
     const [showModal, setShowModal] = useState(false);
     const [powerRobot, setPowerRobot] = useState(false);
     const LimitRangeCartesian = [
@@ -99,10 +99,9 @@ const PowerRobot = () => {
 
     const handlePowerOff = async () => {
         try {
-            const response = await fetch(url + "O0000/", {
+            fetch(url + "O0000/", {
                 method: 'GET',
             });
-            // const data = await response.json();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -110,10 +109,9 @@ const PowerRobot = () => {
 
     const handlePowerOn = async () => {
         try {
-            const response = await fetch(url + "O0001/", {
+            fetch(url + "O0001/", {
                 method: 'GET',
             });
-            // const data = await response.json();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -121,10 +119,9 @@ const PowerRobot = () => {
 
     const handlePowerReset = async () => {
         try {
-            const response = await fetch(url + "O0002/", {
+            fetch(url + "O0002/", {
                 method: 'GET',
             });
-            // const data = await response.json();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -132,10 +129,9 @@ const PowerRobot = () => {
 
     const handlePowerAbort = async () => {
         try {
-            const response = await fetch(url + "O0003/", {
+            fetch(url + "O0003/", {
                 method: 'GET',
             });
-            // const data = await response.json();
         } catch (error) {
             console.error('Error:', error);
         }
@@ -144,14 +140,13 @@ const PowerRobot = () => {
     const handleHomePositionSave = async () => {
         try {
             const homeInputs = homePosition.map(homeInput => parseFloat(homeInput.input));
-            const response = await fetch(url + "O0010/", {
+            fetch(url + "O0010/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(homeInputs),
             });
-            // const data = await response.json();
         } catch (error) {
             console.error('Error:', error);
         }
