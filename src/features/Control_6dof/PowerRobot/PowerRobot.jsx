@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import HeaderControl from '@components/Control_6dof/Header/Header'
 import './PowerRobot.css'
 import Table from '@components/Control_6dof/Table/Table'
@@ -188,12 +188,19 @@ const PowerRobot = () => {
             console.error('Error:', error);
         }
     };
-
-    const [isEE, setIsEE] = useState(false);
     //#endregion 
 
     //#region Modal
-    // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
+
+    const handlePositionClick = () => {
+      setShowModal(true);
+    };
+
+    // Thêm Modal component vào phần render
+    const Modal = useMemo(() => {
+      if (!showModal) return null;
+
+          // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
     const savedPositions =[
       {
         id: 1,
@@ -213,14 +220,6 @@ const PowerRobot = () => {
       }
     ];
 
-    const handlePositionClick = () => {
-      setShowModal(true);
-    };
-
-    // Thêm Modal component vào phần render
-    const Modal = useMemo(() => {
-      if (!showModal) return null;
-
       return (
           <div className="modal-overlay">
               <div className="modal-content">
@@ -234,7 +233,7 @@ const PowerRobot = () => {
               </div>
           </div>
       );
-    }, [showModal, savedPositions]);
+    }, [showModal]);
     //#endregion Modals
 
   return (
@@ -278,7 +277,7 @@ const PowerRobot = () => {
                 <div className={`status-item  ${robotData.busy ? 'active' : ''}`}>
                   {robotData.busy ? 'Robot is ready to move' : 'Robot is not ready to move'}  
                 </div>
-                <div className={`status-item  ${isEE ? 'active' : ''}`}>End-Effector ON</div>
+                <div className={`status-item  ${robotData.ee ? 'active' : ''}`}>End-Effector ON</div>
                 <button className='btn-reset' onClick={handlePowerReset}>Reset</button>
                 <button className='btn-abort' onClick={handlePowerAbort}>Abort</button>
               </div>

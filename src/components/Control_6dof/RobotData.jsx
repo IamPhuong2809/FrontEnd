@@ -8,10 +8,11 @@ export const ReceiveRobotData = ({ children }) => {
     const [robotData, setRobotData] = useState({
         Power: false,
         S: false,
-        I: false,
+        I: true,
         AUX: false,
         busy: false,
         error: false,
+        ee:false,
         override: 0,
         tool: 0,
         work: 0,

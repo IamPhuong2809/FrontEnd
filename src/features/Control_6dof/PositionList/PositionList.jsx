@@ -1,11 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import './PositionList.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Control_6dof/Header/Header'
 import List from '@components/Control_6dof/List/List'
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
+import { useRobotData } from '@components/Control_6dof/RobotData'
+const url = "http://127.0.0.1:8000/api/"
 
 const PositionList = () => {
+
+    const { robotData, setRobotData} = useRobotData(); 
 
 	//#region List of Points
     const points =[
@@ -27,9 +31,9 @@ const PositionList = () => {
 	//#endregion
 
     //#region Popup Screen
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedPoint, setSelectedPoint] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
     
     const handleDetailClose = () => {
         setIsClosing(true);
@@ -64,36 +68,41 @@ const PositionList = () => {
         { label: 'FIG', value: '5' }
     ];
 
-    const currentPosition = [
-        { label: 'X', value: '-57.54mm' },
-        { label: 'Y', value: '210.00mm' },
-        { label: 'Z', value: '463.14mm' },
-        { label: 'FIG', value: '5' },
-        { label: 'RX', value: '180.00°' },
-        { label: 'RY', value: '0.00°' },
-        { label: 'RZ', value: '-81.49°' },
-    ];
-
-    const PopupScreen = () => {
-        //#region Detail of Point
-        const [activeOption, setActiveOption] = useState('ACTIVE');
-
-        const handleOptionChange = (option) => {
-        setActiveOption(option);
-        };
-        
-        const handleMoveToPoint = () => {
-        console.log('Moving to point...');
-        // Implement actual move functionality here
-        };
-        
-        const handleAbort = () => {
-        console.log('Movement aborted');
-        // Implement abort functionality here
-        };
-        //#endregion
-
+    const CurrentPositionDisplay = ({ robotData })=> {
         return (
+          <div className="position-data">
+            {[
+                { label: "X", value: `${robotData.positionCurrent.x.toFixed(2)}mm` },
+                { label: "Y", value: `${robotData.positionCurrent.y.toFixed(2)}mm` },
+                { label: "Z", value: `${robotData.positionCurrent.z.toFixed(2)}mm` },
+                { label: "Roll", value: `${robotData.positionCurrent.rl.toFixed(2)}°` },
+                { label: "Pitch", value: `${robotData.positionCurrent.pt.toFixed(2)}°` },
+                { label: "Yaw", value: `${robotData.positionCurrent.yw.toFixed(2)}°` }
+            ].map((item) => (
+                <div className="position-data" key={item.label}>
+                    <div className="position-row">
+                        <div className="position-label">{item.label}</div>
+                        <div className="position-value">{item.value}</div>
+                    </div>
+                </div>
+            ))}
+          </div>
+        );
+    };
+
+    const PopupScreen = useMemo(() => {
+        
+        if (!selectedPoint) return null;
+
+        const handleMoveToPoint = () => {
+            console.log("move");
+        };
+
+        const handleAbort = () => {
+            console.log("abort");
+        };
+
+        return () => (
             <div className={`point-detail-position ${isClosing ? 'slide-out' : 'slide-in'}`}>
                 <div className="point-detail-header">
                     <div className="point-detail-title">[Point {selectedPoint.id}] "{selectedPoint.name}"</div>
@@ -113,34 +122,29 @@ const PositionList = () => {
                             <div className="option-spans">
                                 <div className="option-span-top">
                                     <span
-                                    className={`option-span ${activeOption === 'ACTIVE' ? 'active' : ''}`}
-                                    onClick={() => handleOptionChange('ACTIVE')}
+                                    className={`option-span ${robotData.Power === 'ACTIVE' ? 'active' : ''}`}
                                     >
                                     BUSY
                                     </span>
                                     <span 
-                                    className={`option-span ${activeOption === 'APPROXH' ? 'active' : ''}`}
-                                    onClick={() => handleOptionChange('APPROXH')}
+                                    className={`option-span ${robotData.Power === 'APPROXH' ? 'active' : ''}`}
                                     >
                                     ACTIVE
                                     </span>
                                     <span 
-                                    className={`option-span ${activeOption === 'LINGER' ? 'active' : ''}`}
-                                    onClick={() => handleOptionChange('LINGER')}
+                                    className={`option-span ${robotData.Power === 'LINGER' ? 'active' : ''}`}
                                     >
                                     ERROR
                                     </span>
                                 </div>
                                 <div className="option-span-bottom">
                                     <span 
-                                    className={`option-span ${activeOption === 'DONE' ? 'active' : ''}`}
-                                    onClick={() => handleOptionChange('DONE')}
+                                    className={`option-span ${robotData.Power === 'DONE' ? 'active' : ''}`}
                                     >
                                     DONE
                                     </span>
                                     <span 
-                                    className={`option-span ${activeOption === 'ABORTED' ? 'active' : ''}`}
-                                    onClick={() => handleOptionChange('ABORTED')}
+                                    className={`option-span ${robotData.Power === 'ABORTED' ? 'active' : ''}`}
                                     >
                                     ABORTED
                                     </span>
@@ -176,21 +180,12 @@ const PositionList = () => {
 
                     <div className="position-section-current">
                         <div className="position-header">Current Position:</div>
-                        <div className="position-data">
-                            {currentPosition.map((item, index) => (
-                                <div className="position-data">
-                                    <div className="position-row" key={item.label}>
-                                        <div className="position-label">{item.label}</div>
-                                        <div className="position-value">{item.value}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <CurrentPositionDisplay robotData={robotData} />
                     </div>
                 </div>
             </div>
         );
-    };
+    }, [isDetailOpen, selectedPoint, isClosing, robotData.Power]);
     //#endregion
 
     return (
