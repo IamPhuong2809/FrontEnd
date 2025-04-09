@@ -1,0 +1,186 @@
+/* Points List Styles */
+.points-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 78vh;
+  border-right: 1px solid #ccc;
+  background-color: white;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  position: relative;
+  z-index: 2;
+}
+
+.points-header {
+  display: flex;
+  background-color: #263339;
+  border-bottom: 1px solid #ccc;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+}
+
+.point-header-title span {
+  display: flex;
+  color: #e6e6e6;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 3px 0 0 15px;
+}
+
+.point-header-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 100%;
+  gap: 15px;
+  padding: 5px 10px 5px 0px;
+}
+
+.button-delete {
+  transition: scale 0.3s ease-in-out;
+}
+
+.button-delete:hover {
+  scale: 1.1;
+}
+
+.points-header-no {
+  width: 40px;
+  padding-left: 10px;
+}
+
+.points-header-name {
+  flex-grow: 1;
+}
+
+.points-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 68vh;
+  overflow-y: scroll;
+}
+
+.point-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  position: relative; /* Để định vị các action button */
+  transition: 0.3s ease-in-out;
+}
+
+.point-item:hover {
+  background-color: #f8f8f8;
+  z-index: 2;
+}
+
+.point-item.selected {
+  background-color: #e6f7ff;
+  z-index: 1;
+}
+
+.point-no {
+  width: 40px;
+  transition: 0.3s ease-in-out;
+  text-align: center;
+}
+
+.point-name {
+  flex-grow: 1;
+  padding-left: 5px;
+}
+
+/* Styles cho action buttons */
+.item-actions {
+    display: flex;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 10px;
+    z-index: 1;
+}
+  
+.action-button-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  
+.action-button {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: scale 0.2s ease-in-out;
+}
+  
+.action-button:hover {
+    scale: 1.2;
+}
+  
+  /* Tooltip styles */
+.action-button-wrapper .tooltip {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 8px 4px;
+    border-radius: 4px;
+    font-size: 15px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    clip-path: none;
+    height: 20px;
+}
+
+.action-button-wrapper img{
+  z-index: 10;
+}
+
+.tooltip.above {
+    top: -30px;
+    left: 0;
+    transform: translateX(-50%);
+}
+  
+.tooltip.below {
+    top: 30px;
+    left: 0;
+    transform: translateX(-50%);
+}
+  
+.action-button-wrapper:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scroll-button {
+    position: absolute;
+    width: 30vw;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-top: 1px solid #ccc;
+    height: 30px;
+}
+
+.scroll-button span {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,137 @@
+.teach-path-robot-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(155, 152, 152);
+    margin: 75px 0 0 125px;
+    width: 90vw;
+    height: 87vh;
+    border-radius: 5px;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.teach-management {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: #c4c7cd;
+    margin: 5px 0 0 0px;
+    width: 90vw;
+    height: 100%;
+    border-radius: 5px;
+    box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* Để PopupScreen hiển thị đúng cách */
+.teach-management > div:first-child {
+    z-index: 3;
+}
+
+.detail-screen {
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+ /* Point Detail Styles */
+ .point-detail-teachpath {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    z-index: 1;
+}
+
+.point-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #d0e1ec;
+    color: #628491;
+    border: 2px solid #628491;
+    height: 40px;
+    width: calc(100% + 1px);
+    margin-left: -1px;
+    border-top-right-radius: 5px;
+}
+  
+.point-detail-title {
+    font-weight: bold;
+}
+  
+.close-button {
+    background: none;
+    color: #006991;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 25px;
+    padding-right: 0px;
+}
+
+.close-button:hover {
+    color: rgb(206, 5, 5);
+}
+
+
+/*Position*/
+.coordinates-container {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    width: fit-content; 
+    font-family: sans-serif; 
+    padding: 10px 10px 0 10px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+  
+.coordinates-row {
+    display: flex;
+    gap: 5px;
+}
+
+.coordinates-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 9.3vw;
+    padding: 8px;
+    background-color: white;
+}
+  
+.coordinate-label {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #444;
+}
+  
+.coordinate-value-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid black;
+    margin: 0px;
+    padding: 3px 0 0px 0;
+    width: 100%;
+    height: 30px;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #222;
+}
+  
+.coordinate-value-input {
+    font-size: 0.85rem;
+    color: #777;
+    width: 100%;
+    height: 30px;
+}
+  

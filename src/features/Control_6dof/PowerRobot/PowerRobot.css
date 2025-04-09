@@ -1,0 +1,417 @@
+
+/* Thêm class mới bao bọc toàn bộ component Control_6dof */
+.power-robot-container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.control-panel {
+    position: relative;
+    left: 100px;
+    display: grid;
+    grid-template-columns: 21% 71%; /* Tạo 3 cột: khoảng trống trái (7%), cột nhỏ (21%), cột lớn (72%) */
+    gap: 15px;
+    padding: 15px;
+    margin-top: 60px;
+}
+
+.control-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Power Section Styles */
+.power-section {
+    width: 100%;
+    overflow: hidden;
+    padding-top: 10px;
+}
+.power-section span {
+    font-size: calc(10px + max(1vh, 1vh));
+}
+.power-button {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0px;
+}
+
+.button-start {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-off, .btn-on {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    color: #868585;
+}
+
+.btn-off:active, .btn-on:active{
+    transform: scale(1);
+}
+
+.button-start .active {
+    background-color: #333;
+    color: white;
+}
+
+
+
+.status-list {
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.status-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    color: white;
+    background-color: #d3372c;
+    height: 100%;
+    font-size: calc(9px + max(1vh, 1vh));
+    transition: background-color 0.4s;
+  }
+
+.status-item.active {
+    background-color: #4CAF50;
+}
+
+
+.btn-reset, .btn-abort {
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    height: 100%;
+    font-size: calc(7px + max(1vh, 1vh));
+    align-items: center;
+}
+
+.btn-reset {
+    background-color: #607D8B;
+    margin-top: 0px;
+}
+
+.btn-abort {
+    background-color: #d3372c;
+    margin-top: -10px;
+}
+
+/* Position Section Styles */
+.position-section {
+    width: 100%;
+    overflow: hidden;
+}
+
+.position-section h3 {
+    margin-top: -5px;
+    font-size: calc(12px + max(1vh, 1vh));
+}
+
+.position-display {
+    margin-top: -15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 40%;
+    justify-content: space-between;
+}
+
+.position-display .position-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 5px 10px 3px 0px;
+    padding: 0 5px 0 5px;
+    width: 90%;
+    height: 100%;
+    font-size: calc(9px + max(1vh, 1vh));
+}
+
+/* Error Section Styles */
+.error-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 70%;
+}
+
+.error-section h3 {
+    margin-top: -5px;
+    font-size: calc(12px + max(1vh, 1vh));
+}
+
+.error-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: -10px;
+    gap: 5px;
+    height: 100%;
+    width: 100%;
+    justify-content: space-between;
+    overflow-y: auto;   
+    background-color: transparent;
+}
+
+.error-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 8px 3px 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    height: 90%;
+    min-height: 38px;
+    font-size: calc(9px + max(1vh, 1vh));
+    align-items: center;    
+}
+
+/* Các style cho phần điều khiển 6 bậc tự do có thể được thêm vào đây */
+
+/* Axis Position Styles */
+.axis-section {
+    width: 100%;
+    overflow: hidden;
+}
+
+.axis-section h3 {
+    margin-top: -5px;
+    font-size: calc(12px + max(1vh, 1vh));
+}
+
+.axis-section .axis-display {
+    margin-top: -15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 40%;
+    justify-content: space-between;
+}
+
+.axis-section .axis-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 5px 10px 3px 0px;
+    padding: 0 5px 0 5px;
+    width: 90%;
+    height: 100%;
+    font-size: calc(9px + max(1vh, 1vh));
+}
+
+/* Parameters Styles */
+.parameters-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 70%;
+    overflow: hidden;
+}
+
+.parameters-section h3 {
+    margin-top: 0px;
+    font-size: calc(12px + max(1vh, 1vh));
+}
+
+.parameters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.parameter-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin-top: -10px;
+    height: 100%;
+    font-size: calc(9px + max(1vh, 1vh));
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-save, .btn-default {
+    padding: 8px 20px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100px;
+    height: 35px;
+}
+
+.btn-save:hover, .btn-default:hover {
+    background-color: #007399;
+}
+
+.left-column {
+    display: grid;
+    grid-template-rows: 1fr 1fr; /* 2 hàng, mỗi hàng 1 phần (1fr) */
+    gap: 15px;
+}
+
+/* Thêm container mới cho cột 2 và 3 */
+.right-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Giữ nguyên 2 cột bằng nhau */
+    grid-template-rows: 50vh 50vh; /* Chia thành 2 hàng với tỷ lệ 40-60 */
+    gap: 15px;
+}
+
+/* Điều chỉnh các card trong cột đầu tiên */
+.power-section,
+.error-section,
+.home-position-section {
+    width: 100%;
+}
+
+/* Điều chỉnh các card trong cột 2 và 3 */
+.position-section,
+.axis-section,
+.parameters-section {
+    width: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .control-panel {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .control-panel {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Home Position Styles */
+.home-position-section {
+    padding: 20px;
+    width: 100%;
+    height: 70%;
+}
+
+.home-position-section h3 {
+    margin-top: 3px;
+    margin-bottom: 10px;
+    font-size: calc(12px + max(1vh, 1vh));
+}
+
+.home-position-grid {
+    display: flex;
+    flex-direction: row;
+    row-gap: 0px;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.position-group-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 5px;
+    height: 100%;
+}
+
+.position-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+}
+
+.position-label {
+    font-weight: bold;
+    min-width: 20px;
+    font-size: calc(9px + max(1vh, 1vh));
+}
+
+.position-group input {
+    width: 70%;
+    margin: 0px 0px 0px -3px;
+    padding-left: 3px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 60%;
+    width: 60%;
+    font-size: calc(9px + max(1vh, 1vh));
+}
+
+.home-position-actions {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px 0;
+    gap: 30%;
+}
+
+.btn-default, .btn-save {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 15px;
+    width: 100%;
+    min-height: 30%;
+    max-height: 35%;
+    margin: 0px;
+}
+
+.home-list {
+    display: flex;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    height: 50%;
+
+}
+
+.home-list span {
+    font-size: calc(10px + max(1vh, 1vh));
+}
+
+.home-list-item {
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.home-list-item:hover {
+    background-color: #f5f5f5;
+}
+

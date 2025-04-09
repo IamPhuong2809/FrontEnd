@@ -1,0 +1,126 @@
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 600px;
+    position: absolute;
+    top: 70px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.saved-position-list {
+    max-height: 700px;
+    overflow-y: scroll;
+    margin-top: -10px; /* Thêm khoảng cách cố định ở đây */
+}
+
+.saved-position-item {
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+    height: 50px;
+    transition: height 0.5s ease-out;
+    cursor: pointer;
+}
+
+.saved-position-item.active {
+    background-color: #f8f8f8;
+    height: 200px;
+}
+
+.position-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.position-coordinates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.saved-position-item.active .position-coordinates {
+    opacity: 1;
+    max-height: 500px;
+}
+
+.coordinate-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.position-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-use {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-delete {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-use:hover {
+    background-color: #45a049;   
+}
+
+.btn-delete:hover {
+    background-color: #da190b;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 5px 10px;
+}
+
+.btn-close:hover {
+    color: #000;
+}
