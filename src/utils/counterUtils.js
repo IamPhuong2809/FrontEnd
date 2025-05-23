@@ -17,6 +17,12 @@ export const useCounter = (initialValue = 0, limit, step = 1, intervalDelay = 15
   const changeValue = (type) => {
     setValue((prevValue) => {
       const newValue = type === "increase" ? prevValue + step : prevValue - step;
+      if(min > 0){
+        if(prevValue === min*0.2 && type === "increase")
+          return min;
+        if(newValue === 0 || (prevValue === min*0.2 && type !== "increase"))
+          return min*0.2;
+      }
       return Math.max(min, Math.min(max, newValue));
     });
   };

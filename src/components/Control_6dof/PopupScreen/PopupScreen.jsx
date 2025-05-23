@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import './PopupScreen.css';
 const url = "http://127.0.0.1:8000/api/"
 
@@ -11,16 +12,14 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
   }, [robotData?.busy, robotData?.Power, robotData?.error, robotData?.abort]);
 
   const [desiredPosition, setDesiredPosition] = useState([
-    { label: 'X', value: '0.00mm' },
-    { label: 'Y', value: '0.00mm' },
-    { label: 'Z', value: '0.00mm' },
-    { label: 'RX', value: '0.00°' },
-    { label: 'RY', value: '0.00°' },
-    { label: 'RZ', value: '0.00°' },
-    { label: 'FIG', value: '0' }
+    { label: 'X', value: '' },
+    { label: 'Y', value: '' },
+    { label: 'Z', value: '' },
+    { label: 'RX', value: '' },
+    { label: 'RY', value: '' },
+    { label: 'RZ', value: '' },
+    { label: 'FIG', value: '' }
   ]);
-  // const [desiredPosition, setDesiredPosition] = useState(null);
-  // const [loading, setLoading] = useState(true); 
   
 
   const fetchLoadData = async () => {
@@ -34,13 +33,13 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
           });
           const data = await response.json();
           const updatedPosition = [
-            { label: 'X', value: `${parseFloat(data[0].x).toFixed(2)}mm` },
-            { label: 'Y', value: `${parseFloat(data[0].y).toFixed(2)}mm` },
-            { label: 'Z', value: `${parseFloat(data[0].z).toFixed(2)}mm` },
-            { label: 'RX', value: `${parseFloat(data[0].roll).toFixed(2)}°` },
-            { label: 'RY', value: `${parseFloat(data[0].pitch).toFixed(2)}°` },
-            { label: 'RZ', value: `${parseFloat(data[0].yaw).toFixed(2)}°` },
-            { label: 'FIG', value: `${data[0].figure}` }
+            { label: 'X', value: `${parseFloat(data.x).toFixed(2)}mm` },
+            { label: 'Y', value: `${parseFloat(data.y).toFixed(2)}mm` },
+            { label: 'Z', value: `${parseFloat(data.z).toFixed(2)}mm` },
+            { label: 'RX', value: `${parseFloat(data.roll).toFixed(2)}°` },
+            { label: 'RY', value: `${parseFloat(data.pitch).toFixed(2)}°` },
+            { label: 'RZ', value: `${parseFloat(data.yaw).toFixed(2)}°` },
+            { label: 'FIG', value: `${data.figure}` }
           ];
           setDesiredPosition(updatedPosition);
       } catch (error) {
@@ -55,8 +54,51 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
 
   if (!selectedPoint) return null;
 
-  const handleMove = () => fetch(url + "O0014/", { method: 'GET' });
-  const handleAbort = () => fetch(url + "O0015/", { method: 'GET' });
+  const handleMove = async () => {
+    try {
+      const response = await fetch(url + "O0014/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({id:selectedPoint.id})
+      });
+      const data = await response.json()
+      if(data.success){
+        toast.success("Initializing Movement", {
+          style: {border: '1px solid green'}});
+      } else {
+        toast.error("Failed to move", {
+          style: {border: '1px solid red'}});
+      }
+      } catch (error) {
+          console.error("Error:", error);
+      }
+    }
+    
+    const handleAbort = async () => {
+      try {
+        const response = await fetch(url + "O0015/", {
+          method: "GET",
+        });
+    
+        const data = await response.json();
+        if (data.success) { 
+          toast.error("Movement Aborted!", {
+            style: { border: "1px solid red" },
+          });
+        } else {
+          toast.error("Abort failed", {
+            style: { border: "1px solid red" },
+          });
+        }
+      } catch (error) {
+        console.error("Abort Error:", error);
+        toast.error("Error while aborting", {
+          style: { border: "1px solid red" },
+        });
+      }
+    };
 
   return (
     <div className='point-detail-position'>

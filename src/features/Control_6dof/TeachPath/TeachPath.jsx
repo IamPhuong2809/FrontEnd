@@ -91,25 +91,6 @@ const TeachPath = () => {
         setSelectedPoint(null);
     };
 
-    // const coordinateRows = [
-    //     [
-    //       { label: 'X', main: '+0.00'},
-    //       { label: 'Y', main: '-210.00'},
-    //       { label: 'Z', main: '+495.00'}
-
-    //     ],
-    //     [
-    //       { label: 'RX', main: '+180.00'},
-    //       { label: 'RY', main: '+0.00'},
-    //       { label: 'RZ', main: '+81.99'}
-    //     ],
-    //     [
-    //         { label: 'Tool', main: '0'},
-    //         { label: 'Figure', main: '+5'},
-    //         { label: 'Work', main: '0'}
-    //     ]
-    //   ];
-
 
     //#endregion
     

@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './Menu.css'
-import logo1 from '@images/picture1.png'
-import logo2 from '@images/picture2.png'
-import logo3 from '@images/picture3.png'
-import logo4 from '@images/picture4.png'
-import logo5 from '@images/picture5.png'
-import logo6 from '@images/picture6.png'
+import logo1 from '@images/PowerRobot.png'
+import logo2 from '@images/Configuration.png'
+import logo3 from '@images/PositioningList.png'
+import logo4 from '@images/TeachPath.png'
+import logo5 from '@images/MovePath.png'
+import logo6 from '@images/information.png'
 
 const Menu = () => {
     const location = useLocation();
@@ -24,7 +24,7 @@ const Menu = () => {
         return tooltipsLink.findIndex(link => location.pathname === link);
     };
     
-    const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo1];
+    const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo6];
     // Mảng chứa nội dung tooltip cho từng button
     const tooltips = [
         "Power Robot",

@@ -180,6 +180,7 @@
     height: 30%;
     margin: 0 20px 30px 30px;
     gap: 20px;
+    align-items: flex-end;
 }
   
 .left-buttons {
@@ -555,3 +556,29 @@
 }
 
 /* #endregion */
+
+/*#region popup*/
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.05); /* lớp phủ tối */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -35px;
+    z-index: 1000;
+  }
+  
+  .popup-content {
+    background-color: #1f2a35;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 300px;
+    max-width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+/*#endregion*/

@@ -10,46 +10,49 @@ import stopIcon from '@images/stop.png'
 import playIcon from '@images/play.png'
 import pauseIcon from '@images/pause.png'
 import { useRobotData } from '@components/Control_6dof/RobotData'
+import Loading from '@components/Loading/Loading'
+
 const url = "http://127.0.0.1:8000/api/"
 
 const MovePath = () => {
 
-    //#region List of Paths
-    const paths =[
-        { id: 1, name: 'Take' },
-        { id: 2, name: 'Bring' },
-        { id: 3, name: 'Place' },
-        { id: 4, name: 'Prepick' },
-        { id: 5, name: 'Pick' },
-        { id: 6, name: 'See' },
-        { id: 7, name: 'Run' },
-        { id: 8, name: 'type_a_name' },
-        { id: 9, name: 'type_a_name' },
-        { id: 10, name: 'type_a_name' },
-        { id: 11, name: 'type_a_name' },
-        { id: 12, name: 'type_a_name' },
-        { id: 13, name: 'type_a_name' },
-        { id: 14, name: 'type_a_name' },
-    ];
-
-    const points =[
-        { id: 1, name: 'Home' },
-        { id: 2, name: 'Prepick Pos 1' },
-        { id: 3, name: 'PickPos 1' },
-        { id: 4, name: 'Prepick Pos 2' },
-        { id: 5, name: 'Pick Pos 2' },
-        { id: 6, name: 'type_a_name' },
-        { id: 7, name: 'type_a_name' },
-        { id: 8, name: 'type_a_name' },
-        { id: 9, name: 'type_a_name' },
-        { id: 10, name: 'type_a_name' },
-        { id: 11, name: 'type_a_name' },
-        { id: 12, name: 'type_a_name' },
-        { id: 13, name: 'type_a_name' },
-        { id: 14, name: 'type_a_name' },
-        { id: 15, name: 'type_a_name' },
-        { id: 16, name: 'type_a_name' },
-    ];
+    //#region api 
+        const [paths, setPaths] = useState(null);
+        const [points, setPoints] = useState(null);
+        const [loading, setLoading] = useState(true); 
+    
+        const fetchLoadData = async (id) => {
+            try {
+                const response = await fetch(url + "O0008/", {
+                    method: "GET",
+                });
+                const data = await response.json();
+                setPaths(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+    
+        useEffect(() => {
+            fetchLoadData();
+        }, []); 
+    
+        const LoadPointInDB = async (id) => {
+            try {
+                const response = await fetch(url + "point/", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, type: null })
+                });
+                const data = await response.json();
+                setPoints(data);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        
+        //#endregion
 
     const [isPointOpen, setIsPointOpen] = useState(false);
     const [selectedPath, setSelectedPath] = useState(null);
@@ -59,12 +62,16 @@ const MovePath = () => {
         setSelectedPath(null);
     };
 
-    const handlePathSelect = (path) => {
+    const handlePathSelect =async (path) => {
         setSelectedPath(path);
         setIsPointOpen(true);
-        console.log(path);
+        await LoadPointInDB(path.id);
     };
     //#endregion
+
+    if (loading) {
+        return <Loading/>;
+    }
 
     const PopupScreen = () => {
         const { robotData } = useRobotData(); 
@@ -193,6 +200,7 @@ const MovePath = () => {
             </div>
         )
     };
+
 
   return (
    <div>

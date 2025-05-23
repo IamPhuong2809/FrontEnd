@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import './Move.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Control_6dof/Header/Header';
+import PopupGlobal from '@components/Control_6dof/PopupGlobal/PopupGlobal'
+import PopupPoint from '@components/Control_6dof/PopupPoint/PopupPoint'
 import { handleInputChange } from '@utils/inputValidation';
 import { useCounter } from '@utils/counterUtils';
 import { useRobotData } from '@components/Control_6dof/RobotData';
@@ -11,8 +13,8 @@ import { useRobotData } from '@components/Control_6dof/RobotData';
 const url = "http://127.0.0.1:8000/api/"
 
 const Move = () => {
-    const navigate = useNavigate();
     const location = useLocation();
+    const navigate = useNavigate();
     const { position } = location.state || {}; 
     //#region Left Content Area
     //#region Declaration variable left content
@@ -116,7 +118,7 @@ const Move = () => {
         const newJointInput = jointCounters.map((counter, index) => ({
             label: LabelShow[index][currentUnitShow],
             value: counter.value,
-            input: counter.value
+            input: counter.value,
         }));
         setJointInput(newJointInput);
         sendJointUpdate(newJointInput);
@@ -138,6 +140,50 @@ const Move = () => {
     };
     //#endregion
 
+    //#region Popup
+    const [showPopupGlobal, setShowPopupGlobal] = useState(false);
+
+    const PopupWrapper = useMemo(() => {
+        if (!showPopupGlobal) return null;
+
+        const ClosePopup = () => {
+            setShowPopupGlobal(false);
+        }
+        let joint = JointInput.map(joint => joint.value);;
+        
+        return (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <PopupGlobal 
+                ClosePopup={ClosePopup}
+                joint={joint}
+              />
+            </div>
+          </div>
+        );
+      }, [showPopupGlobal]);
+
+      const [showPopupPoint, setShowPopupPoint] = useState(false);
+
+      const PopupWrapperPoint = useMemo(() => {
+          if (!showPopupPoint) return null;
+  
+          const ClosePopup = () => {
+            setShowPopupPoint(false);
+          }
+          let joint = JointInput.map(joint => joint.value);;
+          
+          return (
+            <div className="popup-overlay">
+              <div className="popup-content">
+                <PopupPoint
+                  ClosePopup={ClosePopup}
+                  joint={joint}
+                />
+              </div>
+            </div>
+          );
+        }, [showPopupPoint]);
     //#endregion
 
     //#region Backend
@@ -170,7 +216,6 @@ const Move = () => {
     };
 
     const handleReadActualPosition = async () => {
-        
     };
 
     const handleMove= async () => {
@@ -569,7 +614,12 @@ const Move = () => {
                                 <span className={`info-span ${robotData.error  ? 'error' : ''}`}>ERROR</span>
                             </div>
                             <div className="button-row">
-                                <button className="control-button">Teach Position</button>
+                                <button 
+                                    className="control-button"
+                                    onClick={() => setShowPopupPoint(true)}
+                                >
+                                    Teach Position
+                                </button>
                                 <button 
                                     className="control-button small"
                                     onClick={() => navigate(-1)}
@@ -578,7 +628,7 @@ const Move = () => {
                                 </button>
                                 <button 
                                     className="control-button"
-                                    onClick={() => navigate("/6dof/PositionList")}
+                                    onClick={() => setShowPopupGlobal(true)}
                                 >
                                     Position List
                                 </button>
@@ -587,6 +637,8 @@ const Move = () => {
                     </div>
                 </div>
             </div>
+            {PopupWrapper} 
+            {PopupWrapperPoint}
         </div>
     );
 };

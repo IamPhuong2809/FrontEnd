@@ -4,6 +4,7 @@ import Menu from '@components/Control_6dof/Menu/Menu';
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar';
 import HeaderControl from '@components/Control_6dof/Header/Header';
 import Input from '@components/Control_6dof/Input/Input';
+import toast from 'react-hot-toast';
 import Loading from '@components/Loading/Loading'
 
 const url = "http://127.0.0.1:8000/api/";
@@ -49,6 +50,14 @@ const Configuration = () => {
                 }),
             });
             fetchLoadData(activeTab);
+            const data = await response.json();
+            if(data.success){
+                toast.success("Successfully save data!", {
+                    style: {border: '1px solid green'}});
+            } else {
+                toast.error("Failed to save: " + data.error, {
+                    style: {border: '1px solid red'}});
+            }
         } catch (error) {
             console.error("Error:", error);
         }
@@ -77,6 +86,8 @@ const Configuration = () => {
     }
     const handleReset = () => {
         setFormData(Data_default);
+        toast.success("Data has been reset!", {
+            style: {border: '1px solid green'}});
     };
     // Update form data
     const handleInputChange = (field, value) => {

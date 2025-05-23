@@ -1,0 +1,83 @@
+.teach-container {
+    background-color: #1f2a35;
+    color: white;
+    width: 260px;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+}
+
+.teach-header{
+    position: relative;
+    background-color: #424c55;
+    border-radius: 3px;
+}
+  
+.teach-title {
+    display: flex;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    align-content: center;
+    justify-content: center;
+}
+  
+.teach-label {
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: white;
+    font-size: 1rem;
+}
+  
+.teach-input {
+    background-color: #2c3e50;
+    color: white;
+    border: 1px solid #34495e;
+    padding: 6px;
+    border-radius: 4px;
+    margin-top: 8px;
+    font-size: 0.95rem;
+    outline:none;
+}
+
+.teach-input:focus{
+    border: 1px solid #34495e;
+}
+  
+.teach-instruction {
+    display: flex;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    color: rgb(174, 222, 76);
+}
+
+.teach-row{
+    margin-top: 5px;
+}
+  
+.teach-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+  
+.teach-button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+  
+.teach-teach {
+    background-color: #007bff;
+    color: white;
+}
+  
+.teach-cancel {
+    background-color: #555;
+    color: #ccc;
+}
+  

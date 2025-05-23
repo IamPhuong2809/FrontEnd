@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PopupTeachPath.css';
+import toast from 'react-hot-toast';
 const url = "http://127.0.0.1:8000/api/"
 
 const PopupTeachPath = (props) => {
@@ -89,6 +90,14 @@ const PopupTeachPath = (props) => {
                     idPoint: selectedPoint.id
                 }),
             });
+            const data = await response.json();
+            if(data.success){
+                toast.success("Successfully save data!", {
+                    style: {border: '1px solid green'}});
+            } else {
+                toast.error("Failed to save: " + data.error, {
+                    style: {border: '1px solid red'}});
+            }
         } catch (error) {
             console.error("Error:", error);
         }
