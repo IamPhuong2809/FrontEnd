@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PopupTeachPath.css';
 const url = "http://127.0.0.1:8000/api/"
@@ -7,11 +7,11 @@ const PopupTeachPath = (props) => {
     const {
         selectedPoint,
         selectedPath,
-        coordinateRows,
         handleDetailClose,
     } = props;
 
     // Khai báo mảng cấu hình các ô cần hiển thị
+    //#region data
     const parameterConfig = [
         {
         label: 'Motion Typ',
@@ -22,13 +22,13 @@ const PopupTeachPath = (props) => {
         {
         label: 'CONT',
         type: 'select',
-        options: ['FALSE', 'TRUE', 'MIX'], // 3 item cho dropdown
+        options: ['FALSE', 'TRUE'], // 3 item cho dropdown
         defaultValue: 'FALSE'
         },
         {
         label: 'Stop Point',
         type: 'select',
-        options: ['NO', 'YES', 'MAYBE'],   // 3 item cho dropdown
+        options: ['FALSE', 'TRUE'],   // 3 item cho dropdown
         defaultValue: 'NO'
         },
         {
@@ -48,12 +48,33 @@ const PopupTeachPath = (props) => {
         }
     ];
 
+    const coordinateRows = [
+      [
+        { label: 'X', main: '+0.00'},
+        { label: 'Y', main: '-210.00'},
+        { label: 'Z', main: '+495.00'}
+
+      ],
+      [
+        { label: 'RX', main: '+180.00'},
+        { label: 'RY', main: '+0.00'},
+        { label: 'RZ', main: '+81.99'}
+      ],
+      [
+          { label: 'Tool', main: '0'},
+          { label: 'Figure', main: '+5'},
+          { label: 'Work', main: '0'}
+      ]
+    ];
+
     const [parameterValues, setParameterValues] = useState(
         parameterConfig.map(param => param.defaultValue)
-        );
+    );
 
+    const [coordinateValues, setCoordinateValues] = useState(coordinateRows);
 
     const navigate = useNavigate();
+    //#endregion
 
     const handleSave = async () => {
         try {
@@ -73,6 +94,61 @@ const PopupTeachPath = (props) => {
         }
     };
 
+      const fetchLoadData = async () => {
+          try {
+            const response = await fetch(url + "point/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({id_parent:selectedPath.id, id:selectedPoint.id, type:"data"})
+            });
+            const data = await response.json();
+            const newParameterValues = parameterConfig.map(param => {
+              switch (param.label) {
+                  case 'Motion Typ':
+                  return data[0].motion;
+                  case 'CONT':
+                  return data[0].cont ? 'TRUE' : 'FALSE';
+                  case 'Stop Point':
+                  return data[0].stop ? 'TRUE' : 'FALSE';
+                  case 'Velocity':
+                  return data[0].vel;
+                  case 'Acceleration':
+                  return data[0].acc;
+                  case 'Corner distance':
+                  return data[0].corner;
+                  default:
+                  return param.defaultValue;
+              }
+            });
+            setParameterValues(newParameterValues);
+            const newCoordinateValues = coordinateRows.map(row => {
+              return row.map(item => {
+                switch (item.label) {
+                  case 'X': return { ...item, main: `+${data[0].x.toFixed(2)}` };
+                  case 'Y': return { ...item, main: `+${data[0].y.toFixed(2)}` };
+                  case 'Z': return { ...item, main: `+${data[0].z.toFixed(2)}` };
+                  case 'RX': return { ...item, main: `+${data[0].roll.toFixed(2)}` };
+                  case 'RY': return { ...item, main: `+${data[0].pitch.toFixed(2)}` };
+                  case 'RZ': return { ...item, main: `+${data[0].yaw.toFixed(2)}` };
+                  case 'Tool': return { ...item, main: `${data[0].tool}` };
+                  case 'Figure': return { ...item, main: `+${data[0].figure}` };
+                  case 'Work': return { ...item, main: `${data[0].work}` };
+                  default: return item;
+                }
+              });
+            });
+            setCoordinateValues(newCoordinateValues);
+          } catch (error) {
+              console.error("Error:", error);
+          }
+      };
+    
+      useEffect(() => {
+          fetchLoadData();
+      }, [selectedPoint]); 
+
     return (
         <div className='point-detail-teachpath'>
             <div className="point-detail-header">
@@ -85,7 +161,7 @@ const PopupTeachPath = (props) => {
             </div>
 
             <div className="coordinates-container">
-                {coordinateRows.map((row, rowIndex) => (
+                {coordinateValues.map((row, rowIndex) => (
                 <div className="coordinates-row" key={rowIndex}>
                     {row.map((cell, cellIndex) => (
                     <div className="coordinates-cell" key={cellIndex}>

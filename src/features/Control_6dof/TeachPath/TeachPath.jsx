@@ -1,64 +1,65 @@
-import React, {useState} from 'react'
+
+import React, {useState, useEffect} from 'react'
 import './TeachPath.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Control_6dof/Header/Header'
 import List from '@components/Control_6dof/List/List'
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 import PopupScreen from '@components/Control_6dof/PopupTeachPath/PopupTeachPath'
+import Loading from '@components/Loading/Loading'
+
+const url = "http://127.0.0.1:8000/api/";
 
 const TeachPath = () => {
-
-    //#region List of Points
-    const paths =[
-        { id: 1, name: 'Take' },
-        { id: 2, name: 'Bring' },
-        { id: 3, name: 'Place' },
-        { id: 4, name: 'Prepick' },
-        { id: 5, name: 'Pick' },
-        { id: 6, name: 'See' },
-        { id: 7, name: 'Run' },
-        { id: 8, name: 'type_a_name' },
-        { id: 9, name: 'type_a_name' },
-        { id: 10, name: 'type_a_name' },
-        { id: 11, name: 'type_a_name' },
-        { id: 12, name: 'type_a_name' },
-        { id: 13, name: 'type_a_name' },
-        { id: 14, name: 'type_a_name' },
-        ];
-    //#endregion
-
-    //#region Point List Screen
-    const points =[
-        { id: 1, name: 'Home' },
-        { id: 2, name: 'Prepick Pos 1' },
-        { id: 3, name: 'PickPos 1' },
-        { id: 4, name: 'Prepick Pos 2' },
-        { id: 5, name: 'Pick Pos 2' },
-        { id: 6, name: 'type_a_name' },
-        { id: 7, name: 'type_a_name' },
-        { id: 8, name: 'type_a_name' },
-        { id: 9, name: 'type_a_name' },
-        { id: 10, name: 'type_a_name' },
-        { id: 11, name: 'type_a_name' },
-        { id: 12, name: 'type_a_name' },
-        { id: 13, name: 'type_a_name' },
-        { id: 14, name: 'type_a_name' },
-    ];
 
     const [isPointOpen, setIsPointOpen] = useState(false);
     const [selectedPath, setSelectedPath] = useState(null);
     const [isPointClosing, setIsPointClosing] = useState(false);
 
-    const handlePathSelect = (path) => {
+    //#region api 
+    const [paths, setPaths] = useState(null);
+    const [points, setPoints] = useState(null);
+    const [loading, setLoading] = useState(true); 
+
+    const fetchLoadData = async (id) => {
+        try {
+            const response = await fetch(url + "O0007/", {
+                method: "GET",
+            });
+            const data = await response.json();
+            setPaths(data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchLoadData();
+    }, []); 
+
+    const LoadPointInDB = async (id) => {
+        try {
+            const response = await fetch(url + "point/", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, type: null })
+            });
+            const data = await response.json();
+            setPoints(data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+    
+    //#endregion
+    const handlePathSelect = async (path) => {
         if(isPointOpen) {
             handlePathClose();
-            setSelectedPath(path);
-            setIsPointOpen(true);
         }
-        else {
-            setSelectedPath(path);
-            setIsPointOpen(true);
-        }
+        setSelectedPath(path);
+        await LoadPointInDB(path.id);
+        setIsPointOpen(true);   
     };
 
     const handlePathClose = () => {
@@ -77,16 +78,12 @@ const TeachPath = () => {
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedPoint, setSelectedPoint] = useState(null);
 
-    const handlePointSelect = (point) => {
+    const handlePointSelect = async (point) => {
         if(isDetailOpen) {
             handleDetailClose();
-            setSelectedPoint(point);
-            setIsDetailOpen(true);
         }
-        else {  
-            setSelectedPoint(point);
-            setIsDetailOpen(true);
-        }
+        setSelectedPoint(point);
+        setIsDetailOpen(true);
     };
 
     const handleDetailClose = () => {
@@ -94,28 +91,32 @@ const TeachPath = () => {
         setSelectedPoint(null);
     };
 
-    const coordinateRows = [
-        [
-          { label: 'X', main: '+0.00'},
-          { label: 'Y', main: '-210.00'},
-          { label: 'Z', main: '+495.00'}
+    // const coordinateRows = [
+    //     [
+    //       { label: 'X', main: '+0.00'},
+    //       { label: 'Y', main: '-210.00'},
+    //       { label: 'Z', main: '+495.00'}
 
-        ],
-        [
-          { label: 'RX', main: '+180.00'},
-          { label: 'RY', main: '+0.00'},
-          { label: 'RZ', main: '+81.99'}
-        ],
-        [
-            { label: 'Tool', main: '0'},
-            { label: 'Figure', main: '+5'},
-            { label: 'Work', main: '0'}
-        ]
-      ];
+    //     ],
+    //     [
+    //       { label: 'RX', main: '+180.00'},
+    //       { label: 'RY', main: '+0.00'},
+    //       { label: 'RZ', main: '+81.99'}
+    //     ],
+    //     [
+    //         { label: 'Tool', main: '0'},
+    //         { label: 'Figure', main: '+5'},
+    //         { label: 'Work', main: '0'}
+    //     ]
+    //   ];
 
 
     //#endregion
     
+    if (loading) {
+        return <Loading/>;
+    }
+
   return (
    <div>
         <HeaderControl />
@@ -136,6 +137,7 @@ const TeachPath = () => {
                 {isPointOpen && (
                     <List 
                     items={points} 
+                    SelectedParentId={selectedPath.id}
                     SelectedItem={selectedPoint}
                     handleItemSelect={handlePointSelect} 
                     handleDetailClose={handleDetailClose}
@@ -150,7 +152,6 @@ const TeachPath = () => {
                     <PopupScreen
                     selectedPoint={selectedPoint}
                     selectedPath={selectedPath}
-                    coordinateRows={coordinateRows}
                     handleDetailClose={handleDetailClose}
                   />
                 )}

@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './ConfirmDelete.css';
 
 const ConfirmDelete = ({ 
   isOpen, 
   onClose, 
   onConfirm, 
-  itemName = 'this item' 
+  itemName = 'all items',
+  delaySeconds = 0 
 }) => {
+  const [countdown, setCountdown] = useState(delaySeconds);
+  const [canConfirm, setCanConfirm] = useState(delaySeconds === 0);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setCountdown(delaySeconds);
+    setCanConfirm(delaySeconds === 0);
+
+    if (delaySeconds > 0) {
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setCanConfirm(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isOpen, delaySeconds]);
+
   if (!isOpen) return null;
 
   return (
@@ -29,8 +55,9 @@ const ConfirmDelete = ({
           <button 
             className="delete-button"
             onClick={onConfirm}
+            disabled={!canConfirm}
           >
-            Delete
+            {canConfirm ? 'Delete' : `Wait ${countdown}s`}
           </button>
         </div>
       </div>

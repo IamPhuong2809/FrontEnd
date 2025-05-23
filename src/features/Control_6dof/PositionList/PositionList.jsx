@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './PositionList.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Control_6dof/Header/Header'
@@ -8,47 +8,30 @@ import { useRobotData } from '@components/Control_6dof/RobotData'
 import PopupScreen from '@components/Control_6dof/PopupScreen/PopupScreen'
 import Loading from '@components/Loading/Loading'
 
+const url = "http://127.0.0.1:8000/api/";
+
 const PositionList = () => {
 
     const { robotData } = useRobotData(); 
+    const [points, setPoints] = useState(null);
+    const [loading, setLoading] = useState(true); 
 
-    // const fetchLoadData = async (id, retryCount) => {
-    //     try {
-    //         const response = await fetch(url + "O0006/", {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify(id),
-    //         });
-    //         const data = await response.json();
-    //         setFormData(data.dataLoad);
-    //         setTitle(data.nameLoad);
-    //         setName(data.nameLoad[id]);
-    //         setLoading(false);
-    //     } catch (error) {
-    //         console.error("Error:", error);
-    //     }
-    // };
+    const fetchLoadData = async (id) => {
+        try {
+            const response = await fetch(url + "O0006/", {
+                method: "GET",
+            });
+            const data = await response.json();
+            setPoints(data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
 
-	//#region List of Points
-    const points =[
-        { id: 1, name: 'Home' },
-        { id: 2, name: 'Prepick Pos 1' },
-        { id: 3, name: 'PickPos 1' },
-        { id: 4, name: 'Prepick Pos 2' },
-        { id: 5, name: 'Pick Pos 2' },
-        { id: 6, name: 'type_a_name' },
-        { id: 7, name: 'type_a_name' },
-        { id: 8, name: 'type_a_name' },
-        { id: 9, name: 'type_a_name' },
-        { id: 10, name: 'type_a_name' },
-        { id: 11, name: 'type_a_name' },
-        { id: 12, name: 'type_a_name' },
-        { id: 13, name: 'type_a_name' },
-        { id: 14, name: 'type_a_name' },
-        ];
-	//#endregion
+    useEffect(() => {
+        fetchLoadData();
+    }, []); 
 
     //#region Popup Screen
     const [selectedPoint, setSelectedPoint] = useState(null);
@@ -69,10 +52,14 @@ const PositionList = () => {
         { label: "Y", value: `${robotData.positionCurrent.y.toFixed(2)}mm` },
         { label: "Z", value: `${robotData.positionCurrent.z.toFixed(2)}mm` },
         { label:"Tool", value: `${robotData.tool}`},
-        { label: "Roll", value: `${robotData.positionCurrent.rl.toFixed(2)}°` },
-        { label: "Pitch", value: `${robotData.positionCurrent.pt.toFixed(2)}°` },
-        { label: "Yaw", value: `${robotData.positionCurrent.yw.toFixed(2)}°` },
+        { label: "RX", value: `${robotData.positionCurrent.rl.toFixed(2)}°` },
+        { label: "RY", value: `${robotData.positionCurrent.pt.toFixed(2)}°` },
+        { label: "RZ", value: `${robotData.positionCurrent.yw.toFixed(2)}°` },
     ]
+
+    if (loading) {
+        return <Loading/>;
+    }
 
     return (
     <div>
@@ -87,7 +74,7 @@ const PositionList = () => {
                     isPopupOpen={true}
                     handleItemSelect={handlePointSelect}
                     handleDetailClose={handleDetailClose}
-                    headerName="Point Name" 
+                    headerName="Global Point Name" 
                     width="30vw"
                 />
 

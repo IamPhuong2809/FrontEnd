@@ -4,6 +4,12 @@ import "./Rename.css";
 const Rename = ({ initialName = "", title = "Rename", onCancel, onConfirm }) => {
   const [newName, setNewName] = useState(initialName);
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && newName.trim()) {
+      onConfirm(newName);
+    }
+  };
+
   return (
     <div className="rename-container">
       <div className="rename-modal">
@@ -14,6 +20,7 @@ const Rename = ({ initialName = "", title = "Rename", onCancel, onConfirm }) => 
             className="rename-input"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Enter name"
             autoFocus
           />

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './PopupScreen.css';
 const url = "http://127.0.0.1:8000/api/"
 
@@ -10,15 +10,48 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
     return { busy, Power, error, abort };
   }, [robotData?.busy, robotData?.Power, robotData?.error, robotData?.abort]);
 
-  const desiredPosition = useMemo(() => [
-    { label: 'X', value: '-57.54mm' },
-    { label: 'Y', value: '210.00mm' },
-    { label: 'Z', value: '463.14mm' },
-    { label: 'RX', value: '180.00°' },
-    { label: 'RY', value: '20.00°' },
-    { label: 'RZ', value: '-81.49°' },
-    { label: 'FIG', value: '5' }
-  ], []);
+  const [desiredPosition, setDesiredPosition] = useState([
+    { label: 'X', value: '0.00mm' },
+    { label: 'Y', value: '0.00mm' },
+    { label: 'Z', value: '0.00mm' },
+    { label: 'RX', value: '0.00°' },
+    { label: 'RY', value: '0.00°' },
+    { label: 'RZ', value: '0.00°' },
+    { label: 'FIG', value: '0' }
+  ]);
+  // const [desiredPosition, setDesiredPosition] = useState(null);
+  // const [loading, setLoading] = useState(true); 
+  
+
+  const fetchLoadData = async () => {
+      try {
+          const response = await fetch(url + "global/", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({id:selectedPoint.id, type:"data"})
+          });
+          const data = await response.json();
+          const updatedPosition = [
+            { label: 'X', value: `${parseFloat(data[0].x).toFixed(2)}mm` },
+            { label: 'Y', value: `${parseFloat(data[0].y).toFixed(2)}mm` },
+            { label: 'Z', value: `${parseFloat(data[0].z).toFixed(2)}mm` },
+            { label: 'RX', value: `${parseFloat(data[0].roll).toFixed(2)}°` },
+            { label: 'RY', value: `${parseFloat(data[0].pitch).toFixed(2)}°` },
+            { label: 'RZ', value: `${parseFloat(data[0].yaw).toFixed(2)}°` },
+            { label: 'FIG', value: `${data[0].figure}` }
+          ];
+          setDesiredPosition(updatedPosition);
+      } catch (error) {
+          console.error("Error:", error);
+      }
+  };
+
+  useEffect(() => {
+      fetchLoadData();
+  }, []); 
+
 
   if (!selectedPoint) return null;
 

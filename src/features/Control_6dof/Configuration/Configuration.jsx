@@ -16,7 +16,7 @@ const Configuration = () => {
     const [formData, setFormData] = useState(null);
     const [loading, setLoading] = useState(true); 
 
-    const fetchLoadData = async (id, retryCount) => {
+    const fetchLoadData = async (id) => {
         try {
             const response = await fetch(url + "O0005/", {
                 method: "POST",
@@ -88,7 +88,7 @@ const Configuration = () => {
 
     //#endregion Main Content
     if (loading || !title || !formData) {
-        return <Loading message="Loading data..." />;
+        return <Loading/>;
       }
 
   return (
