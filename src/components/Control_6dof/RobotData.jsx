@@ -17,7 +17,7 @@ export const ReceiveRobotData = ({ children }) => {
         override: 0,
         tool: 0,
         work: 0,
-        positionCurrent: { x:0, y:0, z:0, rl:0, pt:0, yw:0 },
+        positionCurrent: { x:0, y:0, z:60, rl:0, pt:0, yw:0 },
         jointCurrent: {t1:0, t2:0, t3:0, t4:0, t5:0, t6:0}
     });
 

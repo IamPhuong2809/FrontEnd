@@ -46,7 +46,11 @@ const PopupGlobal = (props) => {
 
     const handleSave = async () => {
       try {
-        if(selectPoint === null){
+        if(inputName === ''){
+          toast.error("Name point can't empty", {
+            style: {border: '1px solid red'}});
+        }
+        else if(selectPoint === null){
           toast.error("You need to select the ID", {
             style: {border: '1px solid red'}});
         }
@@ -75,6 +79,12 @@ const PopupGlobal = (props) => {
       } catch (error) {
           console.error("Error:", error);
       }
+  };
+
+  const handleKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    }
   };
 
 
@@ -136,6 +146,7 @@ const PopupGlobal = (props) => {
           className="teach-input" 
           value={inputName}
           onChange={(e) => setInputName(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </div>
 

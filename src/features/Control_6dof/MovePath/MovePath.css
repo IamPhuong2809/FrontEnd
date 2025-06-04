@@ -83,6 +83,11 @@
     background-color: #d7ecb0;
     color: rgb(13, 102, 13);
 }
+
+.points-list-move-path .point-item.selected-busy {
+    background-color: #f5e6a1;
+    color: #b8860b;
+}
   
 .point-no {
     width: 40px;

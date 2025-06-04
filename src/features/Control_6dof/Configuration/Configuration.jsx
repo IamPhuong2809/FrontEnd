@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Configuration.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar';
-import HeaderControl from '@components/Control_6dof/Header/Header';
+import HeaderControl from '@components/Header/Header';
 import Input from '@components/Control_6dof/Input/Input';
 import toast from 'react-hot-toast';
 import Loading from '@components/Loading/Loading'

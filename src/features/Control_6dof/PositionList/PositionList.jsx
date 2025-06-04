@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './PositionList.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
-import HeaderControl from '@components/Control_6dof/Header/Header'
+import HeaderControl from '@components/Header/Header'
 import List from '@components/Control_6dof/List/List'
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 import { useRobotData } from '@components/Control_6dof/RobotData'

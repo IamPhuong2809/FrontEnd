@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast';
 import './List.css'
 import deleteItems from '@images/deleteItems.png'
+import copyItem from '@images/copyItem.png'
 import renameItem from '@images/renameItem.png'
 import deleteItem from '@images/deleteItem.png'
-import addItem from '@images/addItem.png'
-import copyItem from '@images/copyItem.png'
 import Rename from '@components/Rename/Rename'
 import ConfirmDelete from '@components/ConfirmDelete/ConfirmDelete'
 
@@ -27,12 +26,10 @@ const List = (props) => {
     const [typeData, setTypeData] = useState(null);
 
     useEffect(() => {
-        if (headerName === "Global Point Name") {
-        setTypeData("global");
-        } else if (headerName === "Path Name") {
-        setTypeData("path");
+        if (headerName === "Site Name") {
+        setTypeData("site");
         } else {
-        setTypeData("point");
+        setTypeData("map");
         }
     }, [headerName]);
 
@@ -64,22 +61,6 @@ const List = (props) => {
             style: {border: '1px solid green'}});
         } else {
         toast.error("Failed to rename: " + data.error, {
-            style: {border: '1px solid red'}});
-        }
-    };
-
-    const updateItemInDB = async (id_parent, id, id_target) => {
-        const response = await fetch( url + `${typeData}/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({id_parent, id, id_target, type:"update" })
-        });
-        const data = await response.json();
-        if(data.success){
-        toast.success("Successfully update component!", {
-            style: {border: '1px solid green'}});
-        } else {
-        toast.error("Failed to update: " + data.error, {
             style: {border: '1px solid red'}});
         }
     };
@@ -125,7 +106,6 @@ const List = (props) => {
     const [currentEditItem, setCurrentEditItem] = useState(null);
     const [itemsList, setItemsList] = useState([...items]);
     const [hoveredItemId, setHoveredItemId] = useState(null);
-    const [draggedItem, setDraggedItem] = useState(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [deleteAllItems, setdeleteAllItems] = useState(false);
@@ -224,58 +204,6 @@ const List = (props) => {
         }
     };
 
-    //#region Drag and drop handlers
-    const handleDragStart = (e, item) => {
-        e.stopPropagation();
-        setDraggedItem(item);
-        e.currentTarget.classList.add('dragging');
-    };
-
-    const handleDragOver = (e, item) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!draggedItem || draggedItem.id === item.id) return;
-        e.currentTarget.classList.add('drag-over');
-    };
-
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('drag-over');
-    };
-
-    const handleDrop = async(e, targetItem) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('drag-over');
-        
-        if (!draggedItem || draggedItem.id === targetItem.id) return;
-
-        const updatedItems = [...itemsList];
-        const draggedIndex = updatedItems.findIndex(p => p.id === draggedItem.id);
-        const targetIndex = updatedItems.findIndex(p => p.id === targetItem.id);
-        
-        const [removed] = updatedItems.splice(draggedIndex, 1);
-        updatedItems.splice(targetIndex, 0, removed);
-        
-        const newItemsList = updatedItems.map((item, index) => ({
-            ...item,
-            id: index + 1
-        }));
-
-        setItemsList(newItemsList);
-        await updateItemInDB(SelectedParentId, draggedIndex + 1, targetIndex + 1 );
-        handleItemSelect(newItemsList[targetIndex])
-    };
-
-    const handleDragEnd = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.currentTarget.classList.remove('dragging');
-        setDraggedItem(null);
-    };
-    //#endregion
-
     return (
         <div>
             <div className={`points-list-container ${isPopupClosing ? 'slide-out' : 'slide-in'}`} style={{ width: width }}>
@@ -293,15 +221,7 @@ const List = (props) => {
                     </div>
                 </div>
                 <div className="points-list">
-                    {itemsList.length === 0 ? (
-                        <div className="empty-list">
-                            <p>No items found.</p>
-                            <button className="add-button-center" onClick={() => handleAddItem({ id: 0 })}>
-                                + Add Item
-                            </button>
-                        </div>
-                    ) : (
-                        itemsList.map((item) => (
+                    {itemsList.map((item) => (
                             <div 
                                 key={item.id} 
                                 className={`point-item ${SelectedItem && SelectedItem.id === item.id ? 'selected' : ''}`}
@@ -309,11 +229,6 @@ const List = (props) => {
                                 onMouseEnter={() => setHoveredItemId(item.id)}
                                 onMouseLeave={() => setHoveredItemId(null)}
                                 draggable={true}
-                                onDragStart={(e) => handleDragStart(e, item)}
-                                onDragOver={(e) => handleDragOver(e, item)}
-                                onDragLeave={handleDragLeave}
-                                onDrop={(e) => handleDrop(e, item)}
-                                onDragEnd={handleDragEnd}
                             >
                                 <div className="point-no">{item.id}</div>
                                 <div className="point-name">{item.name}</div>					
@@ -333,10 +248,6 @@ const List = (props) => {
                                             />
                                         </div>
                                         <div className="action-button-wrapper">
-                                            <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Copy</div>
-                                            <img src={copyItem} alt="Copy" className="action-button" />
-                                        </div>
-                                        <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Delete</div>
                                             <img 
                                                 src={deleteItem} 
@@ -345,23 +256,16 @@ const List = (props) => {
                                                 onClick={(e) => handleDeleteClick(item, e)}
                                             />
                                         </div>
-                                        <div className="action-button-wrapper">
-                                            <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Add</div>
-                                            <img 
-                                                src={addItem} 
-                                                alt="Add" 
-                                                className="action-button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleAddItem(item);
-                                                }} 
-                                            />
-                                        </div>
                                     </div>
                                 )}
                             </div>
-                        )))
+                        ))
                     }
+                    <div className="add-item">
+                        <button className="add-button-center" onClick={() => handleAddItem({ id: itemsList.length })}>
+                            + Add Item
+                        </button>
+                    </div>
                 </div>
                 <div className="scroll-button" style={{width: width}}>
                         <span>▼</span>

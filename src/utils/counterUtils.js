@@ -8,13 +8,17 @@ import { useState, useRef } from 'react';
  * @param {number} intervalDelay - Thời gian interval (mặc định 150ms).
  * @returns {object} - Trả về các hàm và giá trị: value, setValue, changeValue, handleMouseDown, handleMouseUp.
  */
-export const useCounter = (initialValue = 0, limit, step = 1, intervalDelay = 150) => {
+export const useCounter = (initialValue = 0, step = 1, intervalDelay = 150) => {
   const [value, setValue] = useState(initialValue);
   const intervalRef = useRef(null);
-  const [min, max] = limit;
+  const lastClickTimeRef = useRef(0); 
 
   // Hàm thay đổi giá trị theo kiểu "increase" hoặc "decrease"
-  const changeValue = (type) => {
+  const setCurrentValue = (value) =>{
+    setValue(value);
+  }
+  const changeValue = (type, limit) => {
+    const [min, max] = limit;
     setValue((prevValue) => {
       const newValue = type === "increase" ? prevValue + step : prevValue - step;
       if(min > 0){
@@ -27,10 +31,23 @@ export const useCounter = (initialValue = 0, limit, step = 1, intervalDelay = 15
     });
   };
 
-  const handleMouseDown = (type) => {
-    changeValue(type);
+  const handleMouseDown = (type, limit) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    changeValue(type, limit);
+    const now = Date.now();
+    const timeSinceLastClick = now - lastClickTimeRef.current;
+
+    if (timeSinceLastClick < 300) {
+      return;
+    }
+    lastClickTimeRef.current = now;
+
     intervalRef.current = setInterval(() => {
-      changeValue(type);
+      changeValue(type, limit);
     }, intervalDelay);
   };
 
@@ -39,5 +56,5 @@ export const useCounter = (initialValue = 0, limit, step = 1, intervalDelay = 15
     intervalRef.current = null;
   };
 
-  return { value, handleMouseDown, handleMouseUp };
+  return { value, handleMouseDown, handleMouseUp, setCurrentValue };
 };

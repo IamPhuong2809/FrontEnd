@@ -1,0 +1,12 @@
+.maps-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(155, 152, 152);
+    margin: 75px 0 0 125px;
+    width: 90vw;
+    height: 87vh;
+    border-radius: 5px;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}

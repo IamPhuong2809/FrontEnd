@@ -1,11 +1,13 @@
 import HeaderControl from "@components/Header/Header";
+import Menu from "@components/ControlMobile/Menu/Menu"
 
-const StateSystems = () => {
+const Infomation = () => {
     return (
         <div>
             <HeaderControl />
+            <Menu />
         </div>
     )
 }
 
-export default StateSystems;
+export default Infomation;

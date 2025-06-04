@@ -1,0 +1,84 @@
+/* Main container */
+.map-detail-choice {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    z-index: 1;
+}
+
+.map-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #d0e1ec;
+    color: #628491;
+    border: 2px solid #628491;
+    height: 40px;
+    width: calc(100% + 1px);
+    margin-left: -1px;
+    border-top-right-radius: 5px;
+}
+
+.map-detail-title {
+    font-weight: bold;
+}
+
+.map-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+  
+.map-button {
+    background: #f8f8f8;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    padding: 15px 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.map-button.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.map-button:hover {
+    transform: translateY(-5px);
+}
+
+.icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.download {
+    color: #4caf50;
+}
+
+.upload {
+    color: #4caf50;
+}
+
+.record {
+    color: red;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #666;
+}

@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from 'react'
 import './TeachPath.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
-import HeaderControl from '@components/Control_6dof/Header/Header'
+import HeaderControl from '@components/Header/Header'
 import List from '@components/Control_6dof/List/List'
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 import PopupScreen from '@components/Control_6dof/PopupTeachPath/PopupTeachPath'

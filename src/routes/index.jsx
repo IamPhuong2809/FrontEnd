@@ -4,7 +4,7 @@ import Homepage from '@features/Homepage/Homepage';
 import Control6dofRoutes from './6dofRoutes';
 import StateSystems from '@features/StateSystems/StateSystems';
 import AssignTask from '@features/AssignTask/AssignTask';
-import ControlMobile from '@features/ControlMobile/ControlMobile';
+import MobileRoutes from './MobileRoutes';
 
 function AppRoutes() {
   return (
@@ -15,7 +15,7 @@ function AppRoutes() {
         <Route path="/6dof/*" element={<Control6dofRoutes />} />
         <Route path="/StateSystems" element={<StateSystems />} />
         <Route path="/AssignTask" element={<AssignTask />} />
-        <Route path="/ControlMobile" element={<ControlMobile />} />
+        <Route path="/ControlMobile/*" element={< MobileRoutes />} />
       </Routes>
     </HashRouter>
   );

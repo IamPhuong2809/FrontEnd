@@ -51,7 +51,15 @@ const PopupGlobal = (props) => {
               body: JSON.stringify({ id, type: null })
           });
           const data = await response.json();
-          setPoints(data);
+          const updatedPoints = [
+            ...data,
+            {
+                id: data.length > 0 ? Math.max(...data.map(p => p.id)) + 1 : 1, // Tạo ID mới
+                name: "type_a_name"
+            }
+          ];
+          
+          setPoints(updatedPoints);
       } catch (error) {
           console.error("Error:", error);
       }
@@ -59,7 +67,8 @@ const PopupGlobal = (props) => {
 
     const handleSave = async () => {
       try {
-        const response = await fetch(url + "O0028/", {
+        if(inputName !== '') {
+          const response = await fetch(url + "O0028/", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json'
@@ -70,17 +79,30 @@ const PopupGlobal = (props) => {
               name: inputName,
               joint: joint,
             })
-        });
-        const data = await response.json()
-        if(data.success){
-          toast.success("Successfully save position!");
-        } else {
-          toast.error("Failed to save: " + data.error);
+          });
+          const data = await response.json()
+          if(data.success){
+            toast.success("Successfully save position!", {
+              style: {border: '1px solid green'}});
+          } else {
+            toast.error("Failed to save: " + data.error, {
+              style: {border: '1px solid red'}});
+          }
+          ClosePopup();
         }
-        ClosePopup();
+        else{
+          toast.error("Name point can't empty", {
+            style: {border: '1px solid red'}});
+        }
       } catch (error) {
           console.error("Error:", error);
       }
+  };
+
+  const handleKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    }
   };
 
 
@@ -183,6 +205,7 @@ const PopupGlobal = (props) => {
           className="teach-input" 
           value={inputName}
           onChange={(e) => setInputName(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </div>
 

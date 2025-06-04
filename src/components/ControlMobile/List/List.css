@@ -14,7 +14,7 @@
 .points-header {
   display: flex;
   background-color: #263339;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #473f3f;
   justify-content: space-between;
   align-items: center;
   height: 40px;
@@ -55,11 +55,11 @@
   flex-grow: 1;
 }
 
-.empty-list{
+.add-item{
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  margin-top: 200px;
   height: 500px; 
   text-align: center;
   color: #414141; 
@@ -83,6 +83,7 @@
   flex-direction: column;
   height: 68vh;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .point-item {

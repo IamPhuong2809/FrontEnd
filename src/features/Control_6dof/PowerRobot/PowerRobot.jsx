@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import HeaderControl from '@components/Control_6dof/Header/Header'
+import HeaderControl from '@components/Header/Header'
 import './PowerRobot.css'
 import Table from '@components/Control_6dof/Table/Table'
 import Menu from '@components/Control_6dof/Menu/Menu'
@@ -266,7 +266,7 @@ const PowerRobot = () => {
                 <div className={`status-item  ${robotData.Power ? 'active' : ''}`}>
                   {robotData.Power ? 'Powered' : 'No Power'}
                 </div>
-                <div className={`status-item  ${robotData.error  ? 'active' : ''}`}>
+                <div className={`status-item  ${robotData.error  ? '' : 'active'}`}>
                   {robotData.error ? 'Please check error id' : 'Do not have error'}
                 </div>
                 <div className={`status-item  ${robotData.busy ? 'active' : ''}`}>

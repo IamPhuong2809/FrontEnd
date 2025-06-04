@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './MovePath.css'
 import Menu from '@components/Control_6dof/Menu/Menu'
-import HeaderControl from '@components/Control_6dof/Header/Header'
+import HeaderControl from '@components/Header/Header'
 import List from '@components/Control_6dof/List/List'
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 import leftArrow from '@images/left-arrow.png'
@@ -147,6 +147,7 @@ const MovePath = () => {
                     body: JSON.stringify({
                         idPath: selectedPath.id,
                         idPoint: id,
+                        stepMode: isStepMode
                     }),
                 });
             } catch (error) {
@@ -164,7 +165,11 @@ const MovePath = () => {
                     {points && points.map((point, index) => (
                         <div 
                             key={point.id} 
-                            className={`point-item ${index === selectedPointIndex ? 'selected' : ''}`}
+                            className={`point-item ${
+                                index === selectedPointIndex ? 
+                                  (robotData.busy ? 'selected-busy' : 'selected') 
+                                  : ''
+                            }`}
                         >
                             <div className='point-no'>{point.id}</div>
                             <div className='point-name'>{point.name}</div>
