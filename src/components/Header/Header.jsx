@@ -3,7 +3,6 @@ import './Header.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logo from '@images/Logo_Horizon.png'; // Đảm bảo đường dẫn đúng
 import defaultAvatar from '@images/default-avatar.png';
-import { jwtDecode } from 'jwt-decode';
 
 function Header() {
     const navigate = useNavigate();
@@ -18,6 +17,9 @@ function Header() {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('gmail');
+        localStorage.removeItem('fullname');
         setUser(null);
         setShowDropdown(false);
         navigate('/login');
@@ -28,23 +30,25 @@ function Header() {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const decodedUser = jwtDecode(token);
-                    const currentTime = Date.now() / 1000;
-                    if (decodedUser.exp > currentTime) {
-                        setUser(decodedUser);
-                    } else {
-                        handleLogout();
-                    }
+                    const fullname = localStorage.getItem("fullname");
+                    const gmail = localStorage.getItem("gmail");
+
+                    setUser({
+                        name: fullname, // hoặc decoded.name tùy vào cấu trúc token
+                        email: gmail,
+                    });
                 } catch (error) {
                     console.error('Token không hợp lệ:', error);
-                    handleLogout();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('gmail');
+                    localStorage.removeItem('fullname');
                 }
             }
             setIsLoading(false);
         };
         
         checkAuth();
-    });
+    }, []);
 
     return (
         <header className="header">
@@ -66,9 +70,9 @@ function Header() {
                 <button className={`nav-item ${isControlMobile ? 'active' : ''}`} onClick={() => navigate('/ControlMobile/PowerMobile')}>MOBILE ROBOT</button>
                 <button className={`nav-item ${is6Dof ? 'active' : ''}`} onClick={() => navigate('/6dof/PowerRobot')}>6DOF ROBOT</button>
                 <button className={`nav-item ${isStateSystems ? 'active' : ''}`} onClick={() => navigate('/StateSystems')}>STATE SYSTEMS</button>
-            {isLoading ? (
+                {isLoading ? (
                     <div className="auth-placeholder"></div>
-                ) : (
+                ) : user ? (
                     <div className="avatar-container">
                         <img 
                             src={user?.avatar || defaultAvatar} 
@@ -78,12 +82,16 @@ function Header() {
                         />
                         <div className="avatar-dropdown" style={{ display: showDropdown ? 'block' : 'none' }}>
                             <div className="user-info">
-                                <span>{user?.name}</span>
-                                <span>{user?.email}</span>
+                                <span>{user?.name || "N/A"}</span>
+                                <span>{user?.email || "N/A"}</span>
                             </div>
                             <button onClick={handleLogout}>Logout</button>
                         </div>
                     </div>
+                ) : (
+                    <button className="login-button" onClick={() => navigate('/login')}>
+                        Login
+                    </button>
                 )}
             </ul>
         </header>

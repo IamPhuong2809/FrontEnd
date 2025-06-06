@@ -273,7 +273,7 @@ const PowerRobot = () => {
                   {robotData.busy ? 'Robot is ready to move' : 'Robot is not ready to move'}  
                 </div>
                 <div className={`status-item  ${robotData.ee ? 'active' : ''}`}>End-Effector ON</div>
-                <button className='btn-reset' onClick={handlePowerReset}>Reset</button>
+                <button className='btn-reset' onClick={handlePowerReset}>Reset Error</button>
                 <button className='btn-abort' onClick={handlePowerAbort}>Abort</button>
               </div>
             </div>
@@ -327,11 +327,11 @@ const PowerRobot = () => {
                 </div>
                 <div className='parameter-row'>
                   <span>SSH Speed</span>
-                  <span>0.00Mbps</span>
+                  <span>15Mbps</span>
                 </div>
                 <div className='parameter-row'>
                   <span>IP Address robot controller</span>
-                  <span>169. 147. 100 .220</span>
+                  <span>192.168.5.10</span>
                 </div>
               </div>
             </div>

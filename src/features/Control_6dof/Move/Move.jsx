@@ -87,7 +87,7 @@ const Move = () => {
     const [JointInput, setJointInput] = useState(initialJointInput);
     const [currentUnitShow, setCurrentUnitShow] = useState(1);
 
-    const UnitShow = ['°', 'cm'];
+    const UnitShow = ['°', 'mm'];
     const LabelShow = [
         ['J1', 'X',],
         ['J2', 'Y'],
@@ -447,7 +447,7 @@ const Move = () => {
                                                 <div className="joint-value">
                                                     {activeMoveButton === "Joint"
                                                         ? robotData.jointCurrent[`t${index + 1}`]?.toFixed(2) + "°"
-                                                        : Object.values(robotData.positionCurrent)[index]?.toFixed(2) + "cm"
+                                                        : Object.values(robotData.positionCurrent)[index]?.toFixed(2) + "mm"
                                                     }
                                                 </div>
 
@@ -471,7 +471,7 @@ const Move = () => {
                                                 <div className="joint-value">                                                    
                                                     {activeMoveButton === "Joint"
                                                         ? robotData.jointCurrent[`t${index + 4}`]?.toFixed(2) + "°"
-                                                        : Object.values(robotData.positionCurrent)[index + 3]?.toFixed(2) + "cm"
+                                                        : Object.values(robotData.positionCurrent)[index + 3]?.toFixed(2) + "mm"
                                                     }</div>
                                             </div>
                                         </div>

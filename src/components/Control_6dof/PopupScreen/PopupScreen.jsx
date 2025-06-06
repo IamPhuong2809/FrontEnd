@@ -85,7 +85,7 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
         const data = await response.json();
         if (data.success) { 
           toast.error("Movement Aborted!", {
-            style: { border: "1px solid red" },
+            style: { border: "1px solid green" },
           });
         } else {
           toast.error("Abort failed", {
@@ -94,9 +94,6 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
         }
       } catch (error) {
         console.error("Abort Error:", error);
-        toast.error("Error while aborting", {
-          style: { border: "1px solid red" },
-        });
       }
     };
 

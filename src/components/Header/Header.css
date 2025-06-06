@@ -118,16 +118,12 @@
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #1797e5;  /* Đổi màu viền sang màu chủ đạo */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* Thêm bóng đổ nhẹ */
     transition: all 0.3s ease;  /* Hiệu ứng mượt mà */
-    image-rendering: -webkit-optimize-contrast;  /* Tối ưu chất lượng ảnh */
-    image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor;
 }
 
 .user-avatar:hover {
@@ -199,6 +195,21 @@
     100% {
         background-position: -200% 0;
     }
+}
+
+.login-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 12px;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
 }
 
 

@@ -146,7 +146,7 @@ const MovePath = () => {
                     },
                     body: JSON.stringify({
                         idPath: selectedPath.id,
-                        idPoint: id,
+                        idPoint: id + 1,
                         stepMode: isStepMode
                     }),
                 });

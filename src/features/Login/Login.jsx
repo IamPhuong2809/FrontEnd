@@ -6,7 +6,8 @@ import Logo_ACIS from '@images/Logo_ACIS.png';
 import Robot from '@images/WebServer_Login_Image.png';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { setToken } from '../../services/auth';
+
+const url = "http://127.0.0.1:8000/api/"
 
 const Login = () => {
     const navigate = useNavigate();
@@ -15,27 +16,27 @@ const Login = () => {
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch(url + 'login/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
             
             const data = await response.json();
-
-            if (data.success) {
-                toast.success('Đăng nhập thành công!');
-                setToken(data.token); // Sử dụng hàm từ auth.js
+            if (data.message === 'success') {
+                toast.success('Login successfully!');
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("fullname", data.fullname);
+                localStorage.setItem("gmail", data.gmail);
                 navigate('/');
             } else {
-                toast.error('Đăng nhập thất bại!');
+                toast.error(data.message || "Login failed: No token received");
             }
             
         } catch (error) {
             console.error('Login error:', error);
-            toast.error('Đăng nhập thất bại!');
+            toast.error(`${error}`);
         }
     };
 

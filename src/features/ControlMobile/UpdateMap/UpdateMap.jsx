@@ -48,8 +48,11 @@ const UpdateMap = () => {
     const [areas, setAreas] = useState([]);
     const [selectedTool, setSelectedTool] = useState([]);
 
-        useEffect(() => {
-        if (!selectedMap || !selectedSite) {
+    useEffect(() => {
+        const savedMap = localStorage.getItem('selectedMap');
+        const savedSite = localStorage.getItem('selectedSite');
+
+        if (!savedMap || !savedSite) {
             toast.error('Please select a site and map first!', {
                 style: {border: '1px solid red'}
             });
@@ -72,8 +75,6 @@ const UpdateMap = () => {
         ros.on('error', (error) => {
             console.error('Error connecting to rosbridge:', error);
             setIsROSConnected(false);
-            toast.error("Failed to connect ros!", {
-                style: {border: '1px solid red'}});
         });
 
         ros.on('close', () => {

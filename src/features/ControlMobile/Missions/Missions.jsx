@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { data, useNavigate } from 'react-router-dom'; 
+import React, { useEffect, useRef, useState} from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import ROSLIB from 'roslib';
 import toast from 'react-hot-toast';
 import HeaderControl from "@components/Header/Header";
@@ -7,10 +7,10 @@ import Menu from "@components/ControlMobile/Menu/Menu"
 import { useMapContext } from '@components/ControlMobile/MapContext';
 import './Missions.css'
 
-const url = "http://127.0.0.1:8000/api/";
+// const url = "http://127.0.0.1:8000/api/";
 
 const Missions = () => {
-    const { selectedMap, selectedSite, updateSelection } = useMapContext(); 
+    const { selectedMap, selectedSite } = useMapContext(); 
     const navigate = useNavigate();
 
     const [isROSConnected, setIsROSConnected] = useState(false);
@@ -24,8 +24,9 @@ const Missions = () => {
     const [isControlling, setIsControlling] = useState(false);
     const lastTwist = useRef(null);
 
-    const [isStartRecord, setIsStartRecord] = useState(true);
-    const [isRecording, setIsRecording] = useState(false);
+    // const [isStartRecord, setIsStartRecord] = useState(true);
+    // const [isRecording, setIsRecording] = useState(false);
+    let isRecording = false;
     const [currentDirection, setCurrentDirection] = useState('');
     const [joystickIntensity, setJoystickIntensity] = useState(0);
     const [dragging, setDragging] = useState(false);
@@ -40,7 +41,10 @@ const Missions = () => {
     const startLocalizationRef = useRef(null);
 
     useEffect(() => {
-        if (!selectedMap || !selectedSite) {
+        const savedMap = localStorage.getItem('selectedMap');
+        const savedSite = localStorage.getItem('selectedSite');
+
+        if (!savedMap || !savedSite) {
             toast.error('Please select a site and map first!', {
                 style: {border: '1px solid red'}
             });
@@ -63,8 +67,6 @@ const Missions = () => {
         ros.on('error', (error) => {
             console.error('Error connecting to rosbridge:', error);
             setIsROSConnected(false);
-            toast.error("Failed to connect ros!", {
-                style: {border: '1px solid red'}});
         });
 
         ros.on('close', () => {
@@ -531,21 +533,21 @@ const Missions = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.5;
+                twist.linear.x = 0.1;
                 break;
             case 'turn-left':
-                twist.linear.x = 0.5;
-                twist.angular.z = 0.5;
+                twist.linear.x = 0.05;
+                twist.angular.z = 0.1;
                 break;
             case 'turn-right':
-                twist.linear.x = 0.5;
-                twist.angular.z = -0.5;
+                twist.linear.x = 0.05;
+                twist.angular.z = -0.1;
                 break;
             case 'left':
-                twist.angular.z = 0.5;
+                twist.angular.z = 0.4;
                 break;
             case 'right':
-                twist.angular.z = -0.5;
+                twist.angular.z = -0.4;
                 break;
             default:
                 break;

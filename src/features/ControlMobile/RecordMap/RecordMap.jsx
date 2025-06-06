@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { data, useNavigate } from 'react-router-dom'; 
 import ROSLIB from 'roslib';
 import toast from 'react-hot-toast';
@@ -10,7 +10,7 @@ import './RecordMap.css'
 const url = "http://127.0.0.1:8000/api/";
 
 const RecordMaps = () => {
-    const { selectedMap, selectedSite, updateSelection } = useMapContext(); 
+    const { selectedMap, selectedSite} = useMapContext(); 
     const navigate = useNavigate();
 
     const [isROSConnected, setIsROSConnected] = useState(false);
@@ -40,7 +40,10 @@ const RecordMaps = () => {
     const startLocalizationRef = useRef(null);
 
     useEffect(() => {
-        if (!selectedMap || !selectedSite) {
+        const savedMap = localStorage.getItem('selectedMap');
+        const savedSite = localStorage.getItem('selectedSite');
+
+        if (!savedMap || !savedSite) {
             toast.error('Please select a site and map first!', {
                 style: {border: '1px solid red'}
             });
@@ -63,8 +66,6 @@ const RecordMaps = () => {
         ros.on('error', (error) => {
             console.error('Error connecting to rosbridge:', error);
             setIsROSConnected(false);
-            toast.error("Failed to connect ros!", {
-                style: {border: '1px solid red'}});
         });
 
         ros.on('close', () => {
@@ -530,21 +531,21 @@ const RecordMaps = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.5;
+                twist.linear.x = 0.1;
                 break;
             case 'turn-left':
-                twist.linear.x = 0.5;
-                twist.angular.z = 0.5;
+                twist.linear.x = 0.05;
+                twist.angular.z = 0.1;
                 break;
             case 'turn-right':
-                twist.linear.x = 0.5;
-                twist.angular.z = -0.5;
+                twist.linear.x = 0.05;
+                twist.angular.z = -0.1;
                 break;
             case 'left':
-                twist.angular.z = 0.5;
+                twist.angular.z = 0.4;
                 break;
             case 'right':
-                twist.angular.z = -0.5;
+                twist.angular.z = -0.4;
                 break;
             default:
                 break;
@@ -636,6 +637,9 @@ const RecordMaps = () => {
     };
 
     const handleBack = () => {
+        localStorage.removeItem('selectedMap');
+        localStorage.removeItem('selectedSite');
+
         navigate('/ControlMobile/Maps', {
             state: {
                 selectedMapBack: selectedMap,
