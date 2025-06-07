@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast';
 import './List.css'
-import deleteItems from '@images/deleteItems.png'
-import renameItem from '@images/renameItem.png'
-import deleteItem from '@images/deleteItem.png'
-import addItem from '@images/addItem.png'
-import copyItem from '@images/copyItem.png'
+import { FaTrash, FaPen, FaPlus, FaCopy } from 'react-icons/fa';
 import Rename from '@components/Rename/Rename'
 import ConfirmDelete from '@components/ConfirmDelete/ConfirmDelete'
 
@@ -284,11 +280,11 @@ const List = (props) => {
                         <span>No. {headerName}</span>
                     </div>
                     <div className="point-header-img">
-                        <img 
-                          src={deleteItems} 
-                          alt="delete-all" 
-                          className="button-delete"
-                          onClick={(e) => handleDeleteAllConfirm(e)} 
+                        <FaTrash
+                            style={{ color: '#f23a3a', cursor: 'pointer' }} 
+                            alt="delete-all" 
+                            className="button-delete"
+                            onClick={(e) => handleDeleteAllConfirm(e)} 
                         />
                     </div>
                 </div>
@@ -311,7 +307,7 @@ const List = (props) => {
                                 draggable={true}
                                 onDragStart={(e) => handleDragStart(e, item)}
                                 onDragOver={(e) => handleDragOver(e, item)}
-                                onDragLeave={handleDragLeave}
+                                onDragLeave={handleDragLeave}   
                                 onDrop={(e) => handleDrop(e, item)}
                                 onDragEnd={handleDragEnd}
                             >
@@ -322,39 +318,46 @@ const List = (props) => {
                                     <div className="item-actions">
                                         <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Rename</div>
-                                            <img 
-                                                src={renameItem} 
-                                                alt="Rename" 
-                                                className="action-button" 
+                                            <FaPen
+                                                style={{ color: '#ed7e1c', cursor: 'pointer' }} 
+                                                className="action-button"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleRenameItem(item);
                                                 }}
                                             />
                                         </div>
+                                    
                                         <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Copy</div>
-                                            <img src={copyItem} alt="Copy" className="action-button" />
+                                            <FaCopy
+                                                style={{ color: '#40cde6', cursor: 'pointer' }} 
+                                                className="action-button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // handleCopyItem?.(item); // Nếu có handleCopyItem
+                                                }}
+                                            />
                                         </div>
+                                    
                                         <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Delete</div>
-                                            <img 
-                                                src={deleteItem} 
-                                                alt="Delete" 
-                                                className="action-button" 
+                                            <FaTrash
+                                                style={{ color: '#f87171', cursor: 'pointer' }} 
+                                                className="action-button"
                                                 onClick={(e) => handleDeleteClick(item, e)}
                                             />
                                         </div>
+                                    
                                         <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Add</div>
-                                            <img 
-                                                src={addItem} 
-                                                alt="Add" 
+                                            <FaPlus
+                                                style={{ color: '#1ced1c', cursor: 'pointer' }} 
                                                 className="action-button"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleAddItem(item);
-                                                }} 
+                                                }}
                                             />
                                         </div>
                                     </div>

@@ -15,14 +15,14 @@ const Menu = () => {
         "/ControlMobile/Missions",
         "/ControlMobile/RecordMap",
         "/ControlMobile/UpdateMap",
-        "/ControlMobile/Infomation",
+        // "/ControlMobile/Infomation",
     ]
 
     const getActiveIndex = () => {
         return tooltipsLink.findIndex(link => location.pathname === link);
     };
     
-    const logos = [logo1, logo4, logo2, logo6, logo6, logo6];
+    const logos = [logo1, logo4, logo2, logo6, logo6];
     // Mảng chứa nội dung tooltip cho từng button
     const tooltips = [
         "Power Mobile",
@@ -30,7 +30,7 @@ const Menu = () => {
         "Missions",
         "RecordMap",
         "UpdateMap",
-        "Information"
+        // "Information"
         ];
 
     const formatPath = (text) => {

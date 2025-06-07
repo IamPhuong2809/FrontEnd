@@ -41,7 +41,7 @@ const Maps = () => {
 
     useEffect(() => {
         fetchLoadData();
-    }, [selectedMapBack, selectedSiteBack]); 
+    }, []); 
 
     const LoadMapInDB = async (id) => {
         try {
