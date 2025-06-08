@@ -6,9 +6,8 @@ import List from '@components/ControlMobile/List/List'
 import TaskBar from '@components/ControlMobile/TaskBar/TaskBar'
 import PopupScreen from '@components/ControlMobile/PopupMap/PopupMap'
 import Loading from '@components/Loading/Loading'
+import { API_URL } from '@utils/config';
 import './Maps.css'
-
-const url = "http://127.0.0.1:8000/api/";
 
 const Maps = () => {
 
@@ -26,7 +25,7 @@ const Maps = () => {
 
     const fetchLoadData = async (id) => {
         try {
-            const response = await fetch(url + "O0031/", {
+            const response = await fetch(API_URL + "O0031/", {
                 method: "GET",
             });
             const data = await response.json();
@@ -45,7 +44,7 @@ const Maps = () => {
 
     const LoadMapInDB = async (id) => {
         try {
-            const response = await fetch(url + "map/", {
+            const response = await fetch(API_URL + "map/", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, type: null })

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PopupTeachPath.css';
 import toast from 'react-hot-toast';
-const url = "http://127.0.0.1:8000/api/"
+import { API_URL } from '@utils/config';
 
 const PopupTeachPath = (props) => {
     const {
@@ -21,7 +21,7 @@ const PopupTeachPath = (props) => {
         defaultValue: 'LIN'
         },
         {
-        label: 'CONT',
+        label: 'EE',
         type: 'select',
         options: ['FALSE', 'TRUE'], // 3 item cho dropdown
         defaultValue: 'FALSE'
@@ -79,7 +79,7 @@ const PopupTeachPath = (props) => {
 
     const handleSave = async () => {
         try {
-            const response = await fetch(url + "O0016/", {
+            const response = await fetch(API_URL + "O0016/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const PopupTeachPath = (props) => {
 
       const fetchLoadData = async () => {
           try {
-            const response = await fetch(url + "point/", {
+            const response = await fetch(API_URL + "point/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,7 +117,7 @@ const PopupTeachPath = (props) => {
               switch (param.label) {
                   case 'Motion Typ':
                   return data[0].motion;
-                  case 'CONT':
+                  case 'EE':
                   return data[0].cont ? 'TRUE' : 'FALSE';
                   case 'Stop Point':
                   return data[0].stop ? 'TRUE' : 'FALSE';

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import './PopupScreen.css';
-const url = "http://127.0.0.1:8000/api/"
+import { API_URL } from '@utils/config';
 
 
 const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
@@ -24,7 +24,7 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
 
   const fetchLoadData = async () => {
       try {
-          const response = await fetch(url + "global/", {
+          const response = await fetch(API_URL + "global/", {
               method: "POST",
               headers: {
                   "Content-Type": "application/json",
@@ -56,7 +56,7 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
 
   const handleMove = async () => {
     try {
-      const response = await fetch(url + "O0014/", {
+      const response = await fetch(API_URL + "O0014/", {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
     
     const handleAbort = async () => {
       try {
-        const response = await fetch(url + "O0015/", {
+        const response = await fetch(API_URL + "O0015/", {
           method: "GET",
         });
     

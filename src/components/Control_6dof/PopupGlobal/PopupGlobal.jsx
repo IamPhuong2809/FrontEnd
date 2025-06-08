@@ -2,9 +2,7 @@ import React, { useState, useEffect }  from 'react';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
 import './PopupGlobal.css';
-
-const url = "http://127.0.0.1:8000/api/";
-
+import { API_URL } from '@utils/config';
 
 const PopupGlobal = (props) => {
     const { 
@@ -22,7 +20,7 @@ const PopupGlobal = (props) => {
 
     const fetchLoadData = async (id) => {
         try {
-            const response = await fetch(url + "O0006/", {
+            const response = await fetch(API_URL + "O0006/", {
                 method: "GET",
             });
             const data = await response.json();
@@ -55,7 +53,7 @@ const PopupGlobal = (props) => {
             style: {border: '1px solid red'}});
         }
         else{
-          const response = await fetch(url + "O0027/", {
+          const response = await fetch(API_URL + "O0027/", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json'

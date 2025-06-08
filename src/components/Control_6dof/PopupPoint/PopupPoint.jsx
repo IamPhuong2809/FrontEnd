@@ -2,8 +2,7 @@ import React, { useState, useEffect }  from 'react';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
 import './PopupPoint.css';
-
-const url = "http://127.0.0.1:8000/api/";
+import { API_URL } from '@utils/config';
 
 
 const PopupGlobal = (props) => {
@@ -29,7 +28,7 @@ const PopupGlobal = (props) => {
 
     const fetchLoadData = async (id) => {
         try {
-            const response = await fetch(url + "O0007/", {
+            const response = await fetch(API_URL + "O0007/", {
                 method: "GET",
             });
             const data = await response.json();
@@ -45,7 +44,7 @@ const PopupGlobal = (props) => {
 
     const LoadPointInDB = async (id) => {
       try {
-          const response = await fetch(url + "point/", {
+          const response = await fetch(API_URL + "point/", {
               method: "POST",
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ id, type: null })
@@ -68,7 +67,7 @@ const PopupGlobal = (props) => {
     const handleSave = async () => {
       try {
         if(inputName !== '') {
-          const response = await fetch(url + "O0028/", {
+          const response = await fetch(API_URL + "O0028/", {
             method: "POST",
             headers: {
               'Content-Type': 'application/json'

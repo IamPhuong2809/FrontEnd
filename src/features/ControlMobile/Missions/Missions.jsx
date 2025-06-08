@@ -5,9 +5,8 @@ import toast from 'react-hot-toast';
 import HeaderControl from "@components/Header/Header";
 import Menu from "@components/ControlMobile/Menu/Menu"
 import { useMapContext } from '@components/ControlMobile/MapContext';
+import { API_URL } from '@utils/config';
 import './Missions.css'
-
-// const url = "http://127.0.0.1:8000/api/";
 
 const Missions = () => {
     const { selectedMap, selectedSite } = useMapContext(); 
@@ -40,6 +39,14 @@ const Missions = () => {
     const backupMapRef = useRef(null);
     const startLocalizationRef = useRef(null);
 
+    const missions = [
+        { id: 1, title: 'Charge robot' },
+        { id: 2, title: 'Inspect equipment' },
+        { id: 3, title: 'Deliver package' },
+        { id: 4, title: 'Security patrol' },
+        { id: 5, title: 'Data collection' },
+    ];
+
     useEffect(() => {
         const savedMap = localStorage.getItem('selectedMap');
         const savedSite = localStorage.getItem('selectedSite');
@@ -54,8 +61,9 @@ const Missions = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://192.168.5.110:9090', // đổi nếu ROS chạy trên máy khác
         });
+
 
         ros.on('connection', () => {
             console.log('Connected to rosbridge');
@@ -135,7 +143,7 @@ const Missions = () => {
         //Vel pub
         cmdVelPublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/diff_cont/cmd_vel_unstamped',
+            name: '/diff_base_controller/cmd_vel_unstamped',
             messageType: 'geometry_msgs/msg/Twist',
         });
 
@@ -446,7 +454,7 @@ const Missions = () => {
         
         ctx.beginPath();
         ctx.arc(x0, height - y0, 2, 0, 2 * Math.PI);
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = 'red';
         ctx.fill();
         
         const x = (position.x - origin.x) / resolution;
@@ -488,8 +496,7 @@ const Missions = () => {
         else if (deg >= -157.5 && deg < -112.5) direction = 'turn-left'
         else if (deg >= 135 || deg < -157.5) direction = 'left';
         else {
-            handleJoystickStop();
-            intensity = 0;
+            direction = 'rear';
         }
 
         handleJoystickMove(direction, intensity);
@@ -544,10 +551,10 @@ const Missions = () => {
                 twist.angular.z = -0.1;
                 break;
             case 'left':
-                twist.angular.z = 0.4;
+                twist.angular.z = 0.05;
                 break;
             case 'right':
-                twist.angular.z = -0.4;
+                twist.angular.z = -0.5;
                 break;
             default:
                 break;
@@ -580,6 +587,10 @@ const Missions = () => {
         cmdVelPublisher.current.publish(stopTwist);
         lastTwist.current = stopTwist;
     };
+
+    const handleMissionClick = (id) => {
+        console.log(id)
+    }
     //#endregion
 
     return (
@@ -603,7 +614,7 @@ const Missions = () => {
                         <div>Site: <strong>{selectedSite?.name || 'N/A'}</strong></div>
                         <div>Map: <strong>{selectedMap?.name || 'N/A'}</strong></div>
                     </div>
-                    <div className="joystick-container">
+                    <div className="joystick-container-missions">
                         <div className={`joystick-base`} ref={baseRef}>
                             <div className="joystick-direction up">↑</div>
                             <div className="joystick-direction down">↓</div>
@@ -616,9 +627,39 @@ const Missions = () => {
                             />
                         </div>
                     </div>
-                    <div className={`joystick-status ${currentDirection ? 'active' : ''}`}>
+                    <div className={`joystick-status-missions ${currentDirection ? 'active' : ''}`}>
                         <div>Direction: {currentDirection || 'Stopped'}</div>
                         <div>Power: {(joystickIntensity * 100).toFixed(0)}%</div>
+                    </div>
+
+                    <div className="missions-container">
+                        <h1 className="missions-title">Missions</h1>
+
+                        <div className="missions-description">
+                            Create and edit missions
+                        </div>
+                        
+                        <button className="create-mission-btn">
+                            + Create mission
+                        </button>
+                        <div className="missions-list">
+                            {missions.length > 0 ? (
+                                missions.map(mission => (
+                                <div 
+                                    key={mission.id}
+                                    className="mission-item clickable"
+                                    onClick={() => handleMissionClick(mission.id)}
+                                >
+                                    <span className="mission-id">{mission.id}.</span>
+                                    <h2 className="mission-title">{mission.title}</h2>
+                                </div>
+                                ))
+                            ) : (
+                                <div className="no-missions">
+                                    No missions was found
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

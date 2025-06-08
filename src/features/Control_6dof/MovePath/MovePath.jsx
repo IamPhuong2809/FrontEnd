@@ -11,8 +11,8 @@ import playIcon from '@images/play.png'
 import pauseIcon from '@images/pause.png'
 import { useRobotData } from '@components/Control_6dof/RobotData'
 import Loading from '@components/Loading/Loading'
+import { API_URL } from '@utils/config';
 
-const url = "http://127.0.0.1:8000/api/"
 
 const MovePath = () => {
 
@@ -23,7 +23,7 @@ const MovePath = () => {
     
         const fetchLoadData = async (id) => {
             try {
-                const response = await fetch(url + "O0008/", {
+                const response = await fetch(API_URL + "O0008/", {
                     method: "GET",
                 });
                 const data = await response.json();
@@ -40,7 +40,7 @@ const MovePath = () => {
     
         const LoadPointInDB = async (id) => {
             try {
-                const response = await fetch(url + "point/", {
+                const response = await fetch(API_URL + "point/", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id, type: null })
@@ -139,7 +139,7 @@ const MovePath = () => {
 
         const SendId = async (id) => {
             try {
-                fetch(url + "O0026/", {
+                fetch(API_URL + "O0026/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

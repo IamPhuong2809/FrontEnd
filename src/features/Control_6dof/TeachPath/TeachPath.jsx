@@ -7,8 +7,8 @@ import List from '@components/Control_6dof/List/List'
 import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 import PopupScreen from '@components/Control_6dof/PopupTeachPath/PopupTeachPath'
 import Loading from '@components/Loading/Loading'
+import { API_URL } from '@utils/config';
 
-const url = "http://127.0.0.1:8000/api/";
 
 const TeachPath = () => {
 
@@ -23,7 +23,7 @@ const TeachPath = () => {
 
     const fetchLoadData = async (id) => {
         try {
-            const response = await fetch(url + "O0007/", {
+            const response = await fetch(API_URL + "O0007/", {
                 method: "GET",
             });
             const data = await response.json();
@@ -40,7 +40,7 @@ const TeachPath = () => {
 
     const LoadPointInDB = async (id) => {
         try {
-            const response = await fetch(url + "point/", {
+            const response = await fetch(API_URL + "point/", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, type: null })

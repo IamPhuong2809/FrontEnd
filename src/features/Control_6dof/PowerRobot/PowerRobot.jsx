@@ -5,9 +5,7 @@ import Table from '@components/Control_6dof/Table/Table'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import { handleInputChange } from '@utils/inputValidation';
 import { useRobotData } from '@components/Control_6dof/RobotData'
-
-const url = "http://127.0.0.1:8000/api/"
-
+import { API_URL } from '@utils/config';
 
 const PowerRobot = () => {
     const { robotData} = useRobotData();
@@ -18,6 +16,9 @@ const PowerRobot = () => {
     ];
     // Khai báo cho từng card
     //#region Card Power
+    useEffect(() =>{
+      setPowerRobot(robotData["S"])
+    }, [robotData["S"]])
     //#endregion
 
     //#region Card Axis
@@ -80,7 +81,7 @@ const PowerRobot = () => {
 
     //#region Card Home Position
     const defaultPosition = [
-        { label: "X", input: 170.09 },
+        { label: "X", input: 1000.01 },
         { label: "Y", input: -223.05 },
         { label: "Z", input: 432.71 },
         { label: "Rl", input: 177.64 },
@@ -99,7 +100,7 @@ const PowerRobot = () => {
 
     const handlePowerOff = async () => {
         try {
-            fetch(url + "O0000/", {
+            fetch(API_URL + "O0000/", {
                 method: 'GET',
             });
         } catch (error) {
@@ -109,7 +110,7 @@ const PowerRobot = () => {
 
     const handlePowerOn = async () => {
         try {
-            fetch(url + "O0001/", {
+            fetch(API_URL + "O0001/", {
                 method: 'GET',
             });
         } catch (error) {
@@ -119,7 +120,7 @@ const PowerRobot = () => {
 
     const handlePowerReset = async () => {
         try {
-            fetch(url + "O0002/", {
+            fetch(API_URL + "O0002/", {
                 method: 'GET',
             });
         } catch (error) {
@@ -129,7 +130,7 @@ const PowerRobot = () => {
 
     const handlePowerAbort = async () => {
         try {
-            fetch(url + "O0003/", {
+            fetch(API_URL + "O0003/", {
                 method: 'GET',
             });
         } catch (error) {
@@ -140,7 +141,7 @@ const PowerRobot = () => {
     const handleHomePositionSave = async () => {
         try {
             const homeInputs = homePosition.map(homeInput => parseFloat(homeInput.input));
-            fetch(url + "O0010/", {
+            fetch(API_URL + "O0010/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -154,7 +155,7 @@ const PowerRobot = () => {
 
     const handleUsePosition = async (id) => {
         try {
-            const response = await fetch(url + "O0011/", {
+            const response = await fetch(API_URL + "O0011/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -170,7 +171,7 @@ const PowerRobot = () => {
 
     const handleDeletePosition = async (id) => {
         try {
-            const response = await fetch(url + "O0012/", {
+            const response = await fetch(API_URL + "O0012/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -269,8 +270,8 @@ const PowerRobot = () => {
                 <div className={`status-item  ${robotData.error  ? '' : 'active'}`}>
                   {robotData.error ? 'Please check error id' : 'Do not have error'}
                 </div>
-                <div className={`status-item  ${robotData.busy ? 'active' : ''}`}>
-                  {robotData.busy ? 'Robot is ready to move' : 'Robot is not ready to move'}  
+                <div className={`status-item  ${!robotData.busy ? 'active' : ''}`}>
+                  {robotData.busy ? 'Robot is busy' : 'Robot is ready to move'}  
                 </div>
                 <div className={`status-item  ${robotData.ee ? 'active' : ''}`}>End-Effector ON</div>
                 <button className='btn-reset' onClick={handlePowerReset}>Reset Error</button>

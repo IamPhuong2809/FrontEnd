@@ -5,9 +5,8 @@ import toast from 'react-hot-toast';
 import HeaderControl from "@components/Header/Header";
 import Menu from "@components/ControlMobile/Menu/Menu"
 import { useMapContext } from '@components/ControlMobile/MapContext';
+import { API_URL } from '@utils/config';
 import './RecordMap.css'
-
-const url = "http://127.0.0.1:8000/api/";
 
 const RecordMaps = () => {
     const { selectedMap, selectedSite} = useMapContext(); 
@@ -53,7 +52,7 @@ const RecordMaps = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://192.168.5.110:9090', // đổi nếu ROS chạy trên máy khác
         });
 
         ros.on('connection', () => {
@@ -134,7 +133,7 @@ const RecordMaps = () => {
         //Vel pub
         cmdVelPublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/diff_cont/cmd_vel_unstamped',
+            name: '/diff_base_controller/cmd_vel_unstamped',
             messageType: 'geometry_msgs/msg/Twist',
         });
 
@@ -486,8 +485,7 @@ const RecordMaps = () => {
         else if (deg >= -157.5 && deg < -112.5) direction = 'turn-left'
         else if (deg >= 135 || deg < -157.5) direction = 'left';
         else {
-            handleJoystickStop();
-            intensity = 0;
+            direction = 'rear';
         }
 
         handleJoystickMove(direction, intensity);
@@ -531,24 +529,28 @@ const RecordMaps = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.1;
+                twist.linear.x = 0.05;
                 break;
             case 'turn-left':
-                twist.linear.x = 0.05;
-                twist.angular.z = 0.1;
+                twist.linear.x = 0.025;
+                twist.angular.z = 0.05;
                 break;
             case 'turn-right':
-                twist.linear.x = 0.05;
-                twist.angular.z = -0.1;
+                twist.linear.x = 0.025;
+                twist.angular.z = -0.05;
                 break;
             case 'left':
-                twist.angular.z = 0.4;
+                twist.angular.z = 0.0015;
                 break;
             case 'right':
-                twist.angular.z = -0.4;
+                twist.angular.z = -0.0015;
+                break;
+            case 'rear':
+                twist.linear.x = -0.05;
                 break;
             default:
                 break;
+                
         }
 
         lastTwist.current = twist;
@@ -610,7 +612,7 @@ const RecordMaps = () => {
         startLocalizationRef.current?.();
 
         try {
-            const response = await fetch(url + 'save_map/', {
+            const response = await fetch(API_URL + 'save_map/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

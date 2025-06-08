@@ -1,10 +1,10 @@
 import { createContext, useState, useContext, useEffect } from "react";
-
-const url = "http://127.0.0.1:8000/api/"
+import { API_URL } from '@utils/config';
 
 const RobotContext = createContext();
 
 export const ReceiveRobotData = ({ children }) => {
+    
     const [robotData, setRobotData] = useState({
         Power: false,
         S: false,
@@ -24,7 +24,7 @@ export const ReceiveRobotData = ({ children }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(url + "I1001/"); // Gọi API
+                const response = await fetch(API_URL + "I1001/"); // Gọi API
                 const data = await response.json();
                 setRobotData(data);
             } catch (error) {

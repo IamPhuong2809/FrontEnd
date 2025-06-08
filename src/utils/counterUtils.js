@@ -20,7 +20,7 @@ export const useCounter = (initialValue = 0, step = 1, intervalDelay = 150) => {
   const changeValue = (type, limit) => {
     const [min, max] = limit;
     setValue((prevValue) => {
-      const newValue = type === "increase" ? prevValue + step : prevValue - step;
+      const newValue = type === "increase" ? (prevValue + step).toFixed(2) : (prevValue - step).toFixed(2);
       if(min > 0){
         if(prevValue === min*0.2 && type === "increase")
           return min;

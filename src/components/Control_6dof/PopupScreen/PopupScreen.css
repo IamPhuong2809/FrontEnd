@@ -76,6 +76,9 @@
 }
   
 .note-section {
+    display: flex;
+    flex-direction: column;
+    position: relative;
     flex: 1;
     background-color: white;
     border-radius: 5px;
@@ -194,6 +197,7 @@
     flex-direction: column;
     position: relative;
     margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .move-button, .abort-button {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast';
 import './List.css'
-import { FaTrash, FaPen, FaPlus, FaCopy } from 'react-icons/fa';
+import { FaTrash, FaPen} from 'react-icons/fa';
 import Rename from '@components/Rename/Rename'
 import ConfirmDelete from '@components/ConfirmDelete/ConfirmDelete'
 

@@ -6,8 +6,7 @@ import HeaderControl from '@components/Header/Header';
 import Input from '@components/Control_6dof/Input/Input';
 import toast from 'react-hot-toast';
 import Loading from '@components/Loading/Loading'
-
-const url = "http://127.0.0.1:8000/api/";
+import { API_URL } from '@utils/config';
 
 const Configuration = () => {
 
@@ -19,7 +18,7 @@ const Configuration = () => {
 
     const fetchLoadData = async (id) => {
         try {
-            const response = await fetch(url + "O0005/", {
+            const response = await fetch(API_URL + "O0005/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -38,7 +37,7 @@ const Configuration = () => {
 
     const handleWriteToRobot = async () => {
         try {
-            const response = await fetch(url + "O0013/", {
+            const response = await fetch(API_URL + "O0013/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

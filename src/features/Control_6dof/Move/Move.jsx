@@ -6,11 +6,11 @@ import Menu from '@components/Control_6dof/Menu/Menu';
 import HeaderControl from '@components/Header/Header';
 import PopupGlobal from '@components/Control_6dof/PopupGlobal/PopupGlobal'
 import PopupPoint from '@components/Control_6dof/PopupPoint/PopupPoint'
+import ModelRobot from '@images/ModelRobot.jpg';
 import { handleInputChange } from '@utils/inputValidation';
 import { useCounter } from '@utils/counterUtils';
 import { useRobotData } from '@components/Control_6dof/RobotData';
-
-const url = "http://127.0.0.1:8000/api/"
+import { API_URL } from '@utils/config';
 
 const Move = () => {
     const navigate = useNavigate();
@@ -29,13 +29,13 @@ const Move = () => {
         value: velocity,
         handleMouseDown: handleMouseDownVelocity,
         handleMouseUp: handleMouseUpVelocity
-      } = useCounter(5, 1, 150);
+      } = useCounter(50, 1, 150);
     
     const {
         value: acceleration,
         handleMouseDown: handleMouseDownAcceleration,
         handleMouseUp: handleMouseUpAcceleration
-    } = useCounter(5, 1, 150);
+    } = useCounter(50, 1, 150);
     //#endregion
 
     const handleJogButtonClick = (label) => {
@@ -58,6 +58,7 @@ const Move = () => {
             jointCounters[4].setCurrentValue(robotData.positionCurrent.pt);
             jointCounters[5].setCurrentValue(robotData.positionCurrent.yw);
         }
+        handleType(label);
     };
 
     const handleMoveButtonClick = (label) => {
@@ -65,6 +66,7 @@ const Move = () => {
         setActiveJogButton(null);
         setIsJog(false);
         setCurrentUnitShow(label === "Joint" ? 0 : 1);
+        handleType(label)
     };
     //#endregion
 
@@ -98,12 +100,12 @@ const Move = () => {
     ];
 
     const LimitRangeRobot = [
-        [[-180, 180],[-20, 100]],
-        [[-90, 90],[-90, 90]],
-        [[-45, 135],[0, 145]],
-        [[-90, 90],[-180, 180]],
-        [[-90, 90],[-180, 180]],
-        [[-180, 180],[-180, 180]],
+        [[0, 180],[-200, 1000]],
+        [[0, 180],[-900, 900]],
+        [[0, 135],[0, 1450]],
+        [[0, 180],[-180, 180]],
+        [[0, 180],[-180, 180]],
+        [[0, 359],[-180, 180]],
     ]
 
     const {
@@ -204,9 +206,26 @@ const Move = () => {
     //#endregion
 
     //#region Backend
+
+    const handleType = async (type) => {
+        try {
+            fetch(API_URL + "jog/", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: type
+                })
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const handleEMG = async () => {
         try {
-            fetch(url + "EMG/", {method: 'GET'});
+            fetch(API_URL + "EMG/", {method: 'GET'});
         } catch (error) {
             console.error('Error:', error);
         }
@@ -215,7 +234,7 @@ const Move = () => {
     const sendJointUpdate = async (newJointInput) => {
         try {
             const jointValues = newJointInput.map(joint => joint.value);
-            fetch(url + 'O0025/', {
+            fetch(API_URL + 'O0025/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -223,8 +242,8 @@ const Move = () => {
                 body: JSON.stringify({
                     joint: jointValues,
                     jogMode: activeJogButton,
-                    velocity: velocity,
-                    acceleration: acceleration
+                    velocity: velocity*5/100,
+                    acceleration: acceleration*5/100
                 })
             });
         } catch (error) {
@@ -243,7 +262,7 @@ const Move = () => {
             }));
             setJointInput(newJointInput);
             const jointInputs = JointInput.map(joint => parseFloat(joint.input));
-            fetch(url + 'O0022/', {
+            fetch(API_URL + 'O0022/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -262,7 +281,7 @@ const Move = () => {
 
     const handleAbort = async () => {
         try {
-            fetch(url + "O0023/", {
+            fetch(API_URL + "O0023/", {
                 method: 'GET'
             });
             // const data = await response.json();
@@ -273,7 +292,7 @@ const Move = () => {
 
     const handleMoveToHome = async () => {
         try {
-            fetch(url + "O0024/", {
+            fetch(API_URL + "O0024/", {
                 method: 'GET'   
             });
             // const data = await response.json();
@@ -317,8 +336,7 @@ const Move = () => {
                     <div className="axis-title">MOVE AXIS</div>
                     <div className="robot-visualization">
                         <div className="robot-arm">
-                            <div className="robot-base"></div>
-                            <div className="robot-arm-upper"></div>
+                            <img src={ModelRobot} alt="mô_tả_ảnh" />
                         </div>
                     </div>
                     <div className="bottom-controls">
@@ -430,7 +448,7 @@ const Move = () => {
                         exit={{ opacity: 0}}
                         transition={{ duration: 0.6 }}
                         >
-                            <div className="joint-panel jog-true">
+                            <div className={`joint-panel jog-true ${robotData.busy ? 'disabled' : ''}`}>
                                 {/* Left panel cũ */}
                                 <div className="left-panel">
                                     {JointInput.slice(0, 3).map((joint, index) => (
@@ -443,6 +461,7 @@ const Move = () => {
                                                     className="joint-input"
                                                     onChange={(e) => handleInputChange(e, index, JointInput,
                                                          setJointInput, LimitRangeRobot[index][currentUnitShow])}
+                                                    disabled={robotData.busy}
                                                 />
                                                 <div className="joint-value">
                                                     {activeMoveButton === "Joint"
@@ -467,6 +486,7 @@ const Move = () => {
                                                     className="joint-input"
                                                     onChange={(e) => handleInputChange(e, index + 3, JointInput,
                                                          setJointInput, LimitRangeRobot[index+3][currentUnitShow])}
+                                                    disabled={robotData.busy}
                                                 />
                                                 <div className="joint-value">                                                    
                                                     {activeMoveButton === "Joint"
@@ -497,6 +517,7 @@ const Move = () => {
                                                     onMouseDown={() => handleJointIncrement(index)}
                                                     onMouseUp={() => handleJointButtonRelease(index)}
                                                     onMouseLeave={() => handleJointButtonRelease(index)}
+                                                    disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index][currentUnitShow]}+ 
                                                 </button>
@@ -505,6 +526,7 @@ const Move = () => {
                                                     onMouseDown={() => handleJointDecrement(index)}
                                                     onMouseUp={() => handleJointButtonRelease(index)}
                                                     onMouseLeave={() => handleJointButtonRelease(index)}
+                                                    disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index][currentUnitShow]}- 
                                                 </button>
@@ -523,6 +545,7 @@ const Move = () => {
                                                     onMouseDown={() => handleJointIncrement(index + 3)}
                                                     onMouseUp={() => handleJointButtonRelease(index + 3)}
                                                     onMouseLeave={() => handleJointButtonRelease(index + 3)}
+                                                    disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index+3][currentUnitShow]}+ 
                                                 </button>
@@ -531,6 +554,7 @@ const Move = () => {
                                                     onMouseDown={() => handleJointDecrement(index + 3)}
                                                     onMouseUp={() => handleJointButtonRelease(index + 3)}
                                                     onMouseLeave={() => handleJointButtonRelease(index + 3)}
+                                                    disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index+3][currentUnitShow]}- 
                                                 </button>
@@ -613,6 +637,7 @@ const Move = () => {
                                     <button 
                                         className={`control-button-tall ${isJog ? '' : 'active'}`}
                                         onClick={handleMove}
+                                        disabled={robotData.busy}
                                     >
                                         Move
                                     </button>
@@ -630,6 +655,7 @@ const Move = () => {
                                 <button 
                                     className="control-button"
                                     onClick={handleMoveToHome}
+                                    disabled={robotData.busy}
                                 >
                                     Move to Home
                                 </button>
@@ -646,18 +672,21 @@ const Move = () => {
                                 <button 
                                     className="control-button"
                                     onClick={() => setShowPopupPoint(true)}
+                                    disabled={robotData.busy}
                                 >
                                     Teach Position
                                 </button>
                                 <button 
                                     className="control-button small"
                                     onClick={() => navigate(-1)}
+                                    disabled={robotData.busy}
                                 >
                                     Back
                                 </button>
                                 <button 
                                     className="control-button"
                                     onClick={() => setShowPopupGlobal(true)}
+                                    disabled={robotData.busy}
                                 >
                                     Position List
                                 </button>

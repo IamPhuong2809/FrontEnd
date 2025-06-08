@@ -5,8 +5,8 @@ import toast from 'react-hot-toast';
 import { FaCloudDownloadAlt, FaBook, FaSyncAlt } from 'react-icons/fa';
 import { BsRecordCircleFill } from 'react-icons/bs';
 import { useMapContext } from '@components/ControlMobile/MapContext';
+import { API_URL } from '@utils/config';
 
-const url = "http://127.0.0.1:8000/api/"
 
 const PopupMap = (props) => {
     const navigate = useNavigate();
@@ -26,7 +26,7 @@ const PopupMap = (props) => {
 
     const fetchLoadData = async () => {
         try {
-          const response = await fetch(url + "map/", {
+          const response = await fetch(API_URL + "map/", {
               method: "POST",
               headers: {
                   "Content-Type": "application/json",

@@ -7,8 +7,8 @@ import TaskBar from '@components/Control_6dof/TaskBar/TaskBar'
 import { useRobotData } from '@components/Control_6dof/RobotData'
 import PopupScreen from '@components/Control_6dof/PopupScreen/PopupScreen'
 import Loading from '@components/Loading/Loading'
+import { API_URL } from '@utils/config';
 
-const url = "http://127.0.0.1:8000/api/";
 
 const PositionList = () => {
 
@@ -18,7 +18,7 @@ const PositionList = () => {
 
     const fetchLoadData = async (id) => {
         try {
-            const response = await fetch(url + "O0006/", {
+            const response = await fetch(API_URL + "O0006/", {
                 method: "GET",
             });
             const data = await response.json();

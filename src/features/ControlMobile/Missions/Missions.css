@@ -10,6 +10,7 @@
     gap: 20px;
     padding: 0px;
     box-sizing: border-box; 
+    overflow: hidden;
 }
 
 .map-container {
@@ -52,8 +53,8 @@
 }
 
 /* Joystick Styles */
-.joystick-container {
-    margin-top: 40px;
+.joystick-container-missions {
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -138,99 +139,11 @@
     transform: translateY(-50%);
 }
 
-
-/* Action buttons */
-.action-btns {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-    margin-top: 20px;
-}
-
-.action-btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #2196F3;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100%;
-    font-weight: bold;
-}
-
-.action-btn:hover {
-    background-color: #0b7dda;
-}
-
-.action-btn:active {
-    transform: scale(0.98);
-}
-
-.record-btn {
-    background-color: #0b7dda;
-}
-
-.record-btn:hover {
-    background-color: #0666b5;
-}
-
-.record-btn.active {
-    background-color: rgb(246, 98, 98);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 0 0 rgba(255, 152, 0, 0.7); }
-    70% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 0 10px rgba(255, 152, 0, 0); }
-    100% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 0 0 rgba(255, 152, 0, 0); }
-}
-
-.finish-btn {
-    background-color: #4CAF50;
-}
-
-.finish-btn:hover {
-    background-color: #45a049;
-}
-
-.reset-btn {
-    background-color: #e78b01;
-}
-
-.reset-btn:hover {
-    background-color: #c77803;
-}
-
-.back-btn {
-    background-color: #607d8b;
-}
-
-.back-btn:hover {
-    background-color:
-    #455a64;
-}
-
-.action-btn:disabled {
-    opacity: 0.8;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.action-btn:disabled:hover {
-    background-color: initial !important;
-}
-
-/* Status display (optional) */
-.joystick-status {
+.joystick-status-missions{
     background-color: rgba(255,255,255,0.1);
     border-radius: 8px;
     padding: 10px;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     text-align: center;
     color: black;
     font-size: 1rem;
@@ -239,8 +152,91 @@
     flex-direction: column;
     justify-content: center;
 }
+/*Missions*/
+.missions-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    font-family: 'Arial', sans-serif;
+    min-width: 250px;
+    background-color: white;
+    padding: 10px;
+    align-items: flex-start;
+    border-radius: 15px;
+    border: 1px solid gray;
+    overflow-y: scroll;
+}
 
-.joystick-status.active {
-    background-color: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
+.mission-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.mission-id {
+    font-size: 0.95rem;
+    color: black;
+    min-width: 20px;
+    margin-left: 20px;
+}
+
+.mission-title {
+    font-size: 18px;
+    margin: 0;
+    color: #333;
+    text-align: left;
+}
+
+.missions-title {
+    display: flex;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+    width: 100%;
+    justify-content: center;
+}
+
+.missions-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: center;
+}
+
+.create-mission-btn {
+    align-self: center;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-mission-btn:hover {
+    background-color: #45a049;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.clickable:hover {
+    background-color: #61a866;
+}
+
+.no-missions {
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  width: 100%;
 }
