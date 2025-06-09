@@ -540,7 +540,7 @@ const Missions = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.1;
+                twist.linear.x = 2.0;
                 break;
             case 'turn-left':
                 twist.linear.x = 0.05;
@@ -554,7 +554,10 @@ const Missions = () => {
                 twist.angular.z = 0.05;
                 break;
             case 'right':
-                twist.angular.z = -0.5;
+                twist.angular.z = -0.05;
+                break;
+            case 'rear':
+                twist.linear.x = -2.0;
                 break;
             default:
                 break;

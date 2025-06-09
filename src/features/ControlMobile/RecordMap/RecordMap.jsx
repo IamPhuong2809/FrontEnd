@@ -445,7 +445,8 @@ const RecordMaps = () => {
         ctx.arc(x0, height - y0, 2, 0, 2 * Math.PI);
         ctx.fillStyle = 'blue';
         ctx.fill();
-        
+
+                        
         const x = (position.x - origin.x) / resolution;
         const y = (position.y - origin.y) / resolution;
 
@@ -540,10 +541,10 @@ const RecordMaps = () => {
                 twist.angular.z = -0.05;
                 break;
             case 'left':
-                twist.angular.z = 0.0015;
+                twist.angular.z = 0.003;
                 break;
             case 'right':
-                twist.angular.z = -0.0015;
+                twist.angular.z = -0.003;
                 break;
             case 'rear':
                 twist.linear.x = -0.05;
