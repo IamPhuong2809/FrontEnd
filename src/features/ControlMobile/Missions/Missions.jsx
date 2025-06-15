@@ -47,6 +47,21 @@ const Missions = () => {
         { id: 5, title: 'Data collection' },
     ];
 
+    const fetchLoadData = async (id) => {
+        try {
+            fetch(API_URL + "missions/", {
+                method: "GET",
+            });
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchLoadData();
+    }, []); 
+    
+
     useEffect(() => {
         const savedMap = localStorage.getItem('selectedMap');
         const savedSite = localStorage.getItem('selectedSite');
@@ -61,7 +76,7 @@ const Missions = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://192.168.5.110:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://196.169.6.1:9090', // đổi nếu ROS chạy trên máy khác
         });
 
 
@@ -143,7 +158,7 @@ const Missions = () => {
         //Vel pub
         cmdVelPublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/diff_base_controller/cmd_vel_unstamped',
+            name: '/cmd_vel_plc',
             messageType: 'geometry_msgs/msg/Twist',
         });
 
@@ -272,7 +287,10 @@ const Missions = () => {
         ctx.translate(x, height - y);
         ctx.rotate(-theta * Math.PI / 180); // Rotate theo hướng robot
         
-        const robotSize = 6; // Kích thước robot
+        // Vẽ bánh xe
+        const wheelLength = 4;
+        const wheelWidth = 2;
+        const robotSize = 5; // Kích thước robot
         
         // Vẽ thân robot (hình ellipse)
         ctx.beginPath();
@@ -317,10 +335,6 @@ const Missions = () => {
         ctx.arc(robotSize - 2, 1, 1, 0, 2 * Math.PI);
         ctx.fillStyle = '#ffffff';
         ctx.fill();
-        
-        // Vẽ bánh xe
-        const wheelLength = 6;
-        const wheelWidth = 2;
         
         // Bánh xe trái
         ctx.beginPath();
@@ -370,6 +384,8 @@ const Missions = () => {
     };
 
     useEffect(() => {
+        console.log(mapData);
+        console.log(position);
         if (!mapData) return;
 
         const canvas = canvasRef.current;
@@ -540,7 +556,7 @@ const Missions = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 2.0;
+                twist.linear.x = 0.09;
                 break;
             case 'turn-left':
                 twist.linear.x = 0.05;
@@ -557,7 +573,7 @@ const Missions = () => {
                 twist.angular.z = -0.05;
                 break;
             case 'rear':
-                twist.linear.x = -2.0;
+                twist.linear.x = -0.09;
                 break;
             default:
                 break;

@@ -23,8 +23,8 @@ const PopupTeachPath = (props) => {
         {
         label: 'EE',
         type: 'select',
-        options: ['FALSE', 'TRUE'], // 3 item cho dropdown
-        defaultValue: 'FALSE'
+        options: ['GRIP', 'RELEASE', 'SKIP'], // 3 item cho dropdown
+        defaultValue: 'SKIP'
         },
         {
         label: 'Stop Point',
@@ -118,7 +118,7 @@ const PopupTeachPath = (props) => {
                   case 'Motion Typ':
                   return data[0].motion;
                   case 'EE':
-                  return data[0].cont ? 'TRUE' : 'FALSE';
+                  return data[0].ee;
                   case 'Stop Point':
                   return data[0].stop ? 'TRUE' : 'FALSE';
                   case 'Velocity':

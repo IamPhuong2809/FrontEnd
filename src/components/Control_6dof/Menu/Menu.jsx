@@ -23,10 +23,10 @@ const Menu = () => {
     ]
 
     const restrictedRoutes = [
-        "/6dof/PositionList",
-        "/6dof/TeachPath",
-        "/6dof/MovePath",
-        "/6dof/Move"
+        // "/6dof/PositionList",
+        // "/6dof/TeachPath",
+        // "/6dof/MovePath",
+        // "/6dof/Move"
     ];
 
     const getActiveIndex = () => {

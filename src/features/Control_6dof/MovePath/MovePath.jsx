@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './MovePath.css'
+import toast from 'react-hot-toast';
 import Menu from '@components/Control_6dof/Menu/Menu'
 import HeaderControl from '@components/Header/Header'
 import List from '@components/Control_6dof/List/List'
@@ -81,21 +82,31 @@ const MovePath = () => {
         const [isRunning, setIsRunning] = useState(false);
         const [selectedPointIndex, setSelectedPointIndex] = useState(-1);
         const [isButtonDisable, setIsButtonDisable] = useState(true);
-        const prevBusyRef = useRef(robotData.busy);
+        const Gripper = useRef(null);
+        const Release = useRef(null);
 
         useEffect(() => {
-            if (prevBusyRef.current === true && robotData.busy === false) {
+            if (robotData.busy === 0) {
+                console.log(Gripper.current)
+                console.log(Release.current)
                 if (!isStepMode && isRunning) {
-                    setSelectedPointIndex(prev => {
-                        if (prev >= points.length - 1) {
-                            setIsRunning(false);
-                            return -1;
-                        }
-                        return prev + 1;
-                    });
+                    if(Gripper.current){
+                        handleGrip(true);
+                    }
+                    else if (Release.current){
+                        handleGrip(false);
+                    }
+                    else{
+                        setSelectedPointIndex(prev => {
+                            if (prev >= points.length - 1) {
+                                setIsRunning(false);
+                                return -1;
+                            }
+                            return prev + 1;
+                        });
+                    }
                 }
             }
-            prevBusyRef.current = robotData.busy;
             if(isStepMode)
                 setIsButtonDisable(robotData.busy);
             else
@@ -127,6 +138,9 @@ const MovePath = () => {
         };
 
         const handleRunning = () => {
+            if(!isRunning){
+                setSelectedPointIndex(-1);
+            }
             setIsRunning((prev) => !prev);
         }
         //#endregion
@@ -134,12 +148,34 @@ const MovePath = () => {
         useEffect(() => {
             if(selectedPointIndex === -1)
                 return;
+            console.log("send_id")
             SendId(selectedPointIndex);
         },[selectedPointIndex])
 
+        const handleGrip = async (input) => {
+            try {
+                const response = await fetch(API_URL + "grip/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        grip: input,
+                    }),
+                });
+                const data = await response.json();
+                if (data.success) { 
+                    Gripper.current = false;
+                    Release.current = false;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
         const SendId = async (id) => {
             try {
-                fetch(API_URL + "O0026/", {
+                const response = await fetch(API_URL + "O0026/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -150,6 +186,18 @@ const MovePath = () => {
                         stepMode: isStepMode
                     }),
                 });
+                const data = await response.json();
+                if (data.success) { 
+                    Gripper.current = data.grip;
+                    Release.current = data.stop;
+                    toast.success("Running successfully!", {
+                      style: { border: "1px solid green" },
+                    });
+                  } else {
+                    toast.error("Failed to move", {
+                      style: { border: "1px solid red" },
+                    });
+                  }
             } catch (error) {
                 console.error("Error:", error);
             }

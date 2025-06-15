@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
 import './Move.css';
 import Menu from '@components/Control_6dof/Menu/Menu';
@@ -20,8 +21,9 @@ const Move = () => {
     //#region Declaration variable left content
 
     const[isJog, setIsJog] = useState(true);
-    const [activeJogButton, setActiveJogButton] = useState('Work');
+    const [activeJogButton, setActiveJogButton] = useState('Joint');
     const [activeMoveButton, setActiveMoveButton] = useState(null);
+    const startWeb = useRef(true);
     //#endregion
 
     //#region Velocity and Acceleration
@@ -42,6 +44,7 @@ const Move = () => {
         setActiveJogButton(label);
         setActiveMoveButton(null);
         setIsJog(true);
+        startWeb.current = true;
         setCurrentUnitShow(label === "Joint" ? 0 : 1);
         if (label === "Joint") {
             jointCounters[0].setCurrentValue(robotData.jointCurrent.t1);
@@ -64,9 +67,30 @@ const Move = () => {
     const handleMoveButtonClick = (label) => {
         setActiveMoveButton(label);
         setActiveJogButton(null);
+        startWeb.current = true;
         setIsJog(false);
         setCurrentUnitShow(label === "Joint" ? 0 : 1);
-        handleType(label)
+        handleType(label);
+    
+        // Cập nhật JointInput.input thay vì jointCounter
+        const newJointInput = JointInput.map((joint, index) => {
+            let newValue;
+            if (label === "Joint") {
+                newValue = robotData.jointCurrent[`t${index + 1}`];
+            } else {
+                // Lấy giá trị từ positionCurrent tương ứng
+                const positionKeys = ['x', 'y', 'z', 'rl', 'pt', 'yw'];
+                newValue = robotData.positionCurrent[positionKeys[index]];
+            }
+    
+            return {
+                ...joint,
+                input: newValue,
+                value: newValue // Cập nhật cả value nếu cần
+            };
+        });
+    
+        setJointInput(newJointInput);
     };
     //#endregion
 
@@ -74,12 +98,12 @@ const Move = () => {
 
     //#region Declaration variable right content
     const jointInputRead = [
-        { label: 'J1', value: robotData.positionCurrent.x }, 
-        { label: 'J2', value: robotData.positionCurrent.y }, 
-        { label: 'J3', value: robotData.positionCurrent.z }, 
-        { label: 'J4', value: robotData.positionCurrent.rl }, 
-        { label: 'J5', value: robotData.positionCurrent.pt }, 
-        { label: 'J6', value: robotData.positionCurrent.yw }, 
+        { label: 'J1', value: robotData.jointCurrent.t1 }, 
+        { label: 'J2', value: robotData.jointCurrent.t2 }, 
+        { label: 'J3', value: robotData.jointCurrent.t3 }, 
+        { label: 'J4', value: robotData.jointCurrent.t4 }, 
+        { label: 'J5', value: robotData.jointCurrent.t5 }, 
+        { label: 'J6', value: robotData.jointCurrent.t6 }, 
     ];
     const initialJointInput = jointInputRead.map(joint => ({
     ...joint,
@@ -87,7 +111,7 @@ const Move = () => {
     }));
 
     const [JointInput, setJointInput] = useState(initialJointInput);
-    const [currentUnitShow, setCurrentUnitShow] = useState(1);
+    const [currentUnitShow, setCurrentUnitShow] = useState(0);
 
     const UnitShow = ['°', 'mm'];
     const LabelShow = [
@@ -105,7 +129,7 @@ const Move = () => {
         [[0, 135],[0, 1450]],
         [[0, 180],[-180, 180]],
         [[0, 180],[-180, 180]],
-        [[0, 359],[-180, 180]],
+        [[0, 359.99],[-180, 180]],
     ]
 
     const {
@@ -132,11 +156,22 @@ const Move = () => {
 
     // Cập nhật JointCounter khi các giá trị counter thay đổi
     useEffect(() => {
-        const newJointInput = jointCounters.map((counter, index) => ({
-            label: LabelShow[index][currentUnitShow],
-            value: counter.value,
-            input: counter.value,
-        }));
+        const newJointInput = jointCounters.map((counter, index) => {
+            const min = LimitRangeRobot[index][0][0];
+            const max = LimitRangeRobot[index][0][1];
+
+            let input_value = counter.value;
+
+            if (input_value < min) input_value = min;
+            else if (input_value > max) input_value = max;
+
+            return {
+                label: LabelShow[index][currentUnitShow],
+                value: counter.value,
+                input: input_value,
+            };
+        });
+
         setJointInput(newJointInput);
         sendJointUpdate(newJointInput);
     }, [jointCounters.map(counter => counter.value).join(',')]);
@@ -166,9 +201,10 @@ const Move = () => {
         const ClosePopup = () => {
             setShowPopupGlobal(false);
         }
-        console.log(JointInput)
-        console.log(jointInputRead)
-        let joint = JointInput.map(joint => parseFloat(joint.value));;
+
+        const { x, y, z, rl, pt, yw } = robotData.positionCurrent;
+        let joint = [x, y, z, rl, pt, yw];
+        console.log(robotData.positionCurrent)
         
         return (
           <div className="popup-overlay">
@@ -190,7 +226,9 @@ const Move = () => {
           const ClosePopup = () => {
             setShowPopupPoint(false);
           }
-          let joint = JointInput.map(joint => parseFloat(joint.value));;
+          const { x, y, z, rl, pt, yw } = robotData.positionCurrent;
+          let joint = [x, y, z, rl, pt, yw];
+          console.log(robotData.positionCurrent)
           
           return (
             <div className="popup-overlay">
@@ -223,6 +261,10 @@ const Move = () => {
         }
     };
 
+    useEffect(() => {
+        handleType("Work");
+    }, []);
+
     const handleEMG = async () => {
         try {
             fetch(API_URL + "EMG/", {method: 'GET'});
@@ -233,8 +275,12 @@ const Move = () => {
 
     const sendJointUpdate = async (newJointInput) => {
         try {
+            if(startWeb.current){
+                startWeb.current = false;
+                return;
+            }
             const jointValues = newJointInput.map(joint => joint.value);
-            fetch(API_URL + 'O0025/', {
+            const response = await fetch(API_URL + 'O0025/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -246,6 +292,11 @@ const Move = () => {
                     acceleration: acceleration*5/100
                 })
             });
+            const data = await response.json()
+            if(!data.success){
+                toast.error("Failed to move", {
+                    style: {border: '1px solid red'}});
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -262,7 +313,7 @@ const Move = () => {
             }));
             setJointInput(newJointInput);
             const jointInputs = JointInput.map(joint => parseFloat(joint.input));
-            fetch(API_URL + 'O0022/', {
+            const response = await fetch(API_URL + 'O0022/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -274,6 +325,12 @@ const Move = () => {
                     acceleration: acceleration
                 })
             });
+
+            const data = await response.json()
+            if(!data.success){
+                toast.error("Failed to move", {
+                    style: {border: '1px solid red'}});
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -491,8 +548,9 @@ const Move = () => {
                                                 <div className="joint-value">                                                    
                                                     {activeMoveButton === "Joint"
                                                         ? robotData.jointCurrent[`t${index + 4}`]?.toFixed(2) + "°"
-                                                        : Object.values(robotData.positionCurrent)[index + 3]?.toFixed(2) + "mm"
-                                                    }</div>
+                                                        : Object.values(robotData.positionCurrent)[index + 3]?.toFixed(2) + "°"
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -630,13 +688,13 @@ const Move = () => {
                                 <div className="button-row">
                                     <button 
                                         className={`control-button-tall ${isJog ? '' : 'active'}`}
-                                        onClick={handleReadActualPosition}
+                                        onClick={() => handleReadActualPosition}
                                     >
                                         Read Actual Position
                                     </button>
                                     <button 
                                         className={`control-button-tall ${isJog ? '' : 'active'}`}
-                                        onClick={handleMove}
+                                        onClick={() => {handleMove();}}
                                         disabled={robotData.busy}
                                     >
                                         Move
@@ -648,13 +706,13 @@ const Move = () => {
                             <div className="button-row">
                                 <button 
                                     className="control-button"
-                                    onClick={handleAbort}
+                                    onClick={() => handleAbort()}
                                 >
                                     Abort
                                 </button>
                                 <button 
                                     className="control-button"
-                                    onClick={handleMoveToHome}
+                                    onClick={() => handleMoveToHome()}
                                     disabled={robotData.busy}
                                 >
                                     Move to Home

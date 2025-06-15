@@ -67,7 +67,7 @@ function Header() {
 
             <ul className="nav-menu">
                 <button className={`nav-item ${isAssignTask ? 'active' : ''}`} onClick={() => navigate('/AssignTask')}>ASSIGN TASKS</button>
-                <button className={`nav-item ${isControlMobile ? 'active' : ''}`} onClick={() => navigate('/ControlMobile/PowerMobile')}>MOBILE ROBOT</button>
+                <button className={`nav-item ${isControlMobile ? 'active' : ''}`} onClick={() => navigate('/ControlMobile/Maps')}>MOBILE ROBOT</button>
                 <button className={`nav-item ${is6Dof ? 'active' : ''}`} onClick={() => navigate('/6dof/PowerRobot')}>6DOF ROBOT</button>
                 <button className={`nav-item ${isStateSystems ? 'active' : ''}`} onClick={() => navigate('/StateSystems')}>STATE SYSTEMS</button>
                 {isLoading ? (

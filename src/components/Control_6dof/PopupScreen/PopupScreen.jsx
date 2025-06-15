@@ -129,8 +129,8 @@ const PopupScreen = ({ selectedPoint, onClose, robotData }) => {
             </div>
             <div className="error-text">Error Text:</div>
             <div className="action-buttons">
-              <button className="move-button" onClick={handleMove}>MOVE TO POINT</button>
-              <button className="abort-button" onClick={handleAbort}>Abort Movement</button>
+              <button className="move-button" onClick={() => handleMove()}>MOVE TO POINT</button>
+              <button className="abort-button" onClick={() => handleAbort()}>Abort Movement</button>
             </div>
           </div>
 

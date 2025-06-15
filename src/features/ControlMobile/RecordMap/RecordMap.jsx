@@ -38,6 +38,21 @@ const RecordMaps = () => {
     const backupMapRef = useRef(null);
     const startLocalizationRef = useRef(null);
 
+
+    const fetchLoadData = async (id) => {
+        try {
+            fetch(API_URL + "record/", {
+                method: "GET",
+            });
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchLoadData();
+    }, []); 
+
     useEffect(() => {
         const savedMap = localStorage.getItem('selectedMap');
         const savedSite = localStorage.getItem('selectedSite');
@@ -52,7 +67,7 @@ const RecordMaps = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://192.168.5.110:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://192.168.5.111:9090', // đổi nếu ROS chạy trên máy khác
         });
 
         ros.on('connection', () => {
@@ -133,7 +148,7 @@ const RecordMaps = () => {
         //Vel pub
         cmdVelPublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/diff_base_controller/cmd_vel_unstamped',
+            name: '/cmd_vel_plc',
             messageType: 'geometry_msgs/msg/Twist',
         });
 
@@ -530,24 +545,24 @@ const RecordMaps = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.05;
+                twist.linear.x = 0.03;
                 break;
             case 'turn-left':
-                twist.linear.x = 0.025;
-                twist.angular.z = 0.05;
+                twist.linear.x = 0.05;
+                twist.angular.z = 0.03;
                 break;
             case 'turn-right':
-                twist.linear.x = 0.025;
-                twist.angular.z = -0.05;
+                twist.linear.x = 0.05;
+                twist.angular.z = -0.03;
                 break;
             case 'left':
-                twist.angular.z = 0.003;
+                twist.angular.z = 0.05;
                 break;
             case 'right':
-                twist.angular.z = -0.003;
+                twist.angular.z = -0.05;
                 break;
             case 'rear':
-                twist.linear.x = -0.05;
+                twist.linear.x = -0.03;
                 break;
             default:
                 break;

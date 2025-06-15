@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TaskBar.css';
 import { useRobotData } from '@components/Control_6dof/RobotData';
+import { API_URL } from '@utils/config';
 
 const TaskBar = () => {
     const { robotData } = useRobotData();
@@ -13,6 +14,16 @@ const TaskBar = () => {
 
         return () => clearTimeout(timer); // Cleanup khi unmount
     }, []);
+
+    const handleEMG = async () => {
+        try {
+            fetch(API_URL + "EMG/", {
+                method: "GET",
+            });
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
 
     return (
         <div className="top-section">
@@ -53,7 +64,10 @@ const TaskBar = () => {
             {/* Right Section */}
             <div className="top-section-right">
                 <button>HELP</button>
-                <button>EMERGENCY</button>
+                <button
+                    onClick={() => handleEMG()}
+                >
+                    EMERGENCY</button>
             </div>
         </div>
     );
