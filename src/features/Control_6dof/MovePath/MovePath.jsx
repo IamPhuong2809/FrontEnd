@@ -83,18 +83,13 @@ const MovePath = () => {
         const [selectedPointIndex, setSelectedPointIndex] = useState(-1);
         const [isButtonDisable, setIsButtonDisable] = useState(true);
         const Gripper = useRef(null);
-        const Release = useRef(null);
 
         useEffect(() => {
             if (robotData.busy === 0) {
-                console.log(Gripper.current)
-                console.log(Release.current)
                 if (!isStepMode && isRunning) {
-                    if(Gripper.current){
-                        handleGrip(true);
-                    }
-                    else if (Release.current){
-                        handleGrip(false);
+                    console.log(Gripper.current)
+                    if(Gripper.current !== null && Gripper.current !== 'SKIP'){
+                        handleGrip();
                     }
                     else{
                         setSelectedPointIndex(prev => {
@@ -102,6 +97,7 @@ const MovePath = () => {
                                 setIsRunning(false);
                                 return -1;
                             }
+                        console.log(prev);
                             return prev + 1;
                         });
                     }
@@ -148,11 +144,10 @@ const MovePath = () => {
         useEffect(() => {
             if(selectedPointIndex === -1)
                 return;
-            console.log("send_id")
             SendId(selectedPointIndex);
         },[selectedPointIndex])
 
-        const handleGrip = async (input) => {
+        const handleGrip = async () => {
             try {
                 const response = await fetch(API_URL + "grip/", {
                     method: "POST",
@@ -160,13 +155,22 @@ const MovePath = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        grip: input,
+                        grip: Gripper.current,
                     }),
                 });
+                Gripper.current = null;
                 const data = await response.json();
-                if (data.success) { 
-                    Gripper.current = false;
-                    Release.current = false;
+                if (data.success) {
+                    if(Gripper.current === "GRIP"){
+                        toast.success("Grasping object", {
+                            style: { border: "1px solid green" },
+                          });
+                    }
+                    else if(Gripper.current === "RELEASE"){
+                        toast.success("Releasing object", {
+                            style: { border: "1px solid green" },
+                          });
+                    }
                 }
             } catch (error) {
                 console.error("Error:", error);
@@ -188,9 +192,10 @@ const MovePath = () => {
                 });
                 const data = await response.json();
                 if (data.success) { 
-                    Gripper.current = data.grip;
-                    Release.current = data.stop;
-                    toast.success("Running successfully!", {
+                    Gripper.current = data.grip.ee;
+                    console.log(data.grip)
+                    console.log(Gripper.current)
+                    toast.success(`Running position: ${points[selectedPointIndex].name}`, {
                       style: { border: "1px solid green" },
                     });
                   } else {

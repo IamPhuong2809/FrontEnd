@@ -23,10 +23,10 @@ const Menu = () => {
     ]
 
     const restrictedRoutes = [
-        // "/6dof/PositionList",
-        // "/6dof/TeachPath",
-        // "/6dof/MovePath",
-        // "/6dof/Move"
+        "/6dof/PositionList",
+        "/6dof/TeachPath",
+        "/6dof/MovePath",
+        "/6dof/Move"
     ];
 
     const getActiveIndex = () => {
@@ -34,7 +34,10 @@ const Menu = () => {
     };
 
     const isLinkDisabled = (link) => {
-      return restrictedRoutes.includes(link) && !robotData["S"];
+        return (
+          restrictedRoutes.includes(link) &&
+          (!robotData["S"] || robotData["busy"])
+        );
     };
     
     const logos = [logo1, logo2, logo3, logo4, logo5, logo6];

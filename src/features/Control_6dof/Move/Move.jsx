@@ -29,15 +29,15 @@ const Move = () => {
     //#region Velocity and Acceleration
     const {
         value: velocity,
-        handleMouseDown: handleMouseDownVelocity,
-        handleMouseUp: handleMouseUpVelocity
-      } = useCounter(50, 1, 150);
+        increase: IncreaseVelocity,
+        decrease: DecreaseVelocity
+      } = useCounter(50, 5, [0, 100]);
     
     const {
         value: acceleration,
-        handleMouseDown: handleMouseDownAcceleration,
-        handleMouseUp: handleMouseUpAcceleration
-    } = useCounter(50, 1, 150);
+        increase: IncreaseAcceleration,
+        decrease: DecreaseAcceleration
+    } = useCounter(50, 5, [0, 100]);
     //#endregion
 
     const handleJogButtonClick = (label) => {
@@ -128,30 +128,30 @@ const Move = () => {
         [[0, 180],[-900, 900]],
         [[0, 135],[0, 1450]],
         [[0, 180],[-180, 180]],
-        [[0, 180],[-180, 180]],
+        [[0, 176],[-180, 180]],
         [[0, 359.99],[-180, 180]],
     ]
 
     const {
         value: stepsize,
-        handleMouseDown: handleMouseDownStepsize,
-        handleMouseUp: handleMouseUpStepsize
-      } = useCounter(0.5, 0.5, 170);
+        increase: IncreaseStepsize,
+        decrease: DecreaseStepsize
+      } = useCounter(1, 1, [0.5, 30]);
     
     const {
         value: duration,
-        handleMouseDown: handleMouseDownDuration,
-        handleMouseUp: handleMouseUpDuration
-    } = useCounter(300, 10, 170);
+        increase: IncreaseDuration,
+        decrease: DecreaseDuration
+    } = useCounter(300, 10, [170, 300]);
     
     // Tạo 6 counters riêng biệt cho 6 joint
     const jointCounters = [
-        useCounter(jointInputRead[0].value, stepsize, duration), //LimitRangeRobot[1][currentUnitShow]
-        useCounter(jointInputRead[1].value, stepsize, duration),
-        useCounter(jointInputRead[2].value, stepsize, duration),
-        useCounter(jointInputRead[3].value, stepsize, duration),
-        useCounter(jointInputRead[4].value, stepsize, duration),
-        useCounter(jointInputRead[5].value, stepsize, duration),
+        useCounter(jointInputRead[0].value, stepsize, LimitRangeRobot[0][currentUnitShow]), //LimitRangeRobot[1][currentUnitShow]
+        useCounter(jointInputRead[1].value, stepsize, LimitRangeRobot[1][currentUnitShow]),
+        useCounter(jointInputRead[2].value, stepsize, LimitRangeRobot[2][currentUnitShow]),
+        useCounter(jointInputRead[3].value, stepsize, LimitRangeRobot[3][currentUnitShow]),
+        useCounter(jointInputRead[4].value, stepsize, LimitRangeRobot[4][currentUnitShow]),
+        useCounter(jointInputRead[5].value, stepsize, LimitRangeRobot[5][currentUnitShow]),
     ];
 
     // Cập nhật JointCounter khi các giá trị counter thay đổi
@@ -180,15 +180,11 @@ const Move = () => {
 
     //#region Increase and Decrease JogMode
     const handleJointIncrement = (index) => {
-        jointCounters[index].handleMouseDown("increase", LimitRangeRobot[index][currentUnitShow]);
+        jointCounters[index].increase();
     };
 
     const handleJointDecrement = (index) => {
-        jointCounters[index].handleMouseDown("decrease", LimitRangeRobot[index][currentUnitShow]);
-    };
-
-    const handleJointButtonRelease = (index) => {
-        jointCounters[index].handleMouseUp();
+        jointCounters[index].decrease();
     };
     //#endregion
 
@@ -202,9 +198,8 @@ const Move = () => {
             setShowPopupGlobal(false);
         }
 
-        const { x, y, z, rl, pt, yw } = robotData.positionCurrent;
-        let joint = [x, y, z, rl, pt, yw];
-        console.log(robotData.positionCurrent)
+        const { t1, t2, t3, t4, t5, t6 } = robotData.jointCurrent;
+        let joint = [t1, t2, t3, t4, t5, t6];
         
         return (
           <div className="popup-overlay">
@@ -226,9 +221,8 @@ const Move = () => {
           const ClosePopup = () => {
             setShowPopupPoint(false);
           }
-          const { x, y, z, rl, pt, yw } = robotData.positionCurrent;
-          let joint = [x, y, z, rl, pt, yw];
-          console.log(robotData.positionCurrent)
+          const {t1, t2, t3, t4, t5, t6} = robotData.jointCurrent;
+          let joint = [t1, t2, t3, t4, t5, t6];
           
           return (
             <div className="popup-overlay">
@@ -452,17 +446,13 @@ const Move = () => {
                                 <div>
                                 <button 
                                     className="btn-change" 
-                                    onMouseDown={() => handleMouseDownVelocity("increase", [0, 100])}
-                                    onMouseUp={handleMouseUpVelocity}
-                                    onMouseLeave={handleMouseUpVelocity}
+                                    onMouseDown={() => IncreaseVelocity()}
                                 >
                                     V+
                                 </button>
                                 <button 
                                     className="btn-change" 
-                                    onMouseDown={() => handleMouseDownVelocity("decrease", [0, 100])} 
-                                    onMouseUp={handleMouseUpVelocity}
-                                    onMouseLeave={handleMouseUpVelocity}
+                                    onMouseDown={() => DecreaseVelocity()} 
                                 >
                                     V-
                                 </button>
@@ -476,17 +466,13 @@ const Move = () => {
                                 <div>
                                     <button 
                                         className="btn-change" 
-                                        onMouseDown={() => handleMouseDownAcceleration("increase", [0, 100])}
-                                        onMouseUp={handleMouseUpAcceleration}
-                                        onMouseLeave={handleMouseUpAcceleration}
+                                        onMouseDown={() => IncreaseAcceleration()}
                                     >
                                         A+
                                     </button>
                                     <button 
                                         className="btn-change" 
-                                        onMouseDown={() => handleMouseDownAcceleration("decrease", [0, 100])}
-                                        onMouseUp={handleMouseUpAcceleration}
-                                        onMouseLeave={handleMouseUpAcceleration}
+                                        onMouseDown={() => DecreaseAcceleration()}
                                     >
                                         A-
                                     </button>
@@ -573,8 +559,6 @@ const Move = () => {
                                                 <button 
                                                     className="joint-btn"
                                                     onMouseDown={() => handleJointIncrement(index)}
-                                                    onMouseUp={() => handleJointButtonRelease(index)}
-                                                    onMouseLeave={() => handleJointButtonRelease(index)}
                                                     disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index][currentUnitShow]}+ 
@@ -582,8 +566,6 @@ const Move = () => {
                                                 <button 
                                                     className="joint-btn"
                                                     onMouseDown={() => handleJointDecrement(index)}
-                                                    onMouseUp={() => handleJointButtonRelease(index)}
-                                                    onMouseLeave={() => handleJointButtonRelease(index)}
                                                     disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index][currentUnitShow]}- 
@@ -601,8 +583,6 @@ const Move = () => {
                                                 <button 
                                                     className="joint-btn"
                                                     onMouseDown={() => handleJointIncrement(index + 3)}
-                                                    onMouseUp={() => handleJointButtonRelease(index + 3)}
-                                                    onMouseLeave={() => handleJointButtonRelease(index + 3)}
                                                     disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index+3][currentUnitShow]}+ 
@@ -610,8 +590,6 @@ const Move = () => {
                                                 <button 
                                                     className="joint-btn"
                                                     onMouseDown={() => handleJointDecrement(index + 3)}
-                                                    onMouseUp={() => handleJointButtonRelease(index + 3)}
-                                                    onMouseLeave={() => handleJointButtonRelease(index + 3)}
                                                     disabled={robotData.busy}
                                                 > 
                                                     {LabelShow[index+3][currentUnitShow]}- 
@@ -643,17 +621,13 @@ const Move = () => {
                                     <div>
                                         <button 
                                         className="btn-change" 
-                                        onMouseDown={() => handleMouseDownStepsize("increase", [0.5, 10])}
-                                        onMouseUp={handleMouseUpStepsize}
-                                        onMouseLeave={handleMouseUpStepsize}
+                                        onMouseDown={() => IncreaseStepsize()}
                                         >
                                         S+
                                         </button>
                                         <button 
                                         className="btn-change" 
-                                        onMouseDown={() => handleMouseDownStepsize("decrease", [0.5, 10])} 
-                                        onMouseUp={handleMouseUpStepsize}
-                                        onMouseLeave={handleMouseUpStepsize}
+                                        onMouseDown={() => DecreaseStepsize()} 
                                         >
                                         S-
                                         </button>
@@ -667,17 +641,13 @@ const Move = () => {
                                     <div>
                                         <button 
                                         className="btn-change" 
-                                        onMouseDown={() => handleMouseDownDuration("increase", [50, 200])}
-                                        onMouseUp={handleMouseUpDuration}
-                                        onMouseLeave={handleMouseUpDuration}
+                                        onMouseDown={() => IncreaseDuration()}
                                         >
                                         D+
                                         </button>
                                         <button 
                                         className="btn-change" 
-                                        onMouseDown={() => handleMouseDownDuration("decrease", [50, 200])}
-                                        onMouseUp={handleMouseUpDuration}
-                                        onMouseLeave={handleMouseUpDuration}
+                                        onMouseDown={() => DecreaseDuration()}
                                         >
                                         D-
                                         </button>

@@ -51,15 +51,15 @@ const PopupTeachPath = (props) => {
 
     const coordinateRows = [
       [
-        { label: 'X', main: '+0.00'},
-        { label: 'Y', main: '-210.00'},
-        { label: 'Z', main: '+495.00'}
+        { label: 'X', main: '0.00'},
+        { label: 'Y', main: '210.00'},
+        { label: 'Z', main: '495.00'}
 
       ],
       [
-        { label: 'RX', main: '+180.00'},
-        { label: 'RY', main: '+0.00'},
-        { label: 'RZ', main: '+81.99'}
+        { label: 'RX', main: '180.00'},
+        { label: 'RY', main: '0.00'},
+        { label: 'RZ', main: '81.99'}
       ],
       [
           { label: 'Tool', main: '0'},
@@ -135,12 +135,12 @@ const PopupTeachPath = (props) => {
             const newCoordinateValues = coordinateRows.map(row => {
               return row.map(item => {
                 switch (item.label) {
-                  case 'X': return { ...item, main: `+${data[0].x.toFixed(2)}` };
-                  case 'Y': return { ...item, main: `+${data[0].y.toFixed(2)}` };
-                  case 'Z': return { ...item, main: `+${data[0].z.toFixed(2)}` };
-                  case 'RX': return { ...item, main: `+${data[0].roll.toFixed(2)}` };
-                  case 'RY': return { ...item, main: `+${data[0].pitch.toFixed(2)}` };
-                  case 'RZ': return { ...item, main: `+${data[0].yaw.toFixed(2)}` };
+                  case 'X': return { ...item, main: `${data[0].x.toFixed(2)}` };
+                  case 'Y': return { ...item, main: `${data[0].y.toFixed(2)}` };
+                  case 'Z': return { ...item, main: `${data[0].z.toFixed(2)}` };
+                  case 'RX': return { ...item, main: `${data[0].roll.toFixed(2)}` };
+                  case 'RY': return { ...item, main: `${data[0].pitch.toFixed(2)}` };
+                  case 'RZ': return { ...item, main: `${data[0].yaw.toFixed(2)}` };
                   case 'Tool': return { ...item, main: `${data[0].tool}` };
                   case 'Figure': return { ...item, main: `+${data[0].figure}` };
                   case 'Work': return { ...item, main: `${data[0].work}` };

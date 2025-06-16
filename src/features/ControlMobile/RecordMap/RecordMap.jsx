@@ -556,10 +556,10 @@ const RecordMaps = () => {
                 twist.angular.z = -0.03;
                 break;
             case 'left':
-                twist.angular.z = 0.05;
+                twist.angular.z = 0.03;
                 break;
             case 'right':
-                twist.angular.z = -0.05;
+                twist.angular.z = -0.03;
                 break;
             case 'rear':
                 twist.linear.x = -0.03;

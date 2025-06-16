@@ -32,19 +32,16 @@ const Missions = () => {
     const baseRef = useRef(null);
     const knobRef = useRef(null);
 
-    const startMappingRef = useRef(null);
-    const pauseMappingRef = useRef(null);
-    const resumeMappingRef = useRef(null);
-    const resetMappingRef = useRef(null);
-    const backupMapRef = useRef(null);
-    const startLocalizationRef = useRef(null);
+    const gotoNodeRef = useRef(null);
+    const saveNodeRef = useRef(null);
+    const [label, setLabel] = useState('');
+    const [selectedMissionId, setSelectedMissionId] = useState('');
 
     const missions = [
-        { id: 1, title: 'Charge robot' },
-        { id: 2, title: 'Inspect equipment' },
-        { id: 3, title: 'Deliver package' },
-        { id: 4, title: 'Security patrol' },
-        { id: 5, title: 'Data collection' },
+        { id: 1, title: 'Home' },
+        { id: 2, title: 'StationA' },
+        { id: 3, title: 'StationB' },
+        { id: 4, title: 'StationC' },
     ];
 
     const fetchLoadData = async (id) => {
@@ -76,9 +73,11 @@ const Missions = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://196.169.6.1:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://192.168.5.111:9090', // đổi nếu ROS chạy trên máy khác
+            transportOptions: {
+                maxMessageSize: 30000000 // Tăng lên 100MB
+            }
         });
-
 
         ros.on('connection', () => {
             console.log('Connected to rosbridge');
@@ -103,6 +102,8 @@ const Missions = () => {
             ros: ros,
             name: '/map',
             messageType: 'nav_msgs/msg/OccupancyGrid',
+            throttle_rate: 500,
+            queue_length: 1
         });
 
         mapTopic.subscribe((message) => {
@@ -166,88 +167,38 @@ const Missions = () => {
         
         //#region Service
         //Start Mapping
-        const setMappingMode = new ROSLIB.Service({
+        const gotoNode = new ROSLIB.Service({
             ros: ros,
-            name: '/rtabmap/set_mode_mapping',
-            serviceType: 'std_srvs/Empty'
+            name: '/rtabmap/set_goal',
+            serviceType: 'rtabmap_msgs/srv/SetGoal'
         });
 
-        startMappingRef.current = () => {
-            const request = new ROSLIB.ServiceRequest({});
-            setMappingMode.callService(request, (result) => {
+        gotoNodeRef.current = (label) => {
+            const request = new ROSLIB.ServiceRequest({
+                node_label: label
+            });
+            gotoNode.callService(request, (result) => {
                 console.log('Bắt đầu ghi bản đồ!', result);
             });
         };
 
         // Service Pause
-        const pauseService = new ROSLIB.Service({
+        const saveNode = new ROSLIB.Service({
             ros: ros,
-            name: '/rtabmap/pause',
-            serviceType: 'std_srvs/Empty'
+            name: '/rtabmap/set_label',
+            serviceType: 'rtabmap_msgs/srv/SetLabel'
         });
 
-        pauseMappingRef.current = () => {
-            const request = new ROSLIB.ServiceRequest({});
-            pauseService.callService(request, (result) => {
-                console.log('Tạm dừng mapping!', result);
+        saveNodeRef.current = (nodeId, label) => {
+            const request = new ROSLIB.ServiceRequest({
+                node_label: label
+            });
+            saveNode.callService(request, (result) => {
+                console.log('Saved Node', result);
             });
         };
 
-        // Service Resume
-        const resumeService = new ROSLIB.Service({
-            ros: ros,
-            name: '/rtabmap/resume',
-            serviceType: 'std_srvs/Empty'
-        });
-
-        resumeMappingRef.current = () => {
-            const request = new ROSLIB.ServiceRequest({});
-            resumeService.callService(request, (result) => {
-                console.log('Tiếp tục mapping!', result);
-            });
-        };
-
-        // Service Reset
-        const resetService = new ROSLIB.Service({
-            ros: ros,
-            name: '/rtabmap/reset',
-            serviceType: 'std_srvs/Empty'
-        });
-
-        resetMappingRef.current = () => {
-            const request = new ROSLIB.ServiceRequest({});
-            resetService.callService(request, (result) => {
-                console.log('Reset bản đồ thành công!', result);
-            });
-        };
-
-        //Backup service
-        const backupService = new ROSLIB.Service({
-            ros: ros,
-            name: '/rtabmap/backup',
-            serviceType: 'std_srvs/Empty'
-        });
-
-        backupMapRef.current = (filePath) => {
-            const request = new ROSLIB.ServiceRequest({});
-            backupService.callService(request, (result) => {
-                console.log('Bản đồ đã được lưu tại:', filePath);
-            });
-        };
-
-        //const changetype
-        const setLocalizationMode = new ROSLIB.Service({
-            ros: ros,
-            name: '/rtabmap/set_mode_localization',
-            serviceType: 'std_srvs/Empty'
-        });
-
-        startLocalizationRef.current = () => {
-            const request = new ROSLIB.ServiceRequest({});
-            setLocalizationMode.callService(request, (result) => {
-                console.log('Set mode localization success!');
-            });
-        };
+    
         //#endregion
 
         return () => {
@@ -384,8 +335,6 @@ const Missions = () => {
     };
 
     useEffect(() => {
-        console.log(mapData);
-        console.log(position);
         if (!mapData) return;
 
         const canvas = canvasRef.current;
@@ -556,7 +505,7 @@ const Missions = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.09;
+                twist.linear.x = 0.05;
                 break;
             case 'turn-left':
                 twist.linear.x = 0.05;
@@ -573,7 +522,7 @@ const Missions = () => {
                 twist.angular.z = -0.05;
                 break;
             case 'rear':
-                twist.linear.x = -0.09;
+                twist.linear.x = -0.05;
                 break;
             default:
                 break;
@@ -608,7 +557,18 @@ const Missions = () => {
     };
 
     const handleMissionClick = (id) => {
-        console.log(id)
+        if (selectedMissionId) {
+            const label = missions[selectedMissionId - 1]?.title;
+            if (label) {
+                gotoNodeRef.current(label);
+            }
+        }
+    }
+
+    const handleSave = () => {
+        if (selectedMissionId) {
+            saveNodeRef.current(missions[selectedMissionId - 1]?.id, missions[selectedMissionId - 1]?.title);
+        }
     }
     //#endregion
 
@@ -655,10 +615,51 @@ const Missions = () => {
                         <h1 className="missions-title">Missions</h1>
 
                         <div className="missions-description">
-                            Create and edit missions
+                            Select and move position
+                        </div>
+
+                        <div className="mission-selector">
+                            {/* <input
+                                type="text"
+                                placeholder="Enter label"
+                                value={label}
+                                onChange={(e) => setLabel(e.target.value)} */}
+                            {/* /> */}
+                            <button
+                                className="go-to-mission-btn"
+                                onClick={() => {
+                                        handleSave();
+                                }}
+                                disabled={!selectedMissionId}
+                            >
+                                Save Label
+                            </button>
+                            <select
+                                className="mission-select"
+                                value={selectedMissionId}
+                                onChange={(e) => setSelectedMissionId(e.target.value)}
+                            >
+                                <option value="">-- Select a label --</option>
+                                {missions.map((mission) => (
+                                    <option key={mission.id} value={mission.id}>
+                                        {mission.id}. {mission.title}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                className="go-to-mission-btn"
+                                onClick={() => {
+                                    if (selectedMissionId) {
+                                        handleMissionClick(selectedMissionId);
+                                    }
+                                }}
+                                disabled={!selectedMissionId}
+                            >
+                                Go to node
+                            </button>
                         </div>
                         
-                        <button className="create-mission-btn">
+                        {/* <button className="create-mission-btn">
                             + Create mission
                         </button>
                         <div className="missions-list">
@@ -678,7 +679,7 @@ const Missions = () => {
                                     No missions was found
                                 </div>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

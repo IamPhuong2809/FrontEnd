@@ -19,8 +19,8 @@ const UpdateMap = () => {
     const [goalPosition, setGoalPosition] = useState(null);
     const [planData, setPlanData] = useState(null);
     const cmdVelPublisher = useRef(null);
-    const [isControlling, setIsControlling] = useState(false);
-    const lastTwist = useRef(null);
+    const [transform, setTransform] = useState({ x: 0, y: 0, scale: 0.5});
+  
 
     const tools = [
         { id: 'select', name: 'Select', icon: '🎯', description: 'Select objects' },
@@ -62,7 +62,7 @@ const UpdateMap = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://196.169.0.45:9090', // đổi nếu ROS chạy trên máy khác
         });
 
         ros.on('connection', () => {
@@ -70,6 +70,27 @@ const UpdateMap = () => {
             setIsROSConnected(true); 
             toast.success("Successfully connect, you can modify map now!", {
                 style: {border: '1px solid green'}});
+
+            const mapTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/map',
+                messageType: 'nav_msgs/msg/OccupancyGrid',
+            });
+    
+            const handleMapMessage = (message) => {
+                setMapData({
+                    data: new Int8Array(message.data),
+                    width: message.info.width,
+                    height: message.info.height,
+                    resolution: message.info.resolution,
+                    origin: message.info.origin
+                });
+    
+                // Unsubscribe sau khi nhận được 1 message duy nhất
+                mapTopic.unsubscribe();
+            };
+    
+            mapTopic.subscribe(handleMapMessage);
         });
 
         ros.on('error', (error) => {
@@ -83,17 +104,6 @@ const UpdateMap = () => {
         //#endregion
 
         //#region Sub
-        //Map
-        const mapTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: '/map',
-            messageType: 'nav_msgs/msg/OccupancyGrid',
-        });
-
-        mapTopic.subscribe((message) => {
-            setMapData(message);
-        });
-
         //Odom
         const odom_pose = new ROSLIB.Topic({
             ros: ros,
@@ -149,94 +159,8 @@ const UpdateMap = () => {
 
         //#endregion
         
-        // //#region Service
-        // //Start Mapping
-        // const setMappingMode = new ROSLIB.Service({
-        //     ros: ros,
-        //     name: '/rtabmap/set_mode_mapping',
-        //     serviceType: 'std_srvs/Empty'
-        // });
-
-        // startMappingRef.current = () => {
-        //     const request = new ROSLIB.ServiceRequest({});
-        //     setMappingMode.callService(request, (result) => {
-        //         console.log('Bắt đầu ghi bản đồ!', result);
-        //     });
-        // };
-
-        // // Service Pause
-        // const pauseService = new ROSLIB.Service({
-        //     ros: ros,
-        //     name: '/rtabmap/pause',
-        //     serviceType: 'std_srvs/Empty'
-        // });
-
-        // pauseMappingRef.current = () => {
-        //     const request = new ROSLIB.ServiceRequest({});
-        //     pauseService.callService(request, (result) => {
-        //         console.log('Tạm dừng mapping!', result);
-        //     });
-        // };
-
-        // // Service Resume
-        // const resumeService = new ROSLIB.Service({
-        //     ros: ros,
-        //     name: '/rtabmap/resume',
-        //     serviceType: 'std_srvs/Empty'
-        // });
-
-        // resumeMappingRef.current = () => {
-        //     const request = new ROSLIB.ServiceRequest({});
-        //     resumeService.callService(request, (result) => {
-        //         console.log('Tiếp tục mapping!', result);
-        //     });
-        // };
-
-        // // Service Reset
-        // const resetService = new ROSLIB.Service({
-        //     ros: ros,
-        //     name: '/rtabmap/reset',
-        //     serviceType: 'std_srvs/Empty'
-        // });
-
-        // resetMappingRef.current = () => {
-        //     const request = new ROSLIB.ServiceRequest({});
-        //     resetService.callService(request, (result) => {
-        //         console.log('Reset bản đồ thành công!', result);
-        //     });
-        // };
-
-        // //Backup service
-        // const backupService = new ROSLIB.Service({
-        //     ros: ros,
-        //     name: '/rtabmap/backup',
-        //     serviceType: 'std_srvs/Empty'
-        // });
-
-        // backupMapRef.current = (filePath) => {
-        //     const request = new ROSLIB.ServiceRequest({});
-        //     backupService.callService(request, (result) => {
-        //         console.log('Bản đồ đã được lưu tại:', filePath);
-        //     });
-        // };
-
-        // //const changetype
-        // const setLocalizationMode = new ROSLIB.Service({
-        //     ros: ros,
-        //     name: '/rtabmap/set_mode_localization',
-        //     serviceType: 'std_srvs/Empty'
-        // });
-
-        // startLocalizationRef.current = () => {
-        //     const request = new ROSLIB.ServiceRequest({});
-        //     setLocalizationMode.callService(request, (result) => {
-        //         console.log('Set mode localization success!');
-        //     });
-        // };
-        // //#endregion
 
         return () => {
-            mapTopic?.unsubscribe();
             odom_pose?.unsubscribe();
             robot_pose?.unsubscribe();
             goal_pose?.unsubscribe();
@@ -351,19 +275,30 @@ const UpdateMap = () => {
         
         ctx.restore();
     };
-
     useEffect(() => {
         if (!mapData) return;
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
+        const { width, height, resolution, origin, data } = mapData;
 
-        const width = mapData.info.width;
-        const height = mapData.info.height;
-        const data = mapData.data;
+        const scaledWidth = width * transform.scale;
+        const scaledHeight = height * transform.scale;
 
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = scaledWidth;
+        canvas.height = scaledHeight;
+        ctx.clearRect(0, 0, scaledWidth, scaledHeight);
+
+        const x = (position.x - origin.x) / resolution;
+        const y = (position.y - origin.y) / resolution;
+
+        if (position.x !== 0 || position.y !== 0) {
+            setTransform({
+                x: -x * 2 + 700, // 300 là nửa width canvas để center
+                y: -y * 2 + 200, // 200 là nửa height canvas để center  
+                scale: 2.0 // Zoom gần hơn
+            });
+        }
 
         const imageData = ctx.createImageData(width, height);
 
@@ -383,13 +318,10 @@ const UpdateMap = () => {
 
         // Lật ảnh theo chiều dọc để khớp RViz
         ctx.putImageData(imageData, 0, 0);
-        ctx.translate(0, height);
-        ctx.scale(1, -1);
+        ctx.translate(transform.x, transform.y);
+        ctx.scale(transform.scale, transform.scale);
         ctx.drawImage(canvas, 0, 0);
         ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
-
-        const resolution = mapData.info.resolution;
-        const origin = mapData.info.origin.position;
 
         
         // Vẽ robot dạng hình tròn xanh
@@ -429,7 +361,7 @@ const UpdateMap = () => {
             else {
                 setGoalPosition(null);
             }
-        }    
+        }   
 
         const x0 = (odomPosition.x - origin.x) / resolution;
         const y0 = (odomPosition.y - origin.y) / resolution;
@@ -438,9 +370,6 @@ const UpdateMap = () => {
         ctx.arc(x0, height - y0, 2, 0, 2 * Math.PI);
         ctx.fillStyle = 'blue';
         ctx.fill();
-        
-        const x = (position.x - origin.x) / resolution;
-        const y = (position.y - origin.y) / resolution;
 
         drawEnhancedRobot(ctx, x, y, position.theta, width, height);
 
