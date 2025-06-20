@@ -387,7 +387,7 @@ const Move = () => {
                     <div className="axis-title">MOVE AXIS</div>
                     <div className="robot-visualization">
                         <div className="robot-arm">
-                            <img src={ModelRobot} alt="mô_tả_ảnh" />
+                            <img src={ModelRobot} alt="Image Robot Arm" />
                         </div>
                     </div>
                     <div className="bottom-controls">

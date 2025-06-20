@@ -116,17 +116,17 @@ const PopupTeachPath = (props) => {
             const newParameterValues = parameterConfig.map(param => {
               switch (param.label) {
                   case 'Motion Typ':
-                  return data[0].motion;
+                  return data.motion;
                   case 'EE':
-                  return data[0].ee;
+                  return data.ee;
                   case 'Stop Point':
-                  return data[0].stop ? 'TRUE' : 'FALSE';
+                  return data.stop ? 'TRUE' : 'FALSE';
                   case 'Velocity':
-                  return data[0].vel;
+                  return data.vel;
                   case 'Acceleration':
-                  return data[0].acc;
+                  return data.acc;
                   case 'Corner distance':
-                  return data[0].corner;
+                  return data.corner;
                   default:
                   return param.defaultValue;
               }
@@ -135,15 +135,15 @@ const PopupTeachPath = (props) => {
             const newCoordinateValues = coordinateRows.map(row => {
               return row.map(item => {
                 switch (item.label) {
-                  case 'X': return { ...item, main: `${data[0].x.toFixed(2)}` };
-                  case 'Y': return { ...item, main: `${data[0].y.toFixed(2)}` };
-                  case 'Z': return { ...item, main: `${data[0].z.toFixed(2)}` };
-                  case 'RX': return { ...item, main: `${data[0].roll.toFixed(2)}` };
-                  case 'RY': return { ...item, main: `${data[0].pitch.toFixed(2)}` };
-                  case 'RZ': return { ...item, main: `${data[0].yaw.toFixed(2)}` };
-                  case 'Tool': return { ...item, main: `${data[0].tool}` };
-                  case 'Figure': return { ...item, main: `+${data[0].figure}` };
-                  case 'Work': return { ...item, main: `${data[0].work}` };
+                  case 'X': return { ...item, main: `${data.x.toFixed(2)}` };
+                  case 'Y': return { ...item, main: `${data.y.toFixed(2)}` };
+                  case 'Z': return { ...item, main: `${data.z.toFixed(2)}` };
+                  case 'RX': return { ...item, main: `${data.roll.toFixed(2)}` };
+                  case 'RY': return { ...item, main: `${data.pitch.toFixed(2)}` };
+                  case 'RZ': return { ...item, main: `${data.yaw.toFixed(2)}` };
+                  case 'Tool': return { ...item, main: `${data.tool}` };
+                  case 'Figure': return { ...item, main: `+${data.figure}` };
+                  case 'Work': return { ...item, main: `${data.work}` };
                   default: return item;
                 }
               });

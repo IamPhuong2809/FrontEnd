@@ -19,7 +19,7 @@ const UpdateMap = () => {
     const [goalPosition, setGoalPosition] = useState(null);
     const [planData, setPlanData] = useState(null);
     const cmdVelPublisher = useRef(null);
-    const [transform, setTransform] = useState({ x: 0, y: 0, scale: 0.5});
+    const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1});
   
 
     const tools = [
@@ -71,26 +71,20 @@ const UpdateMap = () => {
             toast.success("Successfully connect, you can modify map now!", {
                 style: {border: '1px solid green'}});
 
-            const mapTopic = new ROSLIB.Topic({
+            const getMapInfo = new ROSLIB.Service({
                 ros: ros,
-                name: '/map',
-                messageType: 'nav_msgs/msg/OccupancyGrid',
+                name: '/rtabmap/get_map_data',
+                serviceType: 'rtabmap_msgs/srv/GetMapData'
             });
-    
-            const handleMapMessage = (message) => {
+            
+            getMapInfo.callService({}, (res) => {
                 setMapData({
-                    data: new Int8Array(message.data),
-                    width: message.info.width,
-                    height: message.info.height,
-                    resolution: message.info.resolution,
-                    origin: message.info.origin
+                    width: res.map.info.width,
+                    height: res.map.info.height,
+                    resolution: res.map.info.resolution,
+                    origin: res.map.info.origin.position
                 });
-    
-                // Unsubscribe sau khi nhận được 1 message duy nhất
-                mapTopic.unsubscribe();
-            };
-    
-            mapTopic.subscribe(handleMapMessage);
+            });
         });
 
         ros.on('error', (error) => {
@@ -294,34 +288,38 @@ const UpdateMap = () => {
 
         if (position.x !== 0 || position.y !== 0) {
             setTransform({
-                x: -x * 2 + 700, // 300 là nửa width canvas để center
-                y: -y * 2 + 200, // 200 là nửa height canvas để center  
-                scale: 2.0 // Zoom gần hơn
+                x: -x * transform.scale + scaledWidth / 2,
+                y: -y * transform.scale + scaledHeight / 2,
+                scale: 0.5
             });
         }
 
-        const imageData = ctx.createImageData(width, height);
+        const offscreenCanvas = document.createElement('canvas');
+        offscreenCanvas.width = width;
+        offscreenCanvas.height = height;
+        const offscreenCtx = offscreenCanvas.getContext('2d');
 
+        const imageData = offscreenCtx.createImageData(width, height);
         for (let i = 0; i < data.length; i++) {
             let val = data[i];
             let color;
-
-            if (val === -1) color = 127;       // Unknown -> xám
-            else if (val === 0) color = 255;   // Free -> trắng
-            else color = 0;                    // Occupied -> đen
-
-            imageData.data[i * 4 + 0] = color; // R
-            imageData.data[i * 4 + 1] = color; // G
-            imageData.data[i * 4 + 2] = color; // B
-            imageData.data[i * 4 + 3] = 255;   // A
+            if (val === -1) color = 127;       
+            else if (val === 0) color = 255;    
+            else color = 0;                
+    
+            imageData.data[i * 4 + 0] = color;  
+            imageData.data[i * 4 + 1] = color;  
+            imageData.data[i * 4 + 2] = color;  
+            imageData.data[i * 4 + 3] = 255;    
         }
-
+        offscreenCtx.putImageData(imageData, 0, 0);
+        
         // Lật ảnh theo chiều dọc để khớp RViz
-        ctx.putImageData(imageData, 0, 0);
+        ctx.save();
         ctx.translate(transform.x, transform.y);
         ctx.scale(transform.scale, transform.scale);
-        ctx.drawImage(canvas, 0, 0);
-        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+        ctx.drawImage(offscreenCanvas, 0, 0);
+        ctx.restore();
 
         
         // Vẽ robot dạng hình tròn xanh

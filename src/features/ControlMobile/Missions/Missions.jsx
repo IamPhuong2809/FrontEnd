@@ -73,7 +73,7 @@ const Missions = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://192.168.5.111:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://196.169.0.45:9090', // đổi nếu ROS chạy trên máy khác
             transportOptions: {
                 maxMessageSize: 30000000 // Tăng lên 100MB
             }

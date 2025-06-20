@@ -81,12 +81,12 @@ const PowerRobot = () => {
 
     //#region Card Home Position
     const defaultPosition = [
-        { label: "X", input: 1000.01 },
-        { label: "Y", input: -223.05 },
-        { label: "Z", input: 432.71 },
-        { label: "Rl", input: 177.64 },
-        { label: "Pt", input: 16.31 },
-        { label: "Yw", input: 118.98 }
+        { label: "X", input: 759.80 },
+        { label: "Y", input: 0.0 },
+        { label: "Z", input: 1437.0 },
+        { label: "Rl", input: 0.0 },
+        { label: "Pt", input: 90.0 },
+        { label: "Yw", input: 0.0 }
     ];
 
     const [homePosition, setHomePosition] = useState(defaultPosition);
@@ -275,7 +275,7 @@ const PowerRobot = () => {
                 </div>
                 <div className={`status-item  ${robotData.ee ? 'active' : ''}`}>End-Effector ON</div>
                 <button className='btn-reset' onClick={handlePowerReset}>Reset Error</button>
-                <button className='btn-abort' onClick={handlePowerAbort}>Abort</button>
+                <button className='btn-abort' onClick={handlePowerAbort}>Home</button>
               </div>
             </div>
             <div className='control-card error-section'>

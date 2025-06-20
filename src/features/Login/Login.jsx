@@ -6,8 +6,7 @@ import Logo_ACIS from '@images/Logo_ACIS.png';
 import Robot from '@images/WebServer_Login_Image.png';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-
-const url = "http://127.0.0.1:8000/api/"
+import { API_URL } from '@utils/config';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -17,7 +16,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         try {
-            const response = await fetch(url + 'login/', {
+            const response = await fetch(API_URL + 'login/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
