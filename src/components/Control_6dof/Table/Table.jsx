@@ -12,7 +12,6 @@ const Table = (props) => {
     } = props;
 
     const [activePositionId, setActivePositionId] = useState(null);
-    console.log("1");
 
     const toggleCoordinates = (positionId) => {
         setActivePositionId(activePositionId === positionId ? null : positionId);
@@ -44,12 +43,12 @@ const Table = (props) => {
                         >
                             Use
                         </button>
-                        <button 
+                        {/* <button 
                             className="btn-delete"
                             onClick={() => handleDeletePosition(position.id)}
                         >
                             Delete
-                        </button>
+                        </button> */}
                     </div>
                     </div>
                 </div>

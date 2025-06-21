@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import HeaderControl from '@components/Header/Header'
 import './PowerRobot.css'
 import Table from '@components/Control_6dof/Table/Table'
+import Loading from '@components/Loading/Loading'
 import Menu from '@components/Control_6dof/Menu/Menu'
 import { handleInputChange } from '@utils/inputValidation';
 import { useRobotData } from '@components/Control_6dof/RobotData'
 import { API_URL } from '@utils/config';
+import { use } from 'react'
 
 const PowerRobot = () => {
     const { robotData} = useRobotData();
@@ -81,15 +83,56 @@ const PowerRobot = () => {
 
     //#region Card Home Position
     const defaultPosition = [
-        { label: "X", input: 759.80 },
-        { label: "Y", input: 0.0 },
-        { label: "Z", input: 1437.0 },
-        { label: "Rl", input: 0.0 },
-        { label: "Pt", input: 90.0 },
-        { label: "Yw", input: 0.0 }
+      { label: "T1", input: 90.0 },
+      { label: "T2", input: 90.0 },
+      { label: "T3", input: 45.0 },
+      { label: "T4", input: 90.0 },
+      { label: "T5", input: 90.0 },
+      { label: "T6", input: 70.0 }
     ];
+    const updatedPositions = useRef([]);
 
     const [homePosition, setHomePosition] = useState(defaultPosition);
+    const [loading, setLoading] = useState(true); 
+
+    const fetchLoadData = async () => {
+      try {
+          const response = await fetch(API_URL + "O0004/", {
+              method: "POST",
+          });
+          const data = await response.json();  
+          setHomePosition([
+            { label: "T1", input: parseFloat(data[0].t1) },
+            { label: "T2", input: parseFloat(data[0].t2) },
+            { label: "T3", input: parseFloat(data[0].t3) },
+            { label: "T4", input: parseFloat(data[0].t4) },
+            { label: "T5", input: parseFloat(data[0].t5) },
+            { label: "T6", input: parseFloat(data[0].t6) }
+          ]);
+          updatedPositions.current = data.map(item => ({
+            id: item.id,
+            name: `Home Position ${item.id}`,  // Tên tự động theo ID
+            coordinates: {
+              T1: item.t1,
+              T2: item.t2,
+              T3: item.t3,
+              T4: item.t4,
+              T5: item.t5,
+              T6: item.t6
+            },
+          }));
+      } 
+      catch (error) {
+          console.error('Error:', error);
+      }
+      finally{
+          setLoading(false);
+      }
+    };
+
+    useEffect(() =>{
+      fetchLoadData()
+    }, [])
 
     const handleResetToDefault = () => {
         setHomePosition(defaultPosition);
@@ -196,32 +239,12 @@ const PowerRobot = () => {
     const Modal = useMemo(() => {
       if (!showModal) return null;
 
-          // Mảng chứa các vị trí đã lưu (có thể lấy từ API hoặc state management)
-    const savedPositions =[
-      {
-        id: 1,
-        name: "Home Position 1",
-        coordinates: {
-          X: 170.09, Y: -223.05, Z: 432.71,
-          Rl: 177.64, Pt: 16.31, Yw: 118.98
-        }
-      },
-      {
-        id: 2,
-        name: "Home Position 2",
-        coordinates: {
-          X: 180.00, Y: -220.00, Z: 430.00,
-          Rl: 175.00, Pt: 15.00, Yw: 120.00
-        }
-      }
-    ];
-
       return (
           <div className="modal-overlay">
               <div className="modal-content">
                   <Table 
                       nameTitle="List Home Position"
-                      savedPositions={savedPositions}
+                      savedPositions={updatedPositions.current}
                       setShowModal={setShowModal}
                       handleUsePosition={handleUsePosition}
                       handleDeletePosition={handleDeletePosition}
@@ -231,6 +254,10 @@ const PowerRobot = () => {
       );
     }, [showModal]);
     //#endregion Modals
+
+  if (loading) {
+      return <Loading/>;
+    }
 
   return (
     <div className="power-robot-container">
@@ -346,21 +373,22 @@ const PowerRobot = () => {
                                 <div className="position-label">{axis.label}</div>
                                 <input
                                     type="text"
-                                    name = {axis}
+                                    readOnly={true}
+                                    name = {axis.label}
                                     value={axis.input}
-                                    onChange={(e) => handleInputChange(e, index, homePosition, setHomePosition, LimitRangeCartesian[index])}
+                                    // onChange={(e) => handleInputChange(e, index, homePosition, setHomePosition, LimitRangeCartesian[index])}
                                 />
                             </div>
                         ))}
                     </div>
-                    <div className="home-position-actions">
+                    {/* <div className="home-position-actions">
                         <button className="btn-default" onClick={handleResetToDefault}>
                             DEFAULT
                         </button>
                         <button className="btn-save" onClick={handleHomePositionSave}>
                             SAVE
                         </button>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="home-list">
                     <div

@@ -68,6 +68,33 @@ const PopupTeachPath = (props) => {
       ]
     ];
 
+    const handleJog = async () => {
+        try {
+            const jointInputs = coordinateRows.flat().slice(0, 6).map(item => parseFloat(item.main));
+            const response = await fetch(API_URL + 'O0022/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    joint: jointInputs,
+                    moveMode: "PTP",
+                    velocity: parameterValues[4],
+                    acceleration: parameterValues[5]
+                })
+            });
+            console.log("ok")
+
+            const data = await response.json()
+            if(!data.success){
+                toast.error("Failed to move", {
+                    style: {border: '1px solid red'}});
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const [parameterValues, setParameterValues] = useState(
         parameterConfig.map(param => param.defaultValue)
     );
@@ -231,7 +258,6 @@ const PopupTeachPath = (props) => {
                     className="button-save"
                     onClick={() => {
                         handleSave();
-                        console.log('🟢 Sending values:', parameterValues);
                     }}
                 >
                     Save
@@ -239,9 +265,8 @@ const PopupTeachPath = (props) => {
                 <button 
                     className="button-item"
                     onClick={() => {
-                        navigate('/6dof/Move',{
-                            state: {position: coordinateRows}
-                        });
+                        handleJog();
+                        navigate('/6dof/Move');
                     }}
                 >
                     Jog
