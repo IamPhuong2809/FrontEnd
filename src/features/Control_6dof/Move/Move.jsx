@@ -683,7 +683,7 @@ const Move = () => {
                                 <button 
                                     className="control-button"
                                     onClick={() => handleMoveToHome()}
-                                    disabled={robotData.busy}
+                                    // disabled={robotData.busy}
                                 >
                                     Move to Home
                                 </button>
