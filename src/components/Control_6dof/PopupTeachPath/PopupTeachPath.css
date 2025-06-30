@@ -134,6 +134,49 @@
     height: 30px;
 }
 
+/*Input*/
+.pp-input-container {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-family: sans-serif;
+    padding: 10px 10px 0 10px;
+    margin-bottom: 0.7rem;
+}
+
+.pp-input-row {
+    display: flex;
+    gap: 5px;
+}
+
+.pp-input-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 9.3vw;
+    padding: 8px;
+    background-color: white;
+}
+
+.pp-input-item label {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #444;
+    margin-right: 3px;
+}
+
+.pp-input-item input {
+    width: 100%;
+    height: 30px;
+    padding: 6px 8px;
+    font-size: 1rem;
+    border: 1px solid black;
+    margin-left: 0px;
+    padding: 3px 0 0px 0;
+    text-align: center;
+}
+
 /* Parameters */
 .parameter-form-container {
     display: flex;

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './PopupTeachPath.css';
 import toast from 'react-hot-toast';
 import { API_URL } from '@utils/config';
+import { handleInputChange } from '@utils/inputValidation';
 
 const PopupTeachPath = (props) => {
     const {
@@ -17,7 +18,7 @@ const PopupTeachPath = (props) => {
         {
         label: 'Motion Typ',
         type: 'select',
-        options: ['LIN', 'PTP', 'CIRC'],   // 3 item cho dropdown
+        options: ['LIN', 'PTP', 'P&P'],   // 3 item cho dropdown
         defaultValue: 'LIN'
         },
         {
@@ -48,6 +49,30 @@ const PopupTeachPath = (props) => {
         defaultValue: '100'
         }
     ];
+    const [task, setTask] = useState("SKIP");
+    const [idAruco, setIdAruco] = useState(0);
+    const [ee, setEE] = useState("SKIP");
+    const [stopPoint, setStopPoint] = useState("FALSE")
+
+    const parameterConfigAruco = [
+        {
+        label: 'Motion Typ',
+        type: 'select',
+        options: ['LIN', 'PTP', 'P&P'],  
+        defaultValue: 'LIN'
+        },
+        {
+        label: 'Task',
+        type: 'select',
+        options: ['PICK', 'PLACE', 'SKIP'], 
+        defaultValue: 'SKIP'
+        },
+        {
+        label: 'Id Aruco',
+        type: 'text',
+        defaultValue: '0'
+        },
+    ];
 
     const coordinateRows = [
       [
@@ -68,23 +93,26 @@ const PopupTeachPath = (props) => {
       ]
     ];
 
+    const [positionInputs, setPositionInputs] = useState([
+    { label: 'X', input: '0.0' },
+    { label: 'Y', input: '0.0' },
+    { label: 'Z', input: '0.0' },
+    { label: 'RX', input: '0.0' },
+    { label: 'RY', input: '0.0' },
+    { label: 'RZ', input: '0.0' },
+    ]);
     const handleJog = async () => {
         try {
-            const jointInputs = coordinateRows.flat().slice(0, 6).map(item => parseFloat(item.main));
-            const response = await fetch(API_URL + 'O0022/', {
+            const response = await fetch(API_URL + 'O0017/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    joint: jointInputs,
-                    moveMode: "PTP",
-                    velocity: parameterValues[4],
-                    acceleration: parameterValues[5]
+                    idPath: selectedPath.id,
+                    idPoint: selectedPoint.id
                 })
             });
-            console.log("ok")
-
             const data = await response.json()
             if(!data.success){
                 toast.error("Failed to move", {
@@ -99,6 +127,10 @@ const PopupTeachPath = (props) => {
         parameterConfig.map(param => param.defaultValue)
     );
 
+    const motionType = parameterValues[0] || 'LIN';
+    const isPickAndPlace = motionType === 'P&P';
+    const parameterConfigToUse = isPickAndPlace ? parameterConfigAruco : parameterConfig;
+
     const [coordinateValues, setCoordinateValues] = useState(coordinateRows);
 
     const navigate = useNavigate();
@@ -106,6 +138,7 @@ const PopupTeachPath = (props) => {
 
     const handleSave = async () => {
         try {
+            const posValues = positionInputs.map(joint => joint.input);
             const response = await fetch(API_URL + "O0016/", {
                 method: "POST",
                 headers: {
@@ -114,7 +147,8 @@ const PopupTeachPath = (props) => {
                 body: JSON.stringify({
                     data: parameterValues,
                     idPath: selectedPath.id,
-                    idPoint: selectedPoint.id
+                    idPoint: selectedPoint.id,
+                    pos: posValues,
                 }),
             });
             const data = await response.json();
@@ -158,6 +192,8 @@ const PopupTeachPath = (props) => {
                   return param.defaultValue;
               }
             });
+            setEE(data.ee);
+            setStopPoint(data.stopPoint);
             setParameterValues(newParameterValues);
             const newCoordinateValues = coordinateRows.map(row => {
               return row.map(item => {
@@ -175,6 +211,32 @@ const PopupTeachPath = (props) => {
                 }
               });
             });
+
+            if (data.aruco) {
+                setPositionInputs([
+                    { label: 'X', input: data.aruco.x.toFixed(2) },
+                    { label: 'Y', input: data.aruco.y.toFixed(2) },
+                    { label: 'Z', input: data.aruco.z.toFixed(2) },
+                    { label: 'RX', input: data.aruco.roll.toFixed(2) },
+                    { label: 'RY', input: data.aruco.pitch.toFixed(2) },
+                    { label: 'RZ', input: data.aruco.yaw.toFixed(2) },
+                ]);
+                setIdAruco(data.aruco.id_aruco);
+                setTask(data.aruco.task);
+            }
+            else{
+                setPositionInputs([
+                    { label: 'X', input: '0.0' },
+                    { label: 'Y', input: '0.0' },
+                    { label: 'Z', input: '0.0' },
+                    { label: 'RX', input: '0.0' },
+                    { label: 'RY', input: '0.0' },
+                    { label: 'RZ', input: '0.0' },
+                ]);
+                setIdAruco(0);
+                setTask("SKIP");
+            }
+            
             setCoordinateValues(newCoordinateValues);
           } catch (error) {
               console.error("Error:", error);
@@ -184,6 +246,21 @@ const PopupTeachPath = (props) => {
       useEffect(() => {
           fetchLoadData();
       }, [selectedPoint]); 
+
+      useEffect(() => {
+        if(isPickAndPlace){
+            const updated = [...parameterValues];
+            updated[1] = task;
+            updated[2] = idAruco.toString();
+            setParameterValues(updated);
+        }
+        else{
+            const updated = [...parameterValues];
+            updated[1] = ee;
+            updated[2] = stopPoint;
+            setParameterValues(updated);
+        }
+      }, [isPickAndPlace])
 
     return (
         <div className='point-detail-teachpath'>
@@ -196,60 +273,91 @@ const PopupTeachPath = (props) => {
                 </button>
             </div>
 
-            <div className="coordinates-container">
-                {coordinateValues.map((row, rowIndex) => (
-                <div className="coordinates-row" key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                    <div className="coordinates-cell" key={cellIndex}>
-                        <div className="coordinate-label">{cell.label}</div>
-                        <div className="coordinate-value-main">{cell.main}</div>
+            {isPickAndPlace ? (
+                <div className="pp-input-container">
+                    <div className="pp-input-row">
+                        {positionInputs.slice(0, 3).map((item, idx) => (
+                            <div key={idx} className="pp-input-item">
+                                <label>{item.label}</label>
+                                <input 
+                                    type="text" 
+                                    value={item.input}
+                                    onChange={(e) =>
+                                        handleInputChange(e, idx, positionInputs, setPositionInputs, [-1000, 1000])
+                                    }/>
+                            </div>
+                        ))}
                     </div>
+                    <div className="pp-input-row">
+                        {positionInputs.slice(3, 6).map((item, idx) => (
+                            <div key={idx} className="pp-input-item">
+                                <label>{item.label}</label>
+                                <input 
+                                    type="text" 
+                                    value={item.input}
+                                    onChange={(e) =>
+                                        handleInputChange(e, idx + 3, positionInputs, setPositionInputs, [-1000, 1000])
+                                    }/>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <div className="coordinates-container">
+                    {coordinateValues.map((row, rowIndex) => (
+                        <div className="coordinates-row" key={rowIndex}>
+                            {row.map((cell, cellIndex) => (
+                                <div className="coordinates-cell" key={cellIndex}>
+                                    <div className="coordinate-label">{cell.label}</div>
+                                    <div className="coordinate-value-main">{cell.main}</div>
+                                </div>
+                            ))}
+                        </div>
                     ))}
                 </div>
-                ))}
-            </div>
+            )}
 
             <div className="parameter-form-container">
-                {parameterConfig.map((param, index) => (
-                <div className="parameter-item" key={index}>
-                    <label className="parameter-label">{param.label}</label>
-                    {param.type === 'select' ? (
-                    <select
-                        className="parameter-select"
-                        value={parameterValues[index]}
-                        onChange={(e) => {
-                        const newValues = [...parameterValues];
-                        newValues[index] = e.target.value;
-                        setParameterValues(newValues);
-                        }}
-                    >
-                        {param.options.map((option, idx) => (
-                        <option key={idx} value={option}>
-                            {option}
-                        </option>
-                        ))}
-                    </select>
-                    ) : (
-                    <div className="parameter-input-wrapper">
-                        <input
-                        type="number"
-                        value={parameterValues[index]}
-                        onChange={(e) => {
+                {parameterConfigToUse.map((param, index) => (
+                    <div className="parameter-item" key={index}>
+                        <label className="parameter-label">{param.label}</label>
+                        {param.type === 'select' ? (
+                        <select
+                            className="parameter-select"
+                            value={parameterValues[index]}
+                            onChange={(e) => {
                             const newValues = [...parameterValues];
                             newValues[index] = e.target.value;
                             setParameterValues(newValues);
-                        }}
-                        />
-                        <span className="unit-label">
-                        {param.label === 'Velocity' || param.label === 'Acceleration'
-                            ? '%'
-                            : param.label === 'Corner distance'
-                            ? 'mm'
-                            : ''}
-                        </span>
+                            }}
+                        >
+                            {param.options.map((option, idx) => (
+                            <option key={idx} value={option}>
+                                {option}
+                            </option>
+                            ))}
+                        </select>
+                        ) : (
+                        <div className="parameter-input-wrapper">
+                            <input
+                            type="number"
+                            value={parameterValues[index] ?? ''}
+                            onChange={(e) => {
+                                const newValues = [...parameterValues];
+                                newValues[index] = e.target.value;
+                                setParameterValues(newValues);
+                            }}
+                            />
+                            <span className="unit-label">
+                            {param.label === 'Velocity' || param.label === 'Acceleration'
+                                ? '%'
+                                : param.label === 'Corner distance'
+                                ? 'mm'
+                                : ''}
+                            </span>
+                        </div>
+                        )}
                     </div>
-                    )}
-                </div>
                 ))}
             </div>
 

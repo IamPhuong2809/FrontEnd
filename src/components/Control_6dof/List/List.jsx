@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast';
 import './List.css'
 import { FaTrash, FaPen, FaPlus, FaCopy } from 'react-icons/fa';
 import Rename from '@components/Rename/Rename'
+import PopupCopy from '@components/Control_6dof/PopupCopy/PopupCopy';
 import ConfirmDelete from '@components/ConfirmDelete/ConfirmDelete'
 import { API_URL } from '@utils/config';
 
@@ -10,13 +11,13 @@ import { API_URL } from '@utils/config';
 const List = (props) => {
     const { 
         items,
-        isPopupClosing,
         SelectedParentId = -1,
         SelectedItem,
         handleItemSelect,
         handleDetailClose,
         headerName, 
         width,
+        haveCopy,
     } = props;
 
     //#region database
@@ -117,6 +118,7 @@ const List = (props) => {
 
     // State cho rename modal
     const [showRename, setShowRename] = useState(false);
+    const [showCopy, setshowCopy] = useState(false);
     const [renameMode, setRenameMode] = useState(''); 
     const [currentEditItem, setCurrentEditItem] = useState(null);
     const [itemsList, setItemsList] = useState([...items]);
@@ -124,6 +126,7 @@ const List = (props) => {
     const [draggedItem, setDraggedItem] = useState(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [itemToCopy, setItemToCopy] = useState(null);
     const [deleteAllItems, setdeleteAllItems] = useState(false);
     const [delay, setDelay] = useState(0);
 
@@ -220,6 +223,27 @@ const List = (props) => {
         }
     };
 
+    const handleCopyClick = (item, e) => {
+        e.stopPropagation();
+        setItemToCopy(item);
+        setshowCopy(true);
+    }
+
+    const PopupCopyWrapper = useMemo(() => {
+        if (!showCopy) return null;
+        return (
+            <div className="popup-copy-overlay">
+                <div className="popup-copy-content">
+                    <PopupCopy 
+                        ClosePopup={() => setshowCopy(false)}
+                        IdPathCopy={SelectedParentId}
+                        PointCopy={itemToCopy}
+                    />
+                </div>
+            </div>
+        );
+    }, [showCopy]);
+
     //#region Drag and drop handlers
     const handleDragStart = (e, item) => {
         e.stopPropagation();
@@ -274,7 +298,7 @@ const List = (props) => {
 
     return (
         <div>
-            <div className={`points-list-container ${isPopupClosing ? 'slide-out' : 'slide-in'}`} style={{ width: width }}>
+            <div className={`points-list-container`} style={{ width: width }}>
                 <div className="points-header">
                     <div className="point-header-title">
                         <span>No. {headerName}</span>
@@ -328,17 +352,18 @@ const List = (props) => {
                                             />
                                         </div>
                                     
+                                        {haveCopy && (
                                         <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Copy</div>
                                             <FaCopy
-                                                style={{ color: '#40cde6', cursor: 'pointer' }} 
-                                                className="action-button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    // handleCopyItem?.(item); // Nếu có handleCopyItem
-                                                }}
+                                            style={{ color: '#40cde6', cursor: 'pointer' }} 
+                                            className="action-button"
+                                            onClick={(e) => {
+                                                handleCopyClick(item, e);
+                                            }}
                                             />
                                         </div>
+                                        )}
                                     
                                         <div className="action-button-wrapper">
                                             <div className={`tooltip ${hoveredItemId === 1 ? 'below' : 'above'}`}>Delete</div>
@@ -380,6 +405,7 @@ const List = (props) => {
                     onConfirm={handleRenameConfirm}
                 />
             )}
+            {PopupCopyWrapper}
 
             <ConfirmDelete
                 isOpen={deleteDialogOpen}

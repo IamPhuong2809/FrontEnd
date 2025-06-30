@@ -14,7 +14,8 @@ const TeachPath = () => {
 
     const [isPointOpen, setIsPointOpen] = useState(false);
     const [selectedPath, setSelectedPath] = useState(null);
-    const [isPointClosing, setIsPointClosing] = useState(false);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [selectedPoint, setSelectedPoint] = useState(null);
 
     //#region api 
     const [paths, setPaths] = useState(null);
@@ -28,6 +29,15 @@ const TeachPath = () => {
             });
             const data = await response.json();
             setPaths(data);
+            const savedPath = localStorage.getItem("selected_path");
+            const savedPoint = localStorage.getItem("selected_point");
+            localStorage.removeItem("selected_point");
+            localStorage.removeItem("selected_path");
+            if (savedPoint && savedPath) {
+                handlePathSelect(data.find(p => p.id === JSON.parse(savedPath)));
+                setSelectedPoint(JSON.parse(savedPoint));
+                setIsDetailOpen(true);
+            }
             setLoading(false);
         } catch (error) {
             console.error("Error:", error);
@@ -63,20 +73,14 @@ const TeachPath = () => {
     };
 
     const handlePathClose = () => {
-        setIsPointClosing(true);
-
         setIsPointOpen(false);
         setSelectedPath(null);
-        setIsPointClosing(false);
-
         setIsDetailOpen(false);
         setSelectedPoint(null);
     };
     //#endregion
 
     //#region Detail Point
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [selectedPoint, setSelectedPoint] = useState(null);
 
     const handlePointSelect = async (point) => {
         if(isDetailOpen) {
@@ -122,9 +126,9 @@ const TeachPath = () => {
                     SelectedItem={selectedPoint}
                     handleItemSelect={handlePointSelect} 
                     handleDetailClose={handleDetailClose}
-                    isPopupClosing={isPointClosing} 
                     headerName="Point Name" 
                     width="30vw"
+                    haveCopy='True'
                     />
                 )}
                 

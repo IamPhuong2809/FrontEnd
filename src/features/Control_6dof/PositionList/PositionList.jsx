@@ -15,6 +15,8 @@ const PositionList = () => {
     const { robotData } = useRobotData(); 
     const [points, setPoints] = useState(null);
     const [loading, setLoading] = useState(true); 
+    const [selectedPoint, setSelectedPoint] = useState(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
 
     const fetchLoadData = async (id) => {
         try {
@@ -23,6 +25,13 @@ const PositionList = () => {
             });
             const data = await response.json();
             setPoints(data);
+            const savedPoint = localStorage.getItem("selected_point");
+            localStorage.removeItem("selected_point");
+            localStorage.removeItem("selected_path");
+            if (savedPoint) {
+                setSelectedPoint(JSON.parse(savedPoint));
+                setIsDetailOpen(true);
+            }
             setLoading(false);
         } catch (error) {
             console.error("Error:", error);
@@ -34,9 +43,6 @@ const PositionList = () => {
     }, []); 
 
     //#region Popup Screen
-    const [selectedPoint, setSelectedPoint] = useState(null);
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
-    
     const handleDetailClose = () => {
         setIsDetailOpen(false);
         setSelectedPoint(null);
@@ -76,6 +82,7 @@ const PositionList = () => {
                     handleDetailClose={handleDetailClose}
                     headerName="Global Point Name" 
                     width="30vw"
+                    haveCopy='True'
                 />
 
                 {isDetailOpen && (

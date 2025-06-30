@@ -206,3 +206,28 @@
     font-size: 12px;
     margin-bottom: 10px;
 }
+
+/*#region popup*/
+.popup-copy-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* lớp phủ tối */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -35px;
+  z-index: 1000;
+}
+  
+.popup-copy-content {
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 300px;
+  max-width: 90%;
+  position: relative;
+}
+/*#endregion*/

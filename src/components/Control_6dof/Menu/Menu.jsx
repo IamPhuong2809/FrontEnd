@@ -19,7 +19,7 @@ const Menu = () => {
       "/6dof/TeachPath",
       "/6dof/MovePath",
       "/6dof/Move",
-      // "/6dof/Information"
+      "/6dof/Information"
     ]
 
     const restrictedRoutes = [
@@ -40,7 +40,7 @@ const Menu = () => {
         );
     };
     
-    const logos = [logo1, logo2, logo3, logo4, logo5, logo6];
+    const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo6];
     // Mảng chứa nội dung tooltip cho từng button
     const tooltips = [
         "Power Robot",
@@ -49,7 +49,7 @@ const Menu = () => {
         "Teach Path",
         "Move Path",
         "Move",
-        // "Information"
+        "Information"
         ];
 
     const formatPath = (text) => {

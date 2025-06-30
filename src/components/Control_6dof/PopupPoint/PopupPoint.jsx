@@ -5,7 +5,7 @@ import './PopupPoint.css';
 import { API_URL } from '@utils/config';
 
 
-const PopupGlobal = (props) => {
+const PopupPoint = (props) => {
     const { 
         ClosePopup,
         joint
@@ -226,4 +226,4 @@ const PopupGlobal = (props) => {
   );
 };
 
-export default PopupGlobal;
+export default PopupPoint;

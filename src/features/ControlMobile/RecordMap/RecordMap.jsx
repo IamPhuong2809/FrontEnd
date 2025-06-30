@@ -67,7 +67,7 @@ const RecordMaps = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://196.169.0.45:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://196.169.1.253:9090', // đổi nếu ROS chạy trên máy khác
         });
 
         ros.on('connection', () => {

@@ -131,6 +131,7 @@ const Move = () => {
         [[0, 176],[-180, 180]],
         [[0, 359.99],[-180, 180]],
     ]
+    const homeValues = [90, 90, 45, 90, 90, 180];
 
     const {
         value: stepsize,
@@ -256,7 +257,7 @@ const Move = () => {
     };
 
     useEffect(() => {
-        handleType("Work");
+        handleType("Joint");
     }, []);
 
     const handleEMG = async () => {
@@ -297,6 +298,30 @@ const Move = () => {
     };
 
     const handleReadActualPosition = async () => {
+        try {
+            const isJointMode = activeMoveButton === "Joint";
+
+            const newJointInput = JointInput.map((joint, index) => {
+                let newValue;
+                if (isJointMode) {
+                    newValue = robotData.jointCurrent[`t${index + 1}`];
+                } else {
+                    const positionKeys = ['x', 'y', 'z', 'rl', 'pt', 'yw'];
+                    newValue = robotData.positionCurrent[positionKeys[index]];
+                }
+
+                return {
+                    ...joint,
+                    input: newValue,
+                    value: newValue
+                };
+            });
+
+            // Cập nhật state
+            setJointInput(newJointInput);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     const handleMove= async () => {
@@ -344,9 +369,18 @@ const Move = () => {
     const handleMoveToHome = async () => {
         try {
             fetch(API_URL + "O0024/", {
-                method: 'GET'   
+                method: 'GET'
             });
             // const data = await response.json();
+            homeValues.forEach((value, index) => {
+                jointCounters[index].setCurrentValue(value);
+            });
+            const newJointInput = JointInput.map((joint, index) => ({
+                ...joint,
+                input: homeValues[index],
+                value: homeValues[index]
+            }));
+            setJointInput(newJointInput);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -658,7 +692,7 @@ const Move = () => {
                                 <div className="button-row">
                                     <button 
                                         className={`control-button-tall ${isJog ? '' : 'active'}`}
-                                        onClick={() => handleReadActualPosition}
+                                        onClick={() => handleReadActualPosition()}
                                     >
                                         Read Actual Position
                                     </button>
