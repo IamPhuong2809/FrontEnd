@@ -4,7 +4,9 @@ import ROSLIB from 'roslib';
 import toast from 'react-hot-toast';
 import HeaderControl from "@components/Header/Header";
 import Menu from "@components/ControlMobile/Menu/Menu"
+import Rename from '@components/Rename/Rename'
 import { useMapContext } from '@components/ControlMobile/MapContext';
+import { API_URL } from '@utils/config';
 import './UpdateMap.css'
 
 const UpdateMap = () => {
@@ -18,9 +20,7 @@ const UpdateMap = () => {
     const [odomPosition, setOdomPosition] = useState({ x: 0, y: 0, z: 0 });
     const [goalPosition, setGoalPosition] = useState(null);
     const [planData, setPlanData] = useState(null);
-    const cmdVelPublisher = useRef(null);
-    const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1});
-  
+    const cmdVelPublisher = useRef(null);  
 
     const tools = [
         { id: 'select', name: 'Select', icon: '🎯', description: 'Select objects' },
@@ -48,6 +48,77 @@ const UpdateMap = () => {
     const [areas, setAreas] = useState([]);
     const [selectedTool, setSelectedTool] = useState([]);
 
+    const [dragStart, setDragStart] = useState(null); 
+    const [posePreview, setPosePreview] = useState(null);
+    const [positionPose, setPositionPose] = useState(null);
+
+    const [showRename, setShowRename] = useState(false);    
+
+    useEffect(() => {
+        const loadMap = async () => {
+            try {
+                const response = await fetch(API_URL + "update/", {
+                    method: "POST",
+                });
+    
+                const data = await response.json();
+                const img = new Image();
+                img.src = `${API_URL}${data.image_url}`;
+                console.log(img)
+    
+                img.onload = () => {
+                    const canvas = canvasRef.current;
+                    const ctx = canvas.getContext('2d');
+    
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+    
+                    setMapData({
+                        width: img.width,
+                        height: img.height,
+                        resolution: data.resolution,
+                        origin: {
+                            x: data.origin[0],
+                            y: data.origin[1]
+                        },
+                        image: img
+                    });
+                };
+            } catch (error) {
+                console.error("Error loading map:", error);
+            }
+        };
+    
+        loadMap();
+    }, []);
+
+    const handleRenameConfirm = async (newName) => {
+    
+        try {
+            const response = await fetch(API_URL + 'position/', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: newName,
+                    pos: positionPose,
+                }),
+            });
+    
+            const result = await response.json();
+            console.log("Server response:", result);
+            toast.success("Saved position successfully!");
+    
+            setShowRename(false);
+        } catch (error) {
+            toast.error("Failed to save position");
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         const savedMap = localStorage.getItem('selectedMap');
         const savedSite = localStorage.getItem('selectedSite');
@@ -62,7 +133,7 @@ const UpdateMap = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://196.169.0.45:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://196.169.1.253:9090', // đổi nếu ROS chạy trên máy khác
         });
 
         ros.on('connection', () => {
@@ -70,21 +141,6 @@ const UpdateMap = () => {
             setIsROSConnected(true); 
             toast.success("Successfully connect, you can modify map now!", {
                 style: {border: '1px solid green'}});
-
-            const getMapInfo = new ROSLIB.Service({
-                ros: ros,
-                name: '/rtabmap/get_map_data',
-                serviceType: 'rtabmap_msgs/srv/GetMapData'
-            });
-            
-            getMapInfo.callService({}, (res) => {
-                setMapData({
-                    width: res.map.info.width,
-                    height: res.map.info.height,
-                    resolution: res.map.info.resolution,
-                    origin: res.map.info.origin.position
-                });
-            });
         });
 
         ros.on('error', (error) => {
@@ -271,66 +327,32 @@ const UpdateMap = () => {
     };
     useEffect(() => {
         if (!mapData) return;
-
+    
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        const { width, height, resolution, origin, data } = mapData;
-
-        const scaledWidth = width * transform.scale;
-        const scaledHeight = height * transform.scale;
-
-        canvas.width = scaledWidth;
-        canvas.height = scaledHeight;
-        ctx.clearRect(0, 0, scaledWidth, scaledHeight);
-
-        const x = (position.x - origin.x) / resolution;
-        const y = (position.y - origin.y) / resolution;
-
-        if (position.x !== 0 || position.y !== 0) {
-            setTransform({
-                x: -x * transform.scale + scaledWidth / 2,
-                y: -y * transform.scale + scaledHeight / 2,
-                scale: 0.5
-            });
-        }
-
-        const offscreenCanvas = document.createElement('canvas');
-        offscreenCanvas.width = width;
-        offscreenCanvas.height = height;
-        const offscreenCtx = offscreenCanvas.getContext('2d');
-
-        const imageData = offscreenCtx.createImageData(width, height);
-        for (let i = 0; i < data.length; i++) {
-            let val = data[i];
-            let color;
-            if (val === -1) color = 127;       
-            else if (val === 0) color = 255;    
-            else color = 0;                
     
-            imageData.data[i * 4 + 0] = color;  
-            imageData.data[i * 4 + 1] = color;  
-            imageData.data[i * 4 + 2] = color;  
-            imageData.data[i * 4 + 3] = 255;    
-        }
-        offscreenCtx.putImageData(imageData, 0, 0);
-        
-        // Lật ảnh theo chiều dọc để khớp RViz
-        ctx.save();
-        ctx.translate(transform.x, transform.y);
-        ctx.scale(transform.scale, transform.scale);
-        ctx.drawImage(offscreenCanvas, 0, 0);
-        ctx.restore();
+        const { width, height, resolution, origin, image } = mapData;
 
-        
-        // Vẽ robot dạng hình tròn xanh
+        ctx.drawImage(image, 0, 0);
+    
+        // === DRAW OBJECTS ===
+    
+        // Helper to convert world to map pixel
+        const toPixel = (wx, wy) => {
+            return {
+                x: (wx - origin.x) / resolution,
+                y: (wy - origin.y) / resolution
+            };
+        };
+    
+        // Draw goal
         if (goalPosition) {
             const dx = position.x - goalPosition.x;
             const dy = position.y - goalPosition.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
         
             if (distance > 0.2) {
-                const goalX = (goalPosition.x - origin.x) / resolution;
-                const goalY = (goalPosition.y - origin.y) / resolution;
+                const { goalX, goalY } = toPixel(goalPosition.x, goalPosition.y);
         
                 ctx.beginPath();
                 ctx.arc(goalX, height - goalY, 3, 0, 2 * Math.PI);
@@ -338,28 +360,28 @@ const UpdateMap = () => {
                 ctx.fill();
 
                 ctx.beginPath();
-
-                for (let i = 0; i < planData.poses.length; i++) {
-                    const pose = planData.poses[i].pose.position;
-            
-                    const px = (pose.x - origin.x) / resolution;
-                    const py = (pose.y - origin.y) / resolution;
-            
-                    if (i === 0) {
-                        ctx.moveTo(px, height - py);
-                    } else {
-                        ctx.lineTo(px, height - py);
+                if (planData?.poses){
+                    for (let i = 0; i < planData.poses.length; i++) {
+                        const pose = planData.poses[i].pose.position;
+                
+                        const { px, py } = toPixel(pose.x, pose.y);
+                
+                        if (i === 0) {
+                            ctx.moveTo(px, height - py);
+                        } else {
+                            ctx.lineTo(px, height - py);
+                        }
                     }
+                
+                    ctx.strokeStyle = 'blue';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
                 }
-            
-                ctx.strokeStyle = 'blue';
-                ctx.lineWidth = 1;
-                ctx.stroke();
             }
             else {
                 setGoalPosition(null);
             }
-        }   
+        }    
 
         const x0 = (odomPosition.x - origin.x) / resolution;
         const y0 = (odomPosition.y - origin.y) / resolution;
@@ -369,12 +391,51 @@ const UpdateMap = () => {
         ctx.fillStyle = 'blue';
         ctx.fill();
 
+        const { x, y } = toPixel(position.x, position.y);
+
         drawEnhancedRobot(ctx, x, y, position.theta, width, height);
 
-        ctx.restore();
-    }, [mapData, position, odomPosition, goalPosition, planData]);
+    
+        // Draw arrow preview
+        if (selectedTool === 'position' && posePreview && dragStart) {
+            const startX = dragStart.x;
+            const startY = dragStart.y;
+        
+            drawArrow(ctx, startX, startY, posePreview.yaw, 40);
+        }
+    }, [mapData, position, odomPosition, goalPosition, planData, posePreview, dragStart]);
     //#endregion
 
+    const drawArrow = (ctx, fromX, fromY, angle, length = 40) => {
+        const toX = fromX + length * Math.cos(angle);
+        const toY = fromY + length * Math.sin(angle);
+
+        // Vẽ thân mũi tên
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Vẽ đầu mũi tên
+        const headLength = 10;
+        const headAngle = Math.PI / 6;
+
+        const leftX = toX - headLength * Math.cos(angle - headAngle);
+        const leftY = toY - headLength * Math.sin(angle - headAngle);
+
+        const rightX = toX - headLength * Math.cos(angle + headAngle);
+        const rightY = toY - headLength * Math.sin(angle + headAngle);
+
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(leftX, leftY);
+        ctx.lineTo(rightX, rightY);
+        ctx.closePath();
+        ctx.fillStyle = '#ff0000';
+        ctx.fill();
+    };
 
     //#region Control
     const handleToolSelect = (toolId) => {
@@ -414,6 +475,83 @@ const UpdateMap = () => {
     };
     //#endregion
 
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const handleMouseDown = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            setDragStart({ x, y });
+        };
+
+        const handleMouseMove = (e) => {
+            if (!dragStart || !mapData) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x1 = (e.clientX - rect.left) * scaleX;
+            const y1 = (e.clientY - rect.top) * scaleY;
+            const dx = x1 - dragStart.x;
+            const dy = y1 - dragStart.y;
+            const yaw = Math.atan2(dy, dx);
+
+            setPosePreview({ yaw });
+        };
+
+        const handleMouseUp = (e) => {
+            if (!dragStart || !mapData) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x1 = (e.clientX - rect.left) * scaleX;
+            const y1 = (e.clientY - rect.top) * scaleY;
+
+            const { resolution, origin } = mapData;
+
+            const mapX0 = dragStart.x * resolution + origin.x;
+            const mapY0 = dragStart.y * resolution + origin.y;
+            const mapX1 = x1 * resolution + origin.x;
+            const mapY1 = y1 * resolution + origin.y;
+
+            const dx = mapX1 - mapX0;
+            const dy = mapY1 - mapY0;
+            const yaw = Math.atan2(dy, dx);
+
+            console.log("Selected Pose:");
+            console.log("x:", mapX0.toFixed(2));
+            console.log("y:", mapY0.toFixed(2));
+            console.log("yaw (rad):", yaw.toFixed(3));
+            console.log("yaw (deg):", (yaw * 180 / Math.PI).toFixed(1));
+            
+            if (selectedTool === 'position') {
+                setShowRename(true);
+            }
+
+            setPosePreview({ yaw });
+            setPositionPose({ x: mapX0, y: mapY0, yaw }); // dùng cho gửi ROS hoặc lưu
+
+            setDragStart(null);
+        };
+
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("mousemove", handleMouseMove);
+
+        return () => {
+            canvas.removeEventListener("mousedown", handleMouseDown);
+            canvas.removeEventListener("mouseup", handleMouseUp);
+            canvas.removeEventListener("mousemove", handleMouseMove);
+        };
+    }, [mapData, dragStart]);
+    
+
     return (
         <div>
             <HeaderControl />
@@ -424,8 +562,8 @@ const UpdateMap = () => {
                         ref={canvasRef} 
                         style={{ 
                             border: '1px solid black', 
-                            width: '600px', 
-                            height: 'auto' 
+                            width: 'auto',
+                            height: '90%',
                         }}
                     />
                 </div>
@@ -528,6 +666,14 @@ const UpdateMap = () => {
                     </div>
                 </div>
             </div>
+            {showRename && (
+                <Rename
+                    title="Enter Position Name"
+                    initialName=""
+                    onCancel={() => setShowRename(false)}
+                    onConfirm={handleRenameConfirm}
+                />
+            )}
         </div>
     )
 }

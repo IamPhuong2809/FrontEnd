@@ -193,7 +193,7 @@ const PopupTeachPath = (props) => {
               }
             });
             setEE(data.ee);
-            setStopPoint(data.stopPoint);
+            setStopPoint(data.stop ? 'TRUE' : 'FALSE');
             setParameterValues(newParameterValues);
             const newCoordinateValues = coordinateRows.map(row => {
               return row.map(item => {

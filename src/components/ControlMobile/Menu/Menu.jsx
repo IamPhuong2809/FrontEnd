@@ -15,7 +15,6 @@ const Menu = () => {
         "/ControlMobile/Missions",
         "/ControlMobile/RecordMap",
         "/ControlMobile/UpdateMap",
-        // "/ControlMobile/Infomation",
     ]
 
     const getActiveIndex = () => {
@@ -30,7 +29,6 @@ const Menu = () => {
         "Missions",
         "RecordMap",
         "UpdateMap",
-        // "Information"
         ];
 
     const formatPath = (text) => {

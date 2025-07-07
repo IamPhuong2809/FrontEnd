@@ -148,7 +148,7 @@ const RecordMaps = () => {
         //Vel pub
         cmdVelPublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/cmd_vel_plc',
+            name: '/diff_base_controller/cmd_vel_unstamped',
             messageType: 'geometry_msgs/msg/Twist',
         });
 
@@ -545,7 +545,7 @@ const RecordMaps = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.03;
+                twist.linear.x = 0.08;
                 break;
             case 'turn-left':
                 twist.linear.x = 0.05;
@@ -556,14 +556,14 @@ const RecordMaps = () => {
                 twist.angular.z = -0.03;
                 break;
             case 'left':
-                twist.angular.z = 0.03;
+                twist.angular.z = 0.12;
                 break;
             case 'right':
-                twist.angular.z = -0.03;
+                twist.angular.z = -0.12;
                 break;
-            case 'rear':
-                twist.linear.x = -0.03;
-                break;
+            // case 'rear':
+            //     twist.linear.x = -0.03;
+            //     break;
             default:
                 break;
                 

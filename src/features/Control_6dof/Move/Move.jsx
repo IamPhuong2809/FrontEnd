@@ -131,7 +131,7 @@ const Move = () => {
         [[0, 176],[-180, 180]],
         [[0, 359.99],[-180, 180]],
     ]
-    const homeValues = [90, 90, 45, 90, 90, 180];
+    const homeValues = [[90, 90, 45, 90, 90, 180], [796, 0, 1023, 0, 0, 90]];
 
     const {
         value: stepsize,
@@ -369,16 +369,30 @@ const Move = () => {
     const handleMoveToHome = async () => {
         try {
             fetch(API_URL + "O0024/", {
-                method: 'GET'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    moveMode: activeMoveButton,
+                    jogMode: activeJogButton,
+                })
             });
             // const data = await response.json();
-            homeValues.forEach((value, index) => {
+            let targetValues;
+            if(activeJogButton === "Joint" || activeMoveButton === "Joint"){
+                targetValues = homeValues[0];
+            }
+            else{
+                targetValues = homeValues[1];
+            }
+            targetValues.forEach((value, index) => {
                 jointCounters[index].setCurrentValue(value);
             });
             const newJointInput = JointInput.map((joint, index) => ({
                 ...joint,
-                input: homeValues[index],
-                value: homeValues[index]
+                input: targetValues[index],
+                value: targetValues[index]
             }));
             setJointInput(newJointInput);
         } catch (error) {

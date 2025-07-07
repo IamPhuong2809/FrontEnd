@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
  */
 
 export const handleInputChange = (e, index, JointInput, setJointInput, limit) => {
-    const regex = /^[+-]?\d*\.?\d{0,2}$/;
+    const regex = /^[+-]?\d*\.?\d{0,3}$/;
     const value = e.target.value;
     const cursorPosition = e.target.selectionStart;
     
