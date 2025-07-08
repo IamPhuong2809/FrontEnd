@@ -124,7 +124,7 @@ const Move = () => {
     ];
 
     const LimitRangeRobot = [
-        [[0, 180],[-200, 1000]],
+        [[0, 180],[-200, 1200]],
         [[0, 180],[-900, 900]],
         [[0, 135],[0, 1450]],
         [[0, 180],[-180, 180]],
@@ -713,7 +713,7 @@ const Move = () => {
                                     <button 
                                         className={`control-button-tall ${isJog ? '' : 'active'}`}
                                         onClick={() => {handleMove();}}
-                                        disabled={robotData.busy}
+                                        // disabled={robotData.busy}
                                     >
                                         Move
                                     </button>

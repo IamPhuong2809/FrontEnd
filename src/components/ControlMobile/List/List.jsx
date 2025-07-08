@@ -4,8 +4,7 @@ import './List.css'
 import { FaTrash, FaPen} from 'react-icons/fa';
 import Rename from '@components/Rename/Rename'
 import ConfirmDelete from '@components/ConfirmDelete/ConfirmDelete'
-
-const url = "http://127.0.0.1:8000/api/"
+import { API_URL } from '@utils/config';
 
 const List = (props) => {
     const { 
@@ -31,7 +30,7 @@ const List = (props) => {
     }, [headerName]);
 
     const addItemToDB = async (id_parent, id, name) => {
-        const response = await fetch( url + `${typeData}/`, {
+        const response = await fetch( API_URL + `${typeData}/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_parent, id, name, type:"add" })
@@ -47,7 +46,7 @@ const List = (props) => {
     };
     
     const renameItemInDB = async (id_parent, id, name) => {
-        const response = await fetch( url + `${typeData}/`, {
+        const response = await fetch( API_URL + `${typeData}/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({id_parent, id, name, type:"rename" })
@@ -63,7 +62,7 @@ const List = (props) => {
     };
     
     const deleteItemInDB = async (id_parent, id) => {
-        const response = await fetch( url + `${typeData}/`, {
+        const response = await fetch( API_URL + `${typeData}/`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({id_parent, id, delete_all:false})
@@ -79,7 +78,7 @@ const List = (props) => {
     };
 
     const deleteAllDB = async (id_parent) => {
-        const response = await fetch( url + `${typeData}/`, {
+        const response = await fetch( API_URL + `${typeData}/`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({id_parent, delete_all:true})

@@ -4,9 +4,11 @@ import ROSLIB from 'roslib';
 import toast from 'react-hot-toast';
 import HeaderControl from "@components/Header/Header";
 import Menu from "@components/ControlMobile/Menu/Menu"
+import Rename from '@components/Rename/Rename'
 import { useMapContext } from '@components/ControlMobile/MapContext';
 import { API_URL } from '@utils/config';
 import './Missions.css'
+import ZoomableMapCanvas from './ZoomableMapCanvas';
 
 const Missions = () => {
     const { selectedMap, selectedSite } = useMapContext(); 
@@ -20,6 +22,7 @@ const Missions = () => {
     const [goalPosition, setGoalPosition] = useState(null);
     const [planData, setPlanData] = useState(null);
     const cmdVelPublisher = useRef(null);
+    const GoalPosePublisher = useRef(null);
     const [isControlling, setIsControlling] = useState(false);
     const lastTwist = useRef(null);
 
@@ -32,38 +35,69 @@ const Missions = () => {
     const baseRef = useRef(null);
     const knobRef = useRef(null);
 
-    const gotoNodeRef = useRef(null);
-    const saveNodeRef = useRef(null);
-    const [label, setLabel] = useState('');
     const [selectedMissionId, setSelectedMissionId] = useState('');
 
-    const missions = [
-        { id: 1, title: 'Home' },
-        { id: 2, title: 'StationA' },
-        { id: 3, title: 'StationB' },
-        { id: 4, title: 'StationC' },
-    ];
+    const [showRename, setShowRename] = useState(false);    
+    const [missions, setMissions] = useState([]);
+    const [scale, setScale] = useState(1);
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-    const fetchLoadData = async (id) => {
+    const handleRenameConfirm = async (newName) => {
         try {
-            fetch(API_URL + "missions/", {
-                method: "GET",
+            const response = await fetch(API_URL + 'position/', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: selectedMap.id,
+                    id_site: selectedSite.id,
+                    name: newName,
+                    pos: position,
+                }),
             });
+    
+            const result = await response.json();
+            if(result.success){
+                toast.success("Saved position successfully!", {
+                    style: {border: '1px solid green'}});
+
+                try {
+                    const missionsResponse = await fetch(API_URL + "missions/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            id: selectedMap.id,
+                            id_site: selectedSite.id,
+                        }),
+                    });
+                    const missionsResult = await missionsResponse.json();
+                    setMissions(missionsResult);
+                } catch (error) {
+                    console.error("Failed to refresh missions:", error);
+                }
+            }
+            else{
+                toast.error("Failed to save", {
+                    style: {border: '1px solid red'}});
+            }
+            setShowRename(false);
         } catch (error) {
-            console.error("Error:", error);
+            toast.error("Failed to save position");
+            console.error(error);
         }
     };
-
-    useEffect(() => {
-        fetchLoadData();
-    }, []); 
     
-
     useEffect(() => {
-        const savedMap = localStorage.getItem('selectedMap');
-        const savedSite = localStorage.getItem('selectedSite');
+        const savedMapRaw = localStorage.getItem('selectedMap');
+        const savedSiteRaw = localStorage.getItem('selectedSite');
+        
+        const savedMap = savedMapRaw ? JSON.parse(savedMapRaw) : null;
+        const savedSite = savedSiteRaw ? JSON.parse(savedSiteRaw) : null;
 
-        if (!savedMap || !savedSite) {
+        if (!savedMapRaw || !savedSiteRaw) {
             toast.error('Please select a site and map first!', {
                 style: {border: '1px solid red'}
             });
@@ -71,9 +105,30 @@ const Missions = () => {
             return;
         }
 
+        const fetchLoadData = async () => {
+            try {
+                const response = await fetch(API_URL + "missions/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        id: savedMap.id,
+                        id_site: savedSite.id,
+                    }),
+                });
+                const result = await response.json();
+                setMissions(result);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        fetchLoadData();
+
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://196.169.1.253:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://192.168.5.111:9090', // đổi nếu ROS chạy trên máy khác
             transportOptions: {
                 maxMessageSize: 30000000 // Tăng lên 100MB
             }
@@ -84,6 +139,21 @@ const Missions = () => {
             setIsROSConnected(true); 
             toast.success("Successfully connect, you can give a mission now!", {
                 style: {border: '1px solid green'}});
+
+            const mapTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/map',
+                messageType: 'nav_msgs/msg/OccupancyGrid',
+                throttle_rate: 500,
+                queue_length: 1
+            });
+            
+            const handleMapMessage = (message) => {
+                setMapData(message);
+                mapTopic.unsubscribe();
+            };
+            
+            mapTopic.subscribe(handleMapMessage);
         });
 
         ros.on('error', (error) => {
@@ -97,19 +167,6 @@ const Missions = () => {
         //#endregion
 
         //#region Sub
-        //Map
-        const mapTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: '/map',
-            messageType: 'nav_msgs/msg/OccupancyGrid',
-            throttle_rate: 500,
-            queue_length: 1
-        });
-
-        mapTopic.subscribe((message) => {
-            setMapData(message);
-        });
-
         //Odom
         const odom_pose = new ROSLIB.Topic({
             ros: ros,
@@ -140,7 +197,7 @@ const Missions = () => {
         });
         
         goal_pose.subscribe((message) => {
-            setGoalPosition(message.pose.position);
+            setGoalPosition(message.pose);
         });
         
         //Plan
@@ -159,55 +216,27 @@ const Missions = () => {
         //Vel pub
         cmdVelPublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/cmd_vel_plc',
+            name: '/diff_base_controller/cmd_vel_unstamped',
             messageType: 'geometry_msgs/msg/Twist',
         });
 
-        //#endregion
         
-        //#region Service
-        //Start Mapping
-        const gotoNode = new ROSLIB.Service({
+        //Set goal
+        GoalPosePublisher.current = new ROSLIB.Topic({
             ros: ros,
-            name: '/rtabmap/set_goal',
-            serviceType: 'rtabmap_msgs/srv/SetGoal'
+            name: '/goal_pose',
+            messageType: 'geometry_msgs/msg/PoseStamped',
         });
 
-        gotoNodeRef.current = (label) => {
-            const request = new ROSLIB.ServiceRequest({
-                node_label: label
-            });
-            gotoNode.callService(request, (result) => {
-                console.log('Bắt đầu ghi bản đồ!', result);
-            });
-        };
-
-        // Service Pause
-        const saveNode = new ROSLIB.Service({
-            ros: ros,
-            name: '/rtabmap/set_label',
-            serviceType: 'rtabmap_msgs/srv/SetLabel'
-        });
-
-        saveNodeRef.current = (nodeId, label) => {
-            const request = new ROSLIB.ServiceRequest({
-                node_label: label
-            });
-            saveNode.callService(request, (result) => {
-                console.log('Saved Node', result);
-            });
-        };
-
-    
         //#endregion
 
         return () => {
-            mapTopic?.unsubscribe();
             odom_pose?.unsubscribe();
             robot_pose?.unsubscribe();
             goal_pose?.unsubscribe();
             planTopic?.unsubscribe();
             cmdVelPublisher.current?.unadvertise();
+            GoalPosePublisher.current?.unadvertise();
             ros?.close();
         };
 
@@ -231,204 +260,161 @@ const Missions = () => {
 
     //#region Map
 
-    const drawEnhancedRobot = (ctx, x, y, theta, width, height) => {
-        ctx.save();
-        
-        // Di chuyển context đến vị trí robot
-        ctx.translate(x, height - y);
-        ctx.rotate(-theta * Math.PI / 180); // Rotate theo hướng robot
-        
-        // Vẽ bánh xe
-        const wheelLength = 4;
-        const wheelWidth = 2;
-        const robotSize = 5; // Kích thước robot
-        
-        // Vẽ thân robot (hình ellipse)
-        ctx.beginPath();
-        ctx.ellipse(0, 0, robotSize, robotSize - 2, 0, 0, 2 * Math.PI);
-        
-        // Gradient cho thân robot
-        const bodyGradient = ctx.createRadialGradient(-2, -2, 0, 0, 0, robotSize);
-        bodyGradient.addColorStop(0, '#4a90e2');
-        bodyGradient.addColorStop(0.7, '#357abd');
-        bodyGradient.addColorStop(1, '#2c5aa0');
-        
-        ctx.fillStyle = bodyGradient;
-        ctx.fill();
-        
-        // Viền thân robot
-        ctx.strokeStyle = '#1e3a5f';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        
-        // Vẽ đầu robot (phần trước)
-        ctx.beginPath();
-        ctx.arc(robotSize - 2, 0, 3, 0, 2 * Math.PI);
-        
-        const headGradient = ctx.createRadialGradient(-1, -1, 0, 0, 0, 3);
-        headGradient.addColorStop(0, '#ff6b6b');
-        headGradient.addColorStop(0.8, '#e55555');
-        headGradient.addColorStop(1, '#cc4444');
-        
-        ctx.fillStyle = headGradient;
-        ctx.fill();
-        ctx.strokeStyle = '#aa3333';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        // Vẽ mắt robot
-        ctx.beginPath();
-        ctx.arc(robotSize - 2, -1, 1, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        
-        ctx.beginPath();
-        ctx.arc(robotSize - 2, 1, 1, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        
-        // Bánh xe trái
-        ctx.beginPath();
-        ctx.rect(-wheelLength/2, robotSize - 1, wheelLength, wheelWidth);
-        ctx.fillStyle = '#2c3e50';
-        ctx.fill();
-        ctx.strokeStyle = '#1a252f';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        // Bánh xe phải
-        ctx.beginPath();
-        ctx.rect(-wheelLength/2, -robotSize + 1 - wheelWidth, wheelLength, wheelWidth);
-        ctx.fillStyle = '#2c3e50';
-        ctx.fill();
-        ctx.strokeStyle = '#1a252f';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        // Vẽ mũi tên chỉ hướng (stylized)
-        ctx.beginPath();
-        ctx.moveTo(robotSize + 12, 0);
-        ctx.lineTo(robotSize + 4, -3);
-        ctx.lineTo(robotSize + 6, 0);
-        ctx.lineTo(robotSize + 4, 3);
-        ctx.closePath();
-        
-        const arrowGradient = ctx.createLinearGradient(robotSize + 4, 0, robotSize + 12, 0);
-        arrowGradient.addColorStop(0, '#ff9500');
-        arrowGradient.addColorStop(1, '#ff6b00');
-        
-        ctx.fillStyle = arrowGradient;
-        ctx.fill();
-        ctx.strokeStyle = '#cc5500';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        // Vẽ trail nhẹ phía sau robot
-        for (let i = 1; i <= 3; i++) {
-            ctx.beginPath();
-            ctx.arc(-robotSize - (i * 3), 0, robotSize * (0.3 - i * 0.08), 0, 2 * Math.PI);
-            ctx.fillStyle = `rgba(74, 144, 226, ${0.15 - i * 0.04})`;
-            ctx.fill();
-        }
-        
-        ctx.restore();
-    };
+    // useEffect(() => {
+    //     if (!mapData) return;
 
-    useEffect(() => {
-        if (!mapData) return;
+    //     const canvas = canvasRef.current;
+    //     const ctx = canvas.getContext('2d');
 
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+    //     const width = mapData.info.width;
+    //     const height = mapData.info.height;
+    //     const data = mapData.data;
 
-        const width = mapData.info.width;
-        const height = mapData.info.height;
-        const data = mapData.data;
+    //     canvas.width = width;
+    //     canvas.height = height;
 
-        canvas.width = width;
-        canvas.height = height;
 
-        const imageData = ctx.createImageData(width, height);
+    //     ctx.save(); // Lưu trạng thái ban đầu
 
-        for (let i = 0; i < data.length; i++) {
-            let val = data[i];
-            let color;
+    //     ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform trước khi vẽ
+    //     ctx.translate(offset.x, offset.y); // Pan
+    //     ctx.scale(scale, scale);           // Zoom
 
-            if (val === -1) color = 127;       // Unknown -> xám
-            else if (val === 0) color = 255;   // Free -> trắng
-            else color = 0;                    // Occupied -> đen
+    //     const imageData = ctx.createImageData(width, height);
 
-            imageData.data[i * 4 + 0] = color; // R
-            imageData.data[i * 4 + 1] = color; // G
-            imageData.data[i * 4 + 2] = color; // B
-            imageData.data[i * 4 + 3] = 255;   // A
-        }
+    //     for (let i = 0; i < data.length; i++) {
+    //         let val = data[i];
+    //         let color;
 
-        // Lật ảnh theo chiều dọc để khớp RViz
-        ctx.putImageData(imageData, 0, 0);
-        ctx.translate(0, height);
-        ctx.scale(1, -1);
-        ctx.drawImage(canvas, 0, 0);
-        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+    //         if (val === -1) color = 127;       // Unknown -> xám
+    //         else if (val === 0) color = 255;   // Free -> trắng
+    //         else color = 0;                    // Occupied -> đen
 
-        const resolution = mapData.info.resolution;
-        const origin = mapData.info.origin.position;
+    //         imageData.data[i * 4 + 0] = color; // R
+    //         imageData.data[i * 4 + 1] = color; // G
+    //         imageData.data[i * 4 + 2] = color; // B
+    //         imageData.data[i * 4 + 3] = 255;   // A
+    //     }
+
+    //     // Lật ảnh theo chiều dọc để khớp RViz
+    //     ctx.putImageData(imageData, 0, 0);
+    //     ctx.translate(0, height);
+    //     ctx.scale(1, -1);
+    //     ctx.drawImage(canvas, 0, 0);
+    //     ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+
+    //     const resolution = mapData.info.resolution;
+    //     const origin = mapData.info.origin.position;
 
         
-        // Vẽ robot dạng hình tròn xanh
-        if (goalPosition) {
-            const dx = position.x - goalPosition.x;
-            const dy = position.y - goalPosition.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+    //     if (goalPosition) {
+    //         const dx = position.x - goalPosition.position.x;
+    //         const dy = position.y - goalPosition.position.y;
+    //         const distance = Math.sqrt(dx * dx + dy * dy);
         
-            if (distance > 0.2) {
-                const goalX = (goalPosition.x - origin.x) / resolution;
-                const goalY = (goalPosition.y - origin.y) / resolution;
-        
-                ctx.beginPath();
-                ctx.arc(goalX, height - goalY, 3, 0, 2 * Math.PI);
-                ctx.fillStyle = 'green';
-                ctx.fill();
+    //         if (distance > 0.15) {
+    //             const q = goalPosition.orientation;
+    
+    //             // Giả sử chỉ quay quanh trục Z (yaw)
+    //             const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    //             const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    //             const yaw = Math.atan2(siny_cosp, cosy_cosp); // radian
+            
+    //             const goalX = (goalPosition.position.x - origin.x) / resolution;
+    //             const goalY = (goalPosition.position.y - origin.y) / resolution;
+            
+    //             const arrowLength = 12;
+    //             const arrowX = goalX + arrowLength * Math.cos(-yaw); // -yaw để đúng hướng trên canvas
+    //             const arrowY = (height - goalY) + arrowLength * Math.sin(-yaw);
+            
+    //             ctx.beginPath();
+    //             ctx.arc(goalX, height - goalY, 2, 0, 2 * Math.PI);
+    //             ctx.fillStyle = 'red';
+    //             ctx.fill();
 
-                ctx.beginPath();
-                if (planData?.poses){
-                    for (let i = 0; i < planData.poses.length; i++) {
-                        const pose = planData.poses[i].pose.position;
+    //             ctx.beginPath();
+    //             ctx.moveTo(goalX, height - goalY);
+    //             ctx.lineTo(arrowX, arrowY);
+    //             ctx.strokeStyle = 'green';
+    //             ctx.lineWidth = 2;
+    //             ctx.stroke();
+            
+    //             if (planData?.poses){
+    //                 for (let i = 0; i < planData.poses.length; i++) {
+    //                     const pose = planData.poses[i].pose.position;
                 
-                        const px = (pose.x - origin.x) / resolution;
-                        const py = (pose.y - origin.y) / resolution;
+    //                     const px = (pose.x - origin.x) / resolution;
+    //                     const py = (pose.y - origin.y) / resolution;
                 
-                        if (i === 0) {
-                            ctx.moveTo(px, height - py);
-                        } else {
-                            ctx.lineTo(px, height - py);
-                        }
-                    }
+    //                     if (i === 0) {
+    //                         ctx.moveTo(px, height - py);
+    //                     } else {
+    //                         ctx.lineTo(px, height - py);
+    //                     }
+    //                 }
                 
-                    ctx.strokeStyle = 'blue';
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                }
-            }
-            else {
-                setGoalPosition(null);
-            }
-        }    
+    //                 ctx.strokeStyle = 'blue';
+    //                 ctx.lineWidth = 1;
+    //                 ctx.stroke();
+    //             }
+    //         }
+    //         else {
+    //             setGoalPosition(null);
+    //         }
+    //     }    
 
-        const x0 = (odomPosition.x - origin.x) / resolution;
-        const y0 = (odomPosition.y - origin.y) / resolution;
+    //     // if (missions && missions.length > 0) {
+    //     //     missions.forEach((mission) => {
+    //     //         const mx = (mission.x - origin.x) / resolution;
+    //     //         const my = (mission.y - origin.y) / resolution;
         
-        ctx.beginPath();
-        ctx.arc(x0, height - y0, 2, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
-        ctx.fill();
+    //     //         // Chấm tròn màu tím
+    //     //         ctx.beginPath();
+    //     //         ctx.arc(mx, height - my, 3, 0, 2 * Math.PI);
+    //     //         ctx.fillStyle = 'purple';
+    //     //         ctx.fill();
         
-        const x = (position.x - origin.x) / resolution;
-        const y = (position.y - origin.y) / resolution;
+    //     //         // Hiển thị goal_id
+    //     //         ctx.font = 'bold 10px Arial';
+    //     //         ctx.fillStyle = 'purple';
+    //     //         ctx.fillText(mission.goal_id.toString(), mx + 5, height - my - 5);
+        
+    //     //         // Vẽ mũi tên hướng yaw
+    //     //         const length = 10; // độ dài mũi tên
+    //     //         const yawRad = mission.yaw * Math.PI / 180;
+    //     //         const arrowX = mx + length * Math.cos(-yawRad);  // -yaw để khớp canvas lật y
+    //     //         const arrowY = (height - my) + length * Math.sin(-yawRad);
+        
+    //     //         ctx.beginPath();
+    //     //         ctx.moveTo(mx, height - my);
+    //     //         ctx.lineTo(arrowX, arrowY);
+    //     //         ctx.strokeStyle = 'purple';
+    //     //         ctx.lineWidth = 2;
+    //     //         ctx.stroke();
+        
+    //     //         // Vẽ đầu mũi tên nhỏ
+    //     //         ctx.beginPath();
+    //     //         ctx.arc(arrowX, arrowY, 2, 0, 2 * Math.PI);
+    //     //         ctx.fillStyle = 'purple';
+    //     //         ctx.fill();
+    //     //     });
+    //     // }
 
-        drawEnhancedRobot(ctx, x, y, position.theta, width, height);
+    //     const x0 = (odomPosition.x - origin.x) / resolution;
+    //     const y0 = (odomPosition.y - origin.y) / resolution;
+        
+    //     ctx.beginPath();
+    //     ctx.arc(x0, height - y0, 2, 0, 2 * Math.PI);
+    //     ctx.fillStyle = 'red';
+    //     ctx.fill();
+        
+    //     const x = (position.x - origin.x) / resolution;
+    //     const y = (position.y - origin.y) / resolution;
 
-        ctx.restore();
-    }, [mapData, position, odomPosition, goalPosition, planData]);
+    //     drawEnhancedRobot(ctx, x, y, position.theta, width, height);
+
+    //     ctx.restore();
+    // }, [mapData, position, odomPosition, goalPosition, planData, missions, scale, offset]);
 
     //#endregion
 
@@ -505,7 +491,7 @@ const Missions = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.05;
+                twist.linear.x = 0.09;
                 break;
             case 'turn-left':
                 twist.linear.x = 0.05;
@@ -516,13 +502,13 @@ const Missions = () => {
                 twist.angular.z = -0.1;
                 break;
             case 'left':
-                twist.angular.z = 0.05;
+                twist.angular.z = 0.1;
                 break;
             case 'right':
-                twist.angular.z = -0.05;
+                twist.angular.z = -0.1;
                 break;
             case 'rear':
-                twist.linear.x = -0.05;
+                twist.linear.x = -0.09;
                 break;
             default:
                 break;
@@ -557,18 +543,48 @@ const Missions = () => {
     };
 
     const handleMissionClick = (id) => {
-        if (selectedMissionId) {
-            const label = missions[selectedMissionId - 1]?.title;
-            if (label) {
-                gotoNodeRef.current(label);
+        const goal = missions.find(m => Number(m.goal_id) === Number(id));
+        const { x, y, yaw } = goal;
+
+        // Chuyển yaw (deg) sang quaternion
+        const quaternion = new ROSLIB.Quaternion({
+            x: 0,
+            y: 0,
+            z: Math.sin((yaw * Math.PI / 180) / 2),
+            w: Math.cos((yaw * Math.PI / 180) / 2)
+        });
+
+        const now = Date.now(); // milliseconds since epoch
+        const secs = Math.floor(now / 1000);
+        const nsecs = (now % 1000) * 1e6;
+    
+        const msg = new ROSLIB.Message({
+            header: {
+                stamp: {
+                    sec: secs,
+                    nanosec: nsecs
+                },
+                frame_id: "map"
+            },
+            pose: {
+                position: { x, y, z: 0 },
+                orientation: quaternion
             }
+        });
+
+        if (GoalPosePublisher.current) {
+            GoalPosePublisher.current.publish(msg);
+            // console.log(msg)
+            toast.success(`Published goal: ${goal.name || id}`, {
+                style: {border: '1px solid green'}});
+        } else {
+            toast.error("Goal publisher is not ready", {
+                style: {border: '1px solid red'}});
         }
     }
 
     const handleSave = () => {
-        if (selectedMissionId) {
-            saveNodeRef.current(missions[selectedMissionId - 1]?.id, missions[selectedMissionId - 1]?.title);
-        }
+        setShowRename(true);
     }
     //#endregion
 
@@ -578,14 +594,25 @@ const Missions = () => {
             <Menu />
             <div className='record-maps-container'>
                 <div className="map-container">
-                    <canvas 
+                    {/* <canvas 
                         ref={canvasRef} 
+                        onWheel={handleWheel}
                         style={{ 
                             border: '1px solid black', 
-                            width: '700px', 
-                            maxHeight:'600px',
-                            height: 'auto' 
+                            width: 'auto',
+                            maxWidth: '800px',
+                            height: '90%',
+                            touchAction: 'none',
                         }}
+                    /> */}
+                    <ZoomableMapCanvas
+                        mapData={mapData}
+                        position={position}
+                        odomPosition={odomPosition}
+                        goalPosition={goalPosition}
+                        planData={planData}
+                        missions={missions}
+                        setGoalPosition={setGoalPosition}
                     />
                 </div>
                 <div className={`control-button-panel ${!isROSConnected ? 'disabled' : ''}`}>
@@ -630,7 +657,7 @@ const Missions = () => {
                                 onClick={() => {
                                         handleSave();
                                 }}
-                                disabled={!selectedMissionId}
+                                // disabled={!selectedMissionId}
                             >
                                 Save Label
                             </button>
@@ -641,8 +668,8 @@ const Missions = () => {
                             >
                                 <option value="">-- Select a label --</option>
                                 {missions.map((mission) => (
-                                    <option key={mission.id} value={mission.id}>
-                                        {mission.id}. {mission.title}
+                                    <option key={mission.goal_id} value={mission.goal_id}>
+                                        {mission.goal_id}. {mission.name}
                                     </option>
                                 ))}
                             </select>
@@ -658,31 +685,18 @@ const Missions = () => {
                                 Go to node
                             </button>
                         </div>
-                        
-                        {/* <button className="create-mission-btn">
-                            + Create mission
-                        </button>
-                        <div className="missions-list">
-                            {missions.length > 0 ? (
-                                missions.map(mission => (
-                                <div 
-                                    key={mission.id}
-                                    className="mission-item clickable"
-                                    onClick={() => handleMissionClick(mission.id)}
-                                >
-                                    <span className="mission-id">{mission.id}.</span>
-                                    <h2 className="mission-title">{mission.title}</h2>
-                                </div>
-                                ))
-                            ) : (
-                                <div className="no-missions">
-                                    No missions was found
-                                </div>
-                            )}
-                        </div> */}
                     </div>
                 </div>
             </div>
+
+            {showRename && (
+                <Rename
+                    title="Enter Position Name"
+                    initialName=""
+                    onCancel={() => setShowRename(false)}
+                    onConfirm={handleRenameConfirm}
+                />
+            )}
         </div>
     )
 }

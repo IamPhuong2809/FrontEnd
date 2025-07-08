@@ -563,6 +563,7 @@ const UpdateMap = () => {
                         style={{ 
                             border: '1px solid black', 
                             width: 'auto',
+                            maxWidth: '800px',
                             height: '90%',
                         }}
                     />
