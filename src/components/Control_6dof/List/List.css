@@ -217,7 +217,7 @@
   background-color: rgba(0, 0, 0, 0.4); /* lớp phủ tối */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   margin-top: -35px;
   z-index: 1000;
 }

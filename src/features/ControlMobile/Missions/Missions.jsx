@@ -128,7 +128,7 @@ const Missions = () => {
 
         //#region connect
         const ros = new ROSLIB.Ros({
-            url: 'ws://192.168.5.111:9090', // đổi nếu ROS chạy trên máy khác
+            url: 'ws://196.169.2.212:9090', // đổi nếu ROS chạy trên máy khác
             transportOptions: {
                 maxMessageSize: 30000000 // Tăng lên 100MB
             }
@@ -491,7 +491,7 @@ const Missions = () => {
 
         switch (direction) {
             case 'forward':
-                twist.linear.x = 0.09;
+                twist.linear.x = 0.2;
                 break;
             case 'turn-left':
                 twist.linear.x = 0.05;
@@ -502,13 +502,13 @@ const Missions = () => {
                 twist.angular.z = -0.1;
                 break;
             case 'left':
-                twist.angular.z = 0.1;
+                twist.angular.z = 0.15;
                 break;
             case 'right':
-                twist.angular.z = -0.1;
+                twist.angular.z = -0.15;
                 break;
             case 'rear':
-                twist.linear.x = -0.09;
+                twist.linear.x = -0.2;
                 break;
             default:
                 break;
@@ -657,7 +657,7 @@ const Missions = () => {
                                 onClick={() => {
                                         handleSave();
                                 }}
-                                // disabled={!selectedMissionId}
+                                disabled={!isROSConnected}
                             >
                                 Save Label
                             </button>
